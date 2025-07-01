@@ -126,7 +126,8 @@ class _LoginScreenState extends State<LoginScreen>
                   controller: _controller,
                   child: CommonButton(
                     onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(context, "/PatientButtonNavigation", (Route<dynamic> route) => false,);
+                      //Navigator.pushNamedAndRemoveUntil(context, "/PatientButtonNavigation", (Route<dynamic> route) => false,);
+                      Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
                     },
                     width: AppDimensions.screenWidth * 0.7,
                     buttonName: 'Login',

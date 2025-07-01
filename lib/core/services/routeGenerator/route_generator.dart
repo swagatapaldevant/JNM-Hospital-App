@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_fontSize.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/booking_history_module/presentation/booking_history_screen.dart';
@@ -34,6 +35,10 @@ class RouteGenerator{
   static const kBookingHistoryScreen = "/BookingHistoryScreen";
   static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
   static const kBookingPaymentScreen = "/BookingPaymentScreen";
+
+
+
+  static const kReportDashboardScreen = "/ReportDashboardScreen";
 
 
 
@@ -77,6 +82,11 @@ class RouteGenerator{
         return _animatedPageRoute(DoctorDetailsScreen());
         case kBookingPaymentScreen:
         return _animatedPageRoute(BookingPaymentScreen());
+
+
+
+        case kReportDashboardScreen:
+        return _animatedPageRoute(ReportDashboardScreen());
 
 
       default:

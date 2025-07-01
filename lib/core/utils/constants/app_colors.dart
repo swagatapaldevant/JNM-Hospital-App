@@ -54,6 +54,23 @@ class AppColors{
   static const Color gray3 = Color(0xFFE9E9E9);
 
 
+  // report dashboard
+
+  static const Color reportDashboardHeaderGrad1 = Color(0xFF9CDBF2);
+  static const Color reportDashboardHeaderGrad2 = Color(0xFF096E93);
+  static const Color reportDashboardCardGrad1 = Color(0xFF139ACA);
+  static const Color reportDashboardCardGrad2 = Color(0xFF92ABED);
+  static const Color reportDashboardCategoryBg = Color(0xFFf1f3fa);
+  static const Color overviewCardBgColor = Color(0xFF577CEF);
+
+
+
+
+
+
+
+
+
   // Text Color
   static const Color colorPrimaryText = Color(0xFF7f98ab);
   static const Color darkBlue = Color(0xFF282846);

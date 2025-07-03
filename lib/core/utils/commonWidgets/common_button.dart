@@ -26,7 +26,45 @@ class CommonButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius??32),
           color:bgColor?? AppColors.arrowBackground,
-          border: Border.all(color:borderColor?? AppColors.arrowBackground)
+          border: Border.all(color:borderColor?? AppColors.arrowBackground),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.colorBlack.withOpacity(0.25),
+              offset: const Offset(
+                3.0,
+                5.0,
+              ),
+              blurRadius: 4.0,
+              spreadRadius: 0.0,
+            ),
+            BoxShadow(
+              color: AppColors.colorBlack.withOpacity(0.25),
+              offset: const Offset(
+                1.0,
+                3.0,
+              ),
+              blurRadius: 2.0,
+              spreadRadius: 0.0,
+            ),
+            BoxShadow(
+              color: AppColors.white.withOpacity(0.79),
+              offset: const Offset(
+                -2.0,
+                0.0,
+              ),
+              blurRadius: 4.0,
+              spreadRadius: 0.0,
+            ),
+            BoxShadow(
+              color: AppColors.white.withOpacity(0.40),
+              offset: const Offset(
+                2.0,
+                0.0,
+              ),
+              blurRadius: 6.0,
+              spreadRadius: 0.0,
+            ),
+          ],
         ),
         child: Center(
           child: Text(buttonName, style: TextStyle(

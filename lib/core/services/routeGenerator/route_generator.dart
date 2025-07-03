@@ -1,7 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_fontSize.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/presentation/billing_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/presentation/birth_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/presentation/dialysis_patients_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report_module/presentation/emg_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/presentation/ipd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/landscape_view_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/booking_history_module/presentation/booking_history_screen.dart';
@@ -39,6 +46,13 @@ class RouteGenerator{
 
 
   static const kReportDashboardScreen = "/ReportDashboardScreen";
+  static const kOpdPatientReportScreen = "/OpdPatientReportScreen";
+  static const kDepartmentWiseOpdReportLandscapeScreen = "/DepartmentWiseOpdReportLandscapeScreen";
+  static const kEmgPatientReportScreen = "/EmgPatientReportScreen";
+  static const kDialysisPatientsReportScreen = "/DialysisPatientsReportScreen";
+  static const kIpdPatientReportScreen = "/IpdPatientReportScreen";
+  static const kBillingReportScreen = "/BillingReportScreen";
+  static const kBirthReportScreen = "/BirthReportScreen";
 
 
 
@@ -87,6 +101,20 @@ class RouteGenerator{
 
         case kReportDashboardScreen:
         return _animatedPageRoute(ReportDashboardScreen());
+        case kOpdPatientReportScreen:
+        return _animatedPageRoute(OpdPatientReportScreen());
+       case kDepartmentWiseOpdReportLandscapeScreen:
+        return _animatedPageRoute(DepartmentWiseOpdReportLandscapeScreen());
+       case kEmgPatientReportScreen:
+        return _animatedPageRoute(EmgPatientReportScreen());
+       case kDialysisPatientsReportScreen:
+        return _animatedPageRoute(DialysisPatientsReportScreen());
+       case kIpdPatientReportScreen:
+        return _animatedPageRoute(IpdPatientReportScreen());
+       case kBillingReportScreen:
+        return _animatedPageRoute(BillingReportScreen());
+       case kBirthReportScreen:
+        return _animatedPageRoute(BirthReportScreen());
 
 
       default:

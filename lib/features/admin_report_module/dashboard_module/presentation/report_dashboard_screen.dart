@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
@@ -62,11 +63,17 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       dashboardItem("assets/images/admin_report/opd.png",
-                          "OPD Patient Report"),
+                          "OPD Patient Report", onTap: () {
+                        Navigator.pushNamed(context, "/OpdPatientReportScreen");
+                        }, ),
                       dashboardItem("assets/images/admin_report/emg.png",
-                          "EMG Patient Report"),
+                          "EMG Patient Report", onTap: () {
+                        Navigator.pushNamed(context, "/EmgPatientReportScreen");
+                          }),
                       dashboardItem("assets/images/admin_report/ipd.png",
-                          "IPD/DAYCARE Patient Report"),
+                          "IPD/DAYCARE Patient Report", onTap: () {
+                        Navigator.pushNamed(context, "/IpdPatientReportScreen");
+                          }),
                     ],
                   ),
                   SizedBox(
@@ -76,12 +83,18 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       dashboardItem("assets/images/admin_report/dialysis.png",
-                          "Dialysis Report"),
+                          "Dialysis Report", onTap: () {
+                            Navigator.pushNamed(context, "/DialysisPatientsReportScreen");
+                          }),
                       dashboardItem("assets/images/admin_report/billing.png",
-                          "Billing Report"),
+                          "Billing Report", onTap: () {
+                        Navigator.pushNamed(context, "/BillingReportScreen");
+                          }),
                       dashboardItem(
                           "assets/images/admin_report/birth_report.png",
-                          "Birth Report"),
+                          "Birth Report", onTap: () {
+                            Navigator.pushNamed(context, "/BirthReportScreen");
+                      }),
                     ],
                   ),
                   SizedBox(
@@ -92,12 +105,12 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                     children: [
                       dashboardItem(
                           "assets/images/admin_report/death_report.png",
-                          "Death Report"),
+                          "Death Report", onTap: () {  }),
                       dashboardItem("assets/images/admin_report/discharge.png",
-                          "Discharge Report"),
+                          "Discharge Report", onTap: () {  }),
                       dashboardItem(
                           "assets/images/admin_report/edited_bill.png",
-                          "Edited Bill Report"),
+                          "Edited Bill Report", onTap: () {  }),
                     ],
                   ),
                   SizedBox(
@@ -325,40 +338,43 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   }
 
   // dashboard item
-  Widget dashboardItem(String imageLink, String text) {
-    return Container(
-      height: ScreenUtils().screenHeight(context) * 0.17,
-      width: ScreenUtils().screenWidth(context) * 0.27,
-      decoration: BoxDecoration(
-        color: AppColors.reportDashboardCategoryBg,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.colorBlack.withOpacity(0.25),
-            offset: const Offset(
-              0.0,
-              4.0,
-            ),
-            blurRadius: 4.0,
-            spreadRadius: 0.0,
-          )
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.03),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Image.asset(imageLink),
-            ),
-            Text(
-              text,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.colorBlack,
-                  fontSize: 10),
+  Widget dashboardItem(String imageLink, String text, {required Function() onTap}) {
+    return Bounceable(
+      onTap: onTap,
+      child: Container(
+        height: ScreenUtils().screenHeight(context) * 0.17,
+        width: ScreenUtils().screenWidth(context) * 0.27,
+        decoration: BoxDecoration(
+          color: AppColors.reportDashboardCategoryBg,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.colorBlack.withOpacity(0.25),
+              offset: const Offset(
+                0.0,
+                4.0,
+              ),
+              blurRadius: 4.0,
+              spreadRadius: 0.0,
             )
           ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.03),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Image.asset(imageLink),
+              ),
+              Text(
+                text,
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.colorBlack,
+                    fontSize: 10),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -62,6 +62,7 @@ class AppColors{
   static const Color reportDashboardCardGrad2 = Color(0xFF92ABED);
   static const Color reportDashboardCategoryBg = Color(0xFFf1f3fa);
   static const Color overviewCardBgColor = Color(0xFF577CEF);
+  static const Color redColor = Color(0xFFB00303);
 
 
 

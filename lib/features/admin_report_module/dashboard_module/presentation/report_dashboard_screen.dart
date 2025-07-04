@@ -17,110 +17,142 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   Widget build(BuildContext context) {
     AppDimensions.init(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            header(),
-            SizedBox(
-              height: AppDimensions.contentGap1,
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                  top: AppDimensions.screenPadding,
-                  left: AppDimensions.screenPadding,
-                  right: AppDimensions.screenPadding),
+      body: Column(
+        children: [
+          Container(
+            height: ScreenUtils().screenHeight(context) * 0.04,
+            width: ScreenUtils().screenWidth(context),
+            color: AppColors.overviewCardBgColor,
+          ),
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StatisticalGraph(
-                    weekDays: [
-                      "2018",
-                      "2019",
-                      "2020",
-                      "2021",
-                      "2022",
-                      "2023",
-                      "2024",
-                      "2025"
-                    ],
-                    blueData: [100, 300, 700, 200, 400, 900, 1200, 500],
-                    text: "Performance graph year wise",
-                  ),
+                  header(),
                   SizedBox(
-                    height: AppDimensions.contentGap2,
+                    height: AppDimensions.contentGap1,
                   ),
-                  Text(
-                    "Patient & Billing Reports",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.colorBlack),
-                  ),
-                  SizedBox(
-                    height: AppDimensions.contentGap3,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      dashboardItem("assets/images/admin_report/opd.png",
-                          "OPD Patient Report", onTap: () {
-                        Navigator.pushNamed(context, "/OpdPatientReportScreen");
-                        }, ),
-                      dashboardItem("assets/images/admin_report/emg.png",
-                          "EMG Patient Report", onTap: () {
-                        Navigator.pushNamed(context, "/EmgPatientReportScreen");
-                          }),
-                      dashboardItem("assets/images/admin_report/ipd.png",
-                          "IPD/DAYCARE Patient Report", onTap: () {
-                        Navigator.pushNamed(context, "/IpdPatientReportScreen");
-                          }),
-                    ],
-                  ),
-                  SizedBox(
-                    height: AppDimensions.contentGap3,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      dashboardItem("assets/images/admin_report/dialysis.png",
-                          "Dialysis Report", onTap: () {
-                            Navigator.pushNamed(context, "/DialysisPatientsReportScreen");
-                          }),
-                      dashboardItem("assets/images/admin_report/billing.png",
-                          "Billing Report", onTap: () {
-                        Navigator.pushNamed(context, "/BillingReportScreen");
-                          }),
-                      dashboardItem(
-                          "assets/images/admin_report/birth_report.png",
-                          "Birth Report", onTap: () {
-                            Navigator.pushNamed(context, "/BirthReportScreen");
-                      }),
-                    ],
-                  ),
-                  SizedBox(
-                    height: AppDimensions.contentGap3,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      dashboardItem(
-                          "assets/images/admin_report/death_report.png",
-                          "Death Report", onTap: () {  }),
-                      dashboardItem("assets/images/admin_report/discharge.png",
-                          "Discharge Report", onTap: () {  }),
-                      dashboardItem(
-                          "assets/images/admin_report/edited_bill.png",
-                          "Edited Bill Report", onTap: () {  }),
-                    ],
-                  ),
-                  SizedBox(
-                    height: AppDimensions.contentGap2,
-                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: AppDimensions.screenPadding,
+                        left: AppDimensions.screenPadding,
+                        right: AppDimensions.screenPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StatisticalGraph(
+                          weekDays: [
+                            "2018",
+                            "2019",
+                            "2020",
+                            "2021",
+                            "2022",
+                            "2023",
+                            "2024",
+                            "2025"
+                          ],
+                          blueData: [100, 300, 700, 200, 400, 900, 1200, 500],
+                          text: "Performance graph year wise",
+                        ),
+                        SizedBox(
+                          height: AppDimensions.contentGap2,
+                        ),
+                        Text(
+                          "Patient & Billing Reports",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.colorBlack),
+                        ),
+                        SizedBox(
+                          height: AppDimensions.contentGap3,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            dashboardItem(
+                              "assets/images/admin_report/opd.png",
+                              "OPD Patient Report",
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, "/OpdPatientReportScreen");
+                              },
+                            ),
+                            dashboardItem("assets/images/admin_report/emg.png",
+                                "EMG Patient Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/EmgPatientReportScreen");
+                            }),
+                            dashboardItem("assets/images/admin_report/ipd.png",
+                                "IPD/DAYCARE Patient Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/IpdPatientReportScreen");
+                            }),
+                          ],
+                        ),
+                        SizedBox(
+                          height: AppDimensions.contentGap3,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            dashboardItem(
+                                "assets/images/admin_report/dialysis.png",
+                                "Dialysis Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/DialysisPatientsReportScreen");
+                            }),
+                            dashboardItem(
+                                "assets/images/admin_report/billing.png",
+                                "Billing Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/BillingReportScreen");
+                            }),
+                            dashboardItem(
+                                "assets/images/admin_report/birth_report.png",
+                                "Birth Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/BirthReportScreen");
+                            }),
+                          ],
+                        ),
+                        SizedBox(
+                          height: AppDimensions.contentGap3,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            dashboardItem(
+                                "assets/images/admin_report/death_report.png",
+                                "Death Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/DeathReportScreen");
+                            }),
+                            dashboardItem(
+                                "assets/images/admin_report/discharge.png",
+                                "Discharge Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/DischargeReportScreen");
+                            }),
+                            dashboardItem(
+                                "assets/images/admin_report/edited_bill.png",
+                                "Edited Bill Report", onTap: () {
+                              Navigator.pushNamed(
+                                  context, "/EditBillReportScreen");
+                            }),
+                          ],
+                        ),
+                        SizedBox(
+                          height: AppDimensions.contentGap2,
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -131,7 +163,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: ScreenUtils().screenHeight(context) * 0.3,
+          height: ScreenUtils().screenHeight(context) * 0.26,
           width: ScreenUtils().screenWidth(context),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -150,54 +182,52 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
               ),
             ],
           ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: AppDimensions.screenPadding,
-                  vertical: AppDimensions.screenWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Hello",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.white,
-                            fontSize: 14),
-                      ),
-                      Text(
-                        "DHIRAJ KHADKA",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.white,
-                            fontSize: 18),
-                      ),
-                      Text(
-                        "ADMIN",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.white,
-                            fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg",
-                        height: AppDimensions.screenHeight * 0.06,
-                        width: AppDimensions.screenWidth * 0.15,
-                        fit: BoxFit.fill,
-                      ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: AppDimensions.screenPadding,
+                vertical: AppDimensions.screenWidth * 0.05),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Hello",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.white,
+                          fontSize: 14),
                     ),
-                  )
-                ],
-              ),
+                    Text(
+                      "DHIRAJ KHADKA",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.white,
+                          fontSize: 18),
+                    ),
+                    Text(
+                      "ADMIN",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.white,
+                          fontSize: 14),
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg",
+                      height: AppDimensions.screenHeight * 0.06,
+                      width: AppDimensions.screenWidth * 0.15,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -252,7 +282,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
           ),
         ),
         Positioned(
-          top: AppDimensions.screenHeight * 0.03,
+          top: 0,
           right: AppDimensions.screenWidth * 0.25,
           child: Image.asset(
             "assets/images/admin_report/stethoscope.png",
@@ -261,7 +291,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
           ),
         ),
         Positioned(
-          top: AppDimensions.screenHeight * 0.03,
+          top: 0,
           left: AppDimensions.screenWidth * 0.3,
           child: Image.asset(
             "assets/images/admin_report/medical.png",
@@ -270,7 +300,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
           ),
         ),
         Positioned(
-          top: AppDimensions.screenHeight * 0.1,
+          top: AppDimensions.screenHeight * 0.06,
           left: AppDimensions.screenWidth * 0.45,
           child: Image.asset(
             "assets/images/admin_report/pills.png",
@@ -338,7 +368,8 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   }
 
   // dashboard item
-  Widget dashboardItem(String imageLink, String text, {required Function() onTap}) {
+  Widget dashboardItem(String imageLink, String text,
+      {required Function() onTap}) {
     return Bounceable(
       onTap: onTap,
       child: Container(

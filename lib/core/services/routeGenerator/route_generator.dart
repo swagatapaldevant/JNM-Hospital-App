@@ -4,7 +4,10 @@ import 'package:jnm_hospital_app/core/utils/helper/app_fontSize.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/presentation/billing_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/presentation/birth_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/presentation/death_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/presentation/dialysis_patients_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/presentation/discharge_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/edit_bill_report_module/presentation/edit_bill_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report_module/presentation/emg_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/presentation/ipd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/landscape_view_screen.dart';
@@ -53,6 +56,9 @@ class RouteGenerator{
   static const kIpdPatientReportScreen = "/IpdPatientReportScreen";
   static const kBillingReportScreen = "/BillingReportScreen";
   static const kBirthReportScreen = "/BirthReportScreen";
+  static const kDeathReportScreen = "/DeathReportScreen";
+  static const kDischargeReportScreen = "/DischargeReportScreen";
+  static const kEditBillReportScreen = "/EditBillReportScreen";
 
 
 
@@ -115,6 +121,12 @@ class RouteGenerator{
         return _animatedPageRoute(BillingReportScreen());
        case kBirthReportScreen:
         return _animatedPageRoute(BirthReportScreen());
+       case kDeathReportScreen:
+        return _animatedPageRoute(DeathReportScreen());
+       case kDischargeReportScreen:
+        return _animatedPageRoute(DischargeReportScreen());
+       case kEditBillReportScreen:
+        return _animatedPageRoute(EditBillReportScreen());
 
 
       default:

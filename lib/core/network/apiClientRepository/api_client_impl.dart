@@ -49,7 +49,7 @@ class ApiClientImpl extends ApiClient {
       CommonUtils().loadingState(isLoading: false);
 
       return Resource(
-          status: response.data['status'] == "success" ? STATUS.SUCCESS : STATUS.ERROR,
+          status: response.data['success'] == true ? STATUS.SUCCESS : STATUS.ERROR,
           data: response.data['data'],
           message: response.data['msg']);
     } on DioException catch (e) {
@@ -78,7 +78,7 @@ class ApiClientImpl extends ApiClient {
       CommonUtils().loadingState(isLoading: false);
 
       return Resource(
-          status: response.data['status']== "success" ? STATUS.SUCCESS : STATUS.ERROR,
+          status: response.data['success']== true ? STATUS.SUCCESS : STATUS.ERROR,
           data: response.data['data'],
           message: response.data['msg']);
     } on DioException catch (e) {

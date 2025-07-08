@@ -6,9 +6,12 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
 
-Future<String?> showCommonModalForAdvancedSearch(BuildContext context) {
+Future<String?> showCommonModalForAdvancedSearch(
+    BuildContext context,
+    // List<String> visitType,
+    // ValueChanged<String> selectedVisitType,
+    ) {
   String? selectedFruit;
-
   final List<String> fruits = [
     "Apple", "Banana", "Cherry", "Date", "Fig", "Grapes", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon",
   ];

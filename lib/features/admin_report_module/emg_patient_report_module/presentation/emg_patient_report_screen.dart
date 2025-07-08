@@ -83,7 +83,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
               });
             },
             filterTap: () {
-              showCommonModalForAdvancedSearch(context);
+              //showCommonModalForAdvancedSearch(context);
             },
           ),
           Expanded(

@@ -110,7 +110,12 @@ class RouteGenerator{
         case kOpdPatientReportScreen:
         return _animatedPageRoute(OpdPatientReportScreen());
        case kDepartmentWiseOpdReportLandscapeScreen:
-        return _animatedPageRoute(DepartmentWiseOpdReportLandscapeScreen());
+         final args = settings.arguments as Map<String, dynamic>;
+        return _animatedPageRoute(DepartmentWiseOpdReportLandscapeScreen(
+          newCount: args["newCount"],
+          oldCount: args["oldCount"],
+          departmentName: args["departmentName"],
+        ));
        case kEmgPatientReportScreen:
         return _animatedPageRoute(EmgPatientReportScreen());
        case kDialysisPatientsReportScreen:

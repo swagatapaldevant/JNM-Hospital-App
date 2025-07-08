@@ -60,14 +60,17 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 Row(
                   spacing: 10,
                   children: [
-                    Icon(Icons.bar_chart, size: 30, color: AppColors.reportDashboardHeaderGrad2,),
+                    Bounceable(
+                        onTap: (){},
+                        child: Icon(Icons.bar_chart, size: 25, color: AppColors.reportDashboardHeaderGrad2,)),
                     Bounceable(
                         onTap:onTapFullScreen,
-                        child: Icon(Icons.fullscreen, color: AppColors.colorBlack, size: 30)),
+                        child: Icon(Icons.fullscreen, color: AppColors.colorBlack, size: 25)),
                   ],
                 ),
               ],
             ),
+            SizedBox(height: ScreenUtils().screenHeight(context)*0.01,),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               spacing: ScreenUtils().screenWidth(context)*0.05,
@@ -75,11 +78,11 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 Row(
                   spacing: 5,
                   children: [
-                    CircleAvatar(backgroundColor: AppColors.redColor,radius: 5,),
+                    CircleAvatar(backgroundColor: AppColors.redColor,radius: 4,),
                     Text("old", style: TextStyle(
                         fontSize: 12,
                         color: AppColors.redColor,
-                        fontWeight: FontWeight.w500
+                        fontWeight: FontWeight.w400
                     ),),
                   ],
                 ),
@@ -87,11 +90,11 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 Row(
                   spacing: 5,
                   children: [
-                    CircleAvatar(backgroundColor: AppColors.arrowBackground,radius: 5,),
+                    CircleAvatar(backgroundColor: AppColors.arrowBackground,radius: 4,),
                     Text("New", style: TextStyle(
                         fontSize: 12,
                         color: AppColors.arrowBackground,
-                        fontWeight: FontWeight.w500
+                        fontWeight: FontWeight.w400
                     ),),
                   ],
                 )
@@ -216,7 +219,8 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 '$year\n${spot.y.toStringAsFixed(1)}',
                 const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
               );
             }).toList();

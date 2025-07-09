@@ -27,4 +27,58 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       return resource;
     }
   }
+
+
+  @override
+  Future<Resource> getFilterData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.getRequest(
+        url: ApiEndPoint.getFilterData, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
+  @override
+  Future<Resource> emgPatientReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.emgPatientReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
+  @override
+  Future<Resource> billingReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.billingReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 }

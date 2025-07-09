@@ -16,8 +16,11 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/com
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_graph_data_model.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report_data_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/department_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/opd_patient_graph_data_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/opd_patient_report_data_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
@@ -43,14 +46,33 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
   final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
   List<OpdPatientGraphDataModel> graphData = [];
-  final List<FlSpot> newCount = [];
-  final List<FlSpot> oldCount = [];
-  final List<String> departmentName = [];
-
+  List<FlSpot> newCount = [];
+  List<FlSpot> oldCount = [];
+  List<String> departmentName = [];
 
   // for advanced filter
-  final List<String> visitType = ["Yes", "No"];
+
   String? selectedVisitType = "";
+
+  List<DepartmentListModel> departmentList = [];
+  Map<int, String> departmentMap = {};
+  String? selectedDepartment = "";
+
+  List<DoctorListModel> consultantDoctorList = [];
+  Map<int, String> doctorDataMap = {};
+  String? selectedDoctor = "";
+
+  List<ReferralListModel> referralList = [];
+  Map<int, String> referralDataMap = {};
+  String? selectedReferral = "";
+
+  List<ReferralListModel> marketByList = [];
+  Map<int, String> marketByDataMap = {};
+  String? selectedMarketByData = "";
+
+  List<ReferralListModel> providerByList = [];
+  Map<int, String> providerByDataMap = {};
+  String? selectedProviderData = "";
 
   @override
   void initState() {
@@ -58,7 +80,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
     getOpdPatientData(1);
-
+    getAllFilteredList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -90,18 +112,38 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                 isVisible = true;
               });
             },
-            filterTap: () {
-              showCommonModalForAdvancedSearch(
+            filterTap: () async {
+              final SelectedFilterData? selectedData =
+                  await showCommonModalForAdvancedSearch(
                 context,
-                // visitType,
-                // selectedVisitType: (String value) {
-                //   setState(() {
-                //     selectedFromDate = value;
-                //   });
-                // },
-
-
+                {1: "New", 2: "Old"},
+                departmentMap,
+                doctorDataMap,
+                referralDataMap,
+                marketByDataMap,
+                providerByDataMap,
               );
+
+              if (selectedData != null) {
+                selectedVisitType = selectedData["visitType"]?.value.toString();
+                selectedDepartment = selectedData["department"]?.key.toString();
+                selectedDoctor = selectedData["doctor"]?.key.toString();
+                selectedReferral = selectedData["referral"]?.key.toString();
+                selectedMarketByData = selectedData["marketBy"]?.key.toString();
+                selectedProviderData = selectedData["provider"]?.key.toString();
+                setState(() {
+                  patientList.clear();
+                  graphData.clear();
+                  newCount.clear();
+                  oldCount.clear();
+                  departmentName.clear();
+
+                  currentPage = 1;
+                  getOpdPatientData(currentPage);
+                });
+              } else {
+                print("Modal closed without filtering");
+              }
             },
           ),
           Expanded(
@@ -175,6 +217,9 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                 onTap: () {
                                   patientList.clear();
                                   graphData.clear();
+                                  newCount.clear();
+                                  oldCount.clear();
+                                  departmentName.clear();
                                   currentPage = 1;
                                   getOpdPatientData(currentPage);
                                 },
@@ -193,6 +238,9 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     selectedToDate = getCurrentDate();
                                     patientList.clear();
                                     graphData.clear();
+                                    newCount.clear();
+                                    oldCount.clear();
+                                    departmentName.clear();
                                     currentPage = 1;
                                     getOpdPatientData(currentPage);
                                   });
@@ -212,6 +260,15 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     selectedToDate = "";
                                     patientList.clear();
                                     graphData.clear();
+                                    newCount.clear();
+                                    oldCount.clear();
+                                    departmentName.clear();
+                                    selectedVisitType = "";
+                                    selectedDepartment = "";
+                                    selectedDoctor = "";
+                                    selectedReferral = "";
+                                    selectedMarketByData = "";
+                                    selectedProviderData = "";
                                     currentPage = 1;
                                     getOpdPatientData(currentPage);
                                   });
@@ -337,12 +394,12 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      "visit_type": null,
-      "department": null,
-      "doctor": null,
-      "referral": null,
-      "market_by": null,
-      "provider": null,
+      "visit_type": selectedVisitType,
+      "department": selectedDepartment,
+      "doctor": selectedDoctor,
+      "referral": selectedReferral,
+      "market_by": selectedMarketByData,
+      "provider": selectedProviderData,
       "from_date": selectedFromDate,
       "to_date": selectedToDate
     };
@@ -392,6 +449,76 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     }
   }
 
+  Future<void> getAllFilteredList() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> requestData = {};
+
+    Resource resource =
+        await _adminReportUsecase.getFilterData(requestData: requestData);
+
+    if (resource.status == STATUS.SUCCESS) {
+      // for department list
+      departmentList = (resource.data["department"] as List)
+          .map((x) => DepartmentListModel.fromJson(x))
+          .toList();
+      for (var item in departmentList) {
+        if (item.id != null) {
+          departmentMap[(item.id ?? 0.0).toInt()] = item.departmentName!;
+        }
+      }
+
+      // for consultant doctor list
+
+      consultantDoctorList = (resource.data["doctor"] as List)
+          .map((x) => DoctorListModel.fromJson(x))
+          .toList();
+      for (var item in consultantDoctorList) {
+        if (item.id != null) {
+          doctorDataMap[(item.id ?? 0.0).toInt()] = item.name ?? "";
+        }
+      }
+
+      // for referral list
+      referralList = (resource.data["referral"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in referralList) {
+        if (item.id != null) {
+          referralDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for market by list
+      marketByList = (resource.data["market_by"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in marketByList) {
+        if (item.id != null) {
+          marketByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for provider name
+      providerByList = (resource.data["provider"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in providerByList) {
+        if (item.id != null) {
+          providerByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
   String getCurrentDate() {
     final DateTime now = DateTime.now();
     final String formattedDate =
@@ -399,3 +526,5 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     return formattedDate;
   }
 }
+
+typedef SelectedFilterData = Map<String, MapEntry<int, String>?>;

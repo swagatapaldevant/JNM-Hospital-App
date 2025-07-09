@@ -145,7 +145,8 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                   child: Transform.rotate(
                     angle: 45 * 3.1415926535 / 180,
                     child: Text(
-                      yearLabels[index],
+                      yearLabels[index].length>14? yearLabels[index].substring(0, 10)
+                          : yearLabels[index],
                       style: const TextStyle(
                         fontSize: 8,
                         color: Colors.black,

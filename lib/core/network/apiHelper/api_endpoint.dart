@@ -15,6 +15,9 @@ class ApiEndPoint{
   // admin report
 
   static const opdPatientReport =  "$baseurl/opd-billing-reports";
+  static const getFilterData =  "$baseurl/get-filteration-report";
+  static const emgPatientReport =  "$baseurl/emg-report";
+  static const billingReport =  "$baseurl/billing-reports";
 
 
 

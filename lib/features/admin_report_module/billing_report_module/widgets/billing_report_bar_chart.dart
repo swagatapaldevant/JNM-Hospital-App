@@ -135,7 +135,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   toY: total[index],
-                  width: 8,
+                  width: 10,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
@@ -144,7 +144,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 ),
                 BarChartRodData(
                   toY: grandTotal[index],
-                  width: 8,
+                  width: 10,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
@@ -153,7 +153,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 ),
                 BarChartRodData(
                   toY: discount[index],
-                  width: 8,
+                  width: 10,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
@@ -162,7 +162,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 ),
                 BarChartRodData(
                   toY: paid[index],
-                  width: 8,
+                  width: 10,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
@@ -171,7 +171,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 ),
                 BarChartRodData(
                   toY: due[index],
-                  width: 8,
+                  width: 10,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
@@ -179,7 +179,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                   color: Colors.red,
                 ),
               ],
-              barsSpace: 1,
+              barsSpace: 0,
             );
           }),
           titlesData: FlTitlesData(
@@ -189,8 +189,8 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 getTitlesWidget: (value, _) {
                   int index = value.toInt();
                   if (index >= 0 && index < type.length) {
-                    return Transform.rotate(
-                      angle: 45 * 3.1415926535 / 180,
+                    return Padding(
+                      padding:  EdgeInsets.only(top: 10.0),
                       child: Text(
                         type[index],
                         style: const TextStyle(

@@ -221,6 +221,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                   oldCount.clear();
                                   departmentName.clear();
                                   currentPage = 1;
+                                  hasMoreData = true;
                                   getOpdPatientData(currentPage);
                                 },
                                 borderRadius: 8,
@@ -242,6 +243,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     oldCount.clear();
                                     departmentName.clear();
                                     currentPage = 1;
+                                    hasMoreData = true;
                                     getOpdPatientData(currentPage);
                                   });
                                 },
@@ -270,6 +272,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     selectedMarketByData = "";
                                     selectedProviderData = "";
                                     currentPage = 1;
+                                    hasMoreData = true;
                                     getOpdPatientData(currentPage);
                                   });
                                 },

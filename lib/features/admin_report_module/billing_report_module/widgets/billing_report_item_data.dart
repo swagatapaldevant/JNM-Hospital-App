@@ -3,34 +3,39 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 
-class OpdPatientItemData extends StatelessWidget {
+class BillingReportItemData extends StatelessWidget {
   final int? index;
   final String? patientName;
-  final String? department;
+  final String? section;
   final String? uhid;
   final String? opdId;
-  final String? gender;
-  final String? age;
+  final String? uid;
+  final String? total;
   final String? mobile;
-  final String? visitType;
-  final String? appointmentDate;
+  final String? grandTotal;
+  final String? billingTime;
   final String? appointmentTime;
   final String? doctor;
+  final String? discountAmount;
+  final String? refundAmount;
+  final String? totalPayment;
+  final String? dueAmount;
 
-  const OpdPatientItemData(
+
+  const BillingReportItemData(
       {super.key,
-      this.index,
-      this.patientName,
-      this.department,
-      this.uhid,
-      this.opdId,
-      this.gender,
-      this.age,
-      this.mobile,
-      this.visitType,
-      this.appointmentDate,
-      this.appointmentTime,
-      this.doctor});
+        this.index,
+        this.patientName,
+        this.section,
+        this.uhid,
+        this.opdId,
+        this.uid,
+        this.total,
+        this.mobile,
+        this.grandTotal,
+        this.billingTime,
+        this.appointmentTime,
+        this.doctor, this.discountAmount, this.refundAmount, this.totalPayment, this.dueAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +58,10 @@ class OpdPatientItemData extends StatelessWidget {
         children: [
           Center(
               child: Image.asset(
-            "assets/images/admin_report/stetho1.png",
-            height: ScreenUtils().screenHeight(context) * 0.25,
-            width: ScreenUtils().screenWidth(context) * 0.5,
-          )),
+                "assets/images/admin_report/stetho1.png",
+                height: ScreenUtils().screenHeight(context) * 0.25,
+                width: ScreenUtils().screenWidth(context) * 0.5,
+              )),
           Padding(
             padding: EdgeInsets.all(AppDimensions.screenPadding),
             child: Column(
@@ -89,7 +94,7 @@ class OpdPatientItemData extends StatelessWidget {
                         fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
-                          text: department,
+                          text: section,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
@@ -102,7 +107,7 @@ class OpdPatientItemData extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'UHID : ',
+                        text: 'ID : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
@@ -141,14 +146,14 @@ class OpdPatientItemData extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'Gender : ',
+                        text: 'UID : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
                             fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: gender,
+                              text: uid,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
@@ -158,14 +163,14 @@ class OpdPatientItemData extends StatelessWidget {
                     ),
                     RichText(
                       text: TextSpan(
-                        text: 'Age : ',
+                        text: 'Total : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
                             fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: age,
+                              text: total,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
@@ -197,14 +202,94 @@ class OpdPatientItemData extends StatelessWidget {
                     ),
                     RichText(
                       text: TextSpan(
-                        text: 'Visit Type : ',
+                        text: 'Grand total : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
                             fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: visitType,
+                              text: grandTotal,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.colorBlack,
+                                  fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: 'Discount Amount : ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.colorBlack,
+                            fontSize: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: discountAmount,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.colorBlack,
+                                  fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        text: 'Refund Amount : ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.colorBlack,
+                            fontSize: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: refundAmount,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.colorBlack,
+                                  fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: 'Total Payment : ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.colorBlack,
+                            fontSize: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: totalPayment,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.colorBlack,
+                                  fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        text: 'Due Amount : ',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.colorBlack,
+                            fontSize: 14),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: dueAmount,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
@@ -216,14 +301,14 @@ class OpdPatientItemData extends StatelessWidget {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: 'Appointment Date : ',
+                    text: 'Appointment Time : ',
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
                         fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
-                          text: appointmentDate,
+                          text: billingTime,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
@@ -233,7 +318,7 @@ class OpdPatientItemData extends StatelessWidget {
                 ),
                 RichText(
                   text: TextSpan(
-                    text: 'Appointment Time : ',
+                    text: 'Appointment Date : ',
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,

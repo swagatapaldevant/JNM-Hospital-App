@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
@@ -11,6 +12,7 @@ import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_bar_chart.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_item_data.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -120,6 +122,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                     color: AppColors.arrowBackground,
                   ))
                 : SingleChildScrollView(
+              controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: AppDimensions.screenPadding),
@@ -190,6 +193,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                   due.clear();
                                   type.clear();
                                   currentPage = 1;
+                                  hasMoreData = true;
                                   getBillingReportData();
                                 },
                                 borderRadius: 8,
@@ -214,6 +218,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                     due.clear();
                                     type.clear();
                                     currentPage = 1;
+                                    hasMoreData = true;
                                     getBillingReportData();
                                   });
                                 },
@@ -245,6 +250,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                     selectedMarketByData = "";
                                     selectedProviderData = "";
                                     currentPage = 1;
+                                    hasMoreData = true;
                                     getBillingReportData();
                                   });
                                 },
@@ -271,15 +277,84 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           ListView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            itemCount: 10,
+                            itemCount: billingList.length +
+                                (isLoading && hasMoreData ? 1 : 0),
                             itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                    bottom:
-                                        ScreenUtils().screenHeight(context) *
-                                            0.02),
-                                child: OpdPatientItemData(),
-                              );
+                              if (index < billingList.length) {
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  duration: const Duration(milliseconds: 500),
+                                  child: SlideAnimation(
+                                    verticalOffset: 50.0,
+                                    curve: Curves.easeOut,
+                                    child: FadeInAnimation(
+                                      curve: Curves.easeIn,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom: ScreenUtils()
+                                              .screenHeight(context) *
+                                              0.02,
+                                        ),
+                                        child: BillingReportItemData(
+                                          index: index,
+                                          patientName: billingList[index]
+                                              .patientName
+                                              .toString(),
+                                          section: billingList[index]
+                                              .section
+                                              .toString(),
+                                          uhid: billingList[index]
+                                              .patientId
+                                              .toString(),
+                                          opdId:
+                                          billingList[index].id.toString(),
+                                          uid: billingList[index]
+                                              .uid
+                                              .toString(),
+                                          total: billingList[index]
+                                              .total
+                                              .toString(),
+                                          mobile: billingList[index]
+                                              .phone
+                                              .toString(),
+                                          grandTotal: billingList[index]
+                                              .grandTotal
+                                              .toString(),
+                                          billingTime: billingList[index]
+                                              .billDate
+                                              .toString(),
+                                          appointmentTime: billingList[index]
+                                              .creDate
+                                              .toString(),
+                                          doctor: billingList[index]
+                                              .doctorName
+                                              .toString(),
+                                          discountAmount: billingList[index]
+                                              .discountAmount
+                                              .toString(),
+                                          totalPayment: billingList[index]
+                                              .totalPayment
+                                              .toString(),
+                                          refundAmount: billingList[index]
+                                              .refundAmount
+                                              .toString(),
+                                          dueAmount: billingList[index]
+                                              .dueAmount
+                                              .toString(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColors.arrowBackground),
+                                  ),
+                                );
+                              }
                             },
                           ),
                         ],

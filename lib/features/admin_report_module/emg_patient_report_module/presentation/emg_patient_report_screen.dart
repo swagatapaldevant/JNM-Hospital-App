@@ -216,6 +216,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                               oldCount.clear();
                               departmentName.clear();
                               currentPage = 1;
+                              hasMoreData = true;
                               getEmgPatientData();
                             });
 
@@ -237,6 +238,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                               oldCount.clear();
                               departmentName.clear();
                               currentPage = 1;
+                              hasMoreData = true;
                               getEmgPatientData();
                             });
 
@@ -264,6 +266,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                               selectedMarketByData ="";
                               selectedProviderData = "";
                               currentPage = 1;
+                              hasMoreData = true;
                               getEmgPatientData();
                             });
                           },

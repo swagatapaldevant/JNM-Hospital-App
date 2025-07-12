@@ -1,14 +1,25 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/doctor_wise_patient_death_count_graph.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/widgets/discharge_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/widgets/discrage_report_modal_for_advanced_search.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_graph_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class DischargeReportScreen extends StatefulWidget {
@@ -24,48 +35,40 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
   bool isVisible = false;
   String selectedFromDate = "";
   String selectedToDate = "";
+  bool isLoading = false;
+  bool hasMoreData = true;
 
-  final List<FlSpot> spotsType1 = [
-    FlSpot(0, 3), // x: 0 (could be "Monday"), y: 3 patients
-    FlSpot(1, 5),
-    FlSpot(2, 2),
-    FlSpot(3, 7),
-    FlSpot(4, 6),
-    FlSpot(5, 4),
-    FlSpot(6, 8),
-    FlSpot(7, 7),
-    FlSpot(8, 6),
-    FlSpot(9, 4),
-    FlSpot(10, 8),
-  ];
-  final List<FlSpot> spotsType2 = [
-    FlSpot(0, 8), // x: 0 (could be "Monday"), y: 3 patients
-    FlSpot(1, 1),
-    FlSpot(2, 9),
-    FlSpot(3, 3),
-    FlSpot(4, 8),
-    FlSpot(5, 4),
-    FlSpot(6, 8),
-    FlSpot(7, 6),
-    FlSpot(8, 6),
-    FlSpot(9, 5),
-    FlSpot(10, 8),
-  ];
+  double? maleCount;
+  double? femaleCount;
 
-// Example department names
-  final List<String> departmentName = [
-    "General Medicine",
-    "Orthopaedics",
-    "Gynaecology",
-    "Pediatrics",
-    "ENT",
-    "Dermatology",
-    "Cardiology",
-    "Pediatrics",
-    "ENT",
-    "Dermatology",
-    "Cardiology",
-  ];
+  final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
+  final SharedPref _pref = getIt<SharedPref>();
+  List<DischargeReportModel> dischargeReportList = [];
+  final ScrollController _scrollController = ScrollController();
+  int currentPage = 1;
+
+  List<DischargeReportGraphModel> dischargeReportGraphData = [];
+  List<String> type = [];
+  List<int> totalCount = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedFromDate = getCurrentDate();
+    selectedToDate = getCurrentDate();
+    getDischargeReportData();
+    //getBirthChartData();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent &&
+          !isLoading &&
+          hasMoreData) {
+        currentPage += 1;
+        getDischargeReportData();
+      }
+    });
+  }
 
 
   @override
@@ -88,7 +91,13 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
             },
           ),
           Expanded(
-            child: SingleChildScrollView(
+            child:isLoading && dischargeReportList.isEmpty
+                ? Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.arrowBackground,
+                ))
+                : SingleChildScrollView(
+              controller: _scrollController,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
                 child: Column(
@@ -118,6 +127,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                       children: [
                         Expanded(
                           child: CustomDatePickerField(
+                            selectedDate: selectedFromDate,
                             onDateChanged: (String value) {
                               setState(() {
                                 selectedFromDate = value;
@@ -129,6 +139,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                         SizedBox(width: 10),
                         Expanded(
                           child: CustomDatePickerField(
+                            selectedDate: selectedToDate,
                             onDateChanged: (String value) {
                               setState(() {
                                 selectedToDate = value;
@@ -145,6 +156,16 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CommonButton(
+                          onTap: () {
+                            dischargeReportList.clear();
+                           // deathCountByDoctorList.clear();
+                            totalCount.clear();
+                            type.clear();
+
+                            currentPage = 1;
+                            hasMoreData = true;
+                            getDischargeReportData();
+                          },
                           borderRadius: 8,
                           bgColor: AppColors.arrowBackground,
                           height: ScreenUtils().screenHeight(context) * 0.05,
@@ -152,6 +173,19 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                           buttonName: "Filter",
                         ),
                         CommonButton(
+                          onTap: () {
+                            setState(() {
+                              selectedFromDate = getCurrentDate();
+                              selectedToDate = getCurrentDate();
+                              dischargeReportList.clear();
+                             // deathCountByDoctorList.clear();
+                              totalCount.clear();
+                              type.clear();
+                              currentPage = 1;
+                              hasMoreData = true;
+                              getDischargeReportData();
+                            });
+                          },
                           borderRadius: 8,
                           bgColor: AppColors.arrowBackground,
                           height: ScreenUtils().screenHeight(context) * 0.05,
@@ -159,6 +193,25 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                           buttonName: "Today",
                         ),
                         CommonButton(
+                          onTap: () {
+                            setState(() {
+                              selectedFromDate = "";
+                              selectedToDate = "";
+                              dischargeReportList.clear();
+                              //deathCountByDoctorList.clear();
+                              totalCount.clear();
+                              type.clear();
+                              // selectedVisitType = "";
+                              // selectedDepartment = "";
+                              // selectedDoctor = "";
+                              // selectedReferral = "";
+                              // selectedMarketByData = "";
+                              // selectedProviderData = "";
+                              currentPage = 1;
+                              hasMoreData = true;
+                              getDischargeReportData();
+                            });
+                          },
                           borderRadius: 8,
                           bgColor: AppColors.arrowBackground,
                           height: ScreenUtils().screenHeight(context) * 0.05,
@@ -177,26 +230,63 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                       lineColor: AppColors.colorGreen,
                       grad1: AppColors.colorGreen.withOpacity(0.6),
                       grad2: AppColors.colorGreen.withOpacity(0.1),
-                      doctorNames: ["Dr. A", "Dr. B", "Dr. C", "Dr. D"],
-                      deathCounts: [3, 1, 5, 2],
+                      doctorNames:type,
+                      deathCounts:totalCount,
+                      maleCount:maleCount.toString() ,
+                      femaleCount: femaleCount.toString(),
                     ),
-                    // GenderPieChart(
-                    //   maleCount: 120,
-                    //   femaleCount: 80,
-                    //   labels: ["LUCS", "Normal",],
-                    //   lucsCounts: [20, 25,],
-                    //   normalCounts: [40, 35,],
-                    // ),
 
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding:  EdgeInsets.only(bottom: ScreenUtils().screenHeight(context)*0.02),
-                          child: OpdPatientItemData(),
-                        );
+                      itemCount: dischargeReportList.length +
+                          (isLoading && hasMoreData ? 1 : 0),
+                      itemBuilder:
+                          (BuildContext context, int index) {
+                        if (index < dischargeReportList.length) {
+                          return AnimationConfiguration
+                              .staggeredList(
+                            position: index,
+                            duration: const Duration(
+                                milliseconds: 500),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              curve: Curves.easeOut,
+                              child: FadeInAnimation(
+                                curve: Curves.easeIn,
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: ScreenUtils()
+                                        .screenHeight(
+                                        context) *
+                                        0.02,
+                                  ),
+                                  child:DischargeReportItem(
+                                    index: index,
+                                    patientId: dischargeReportList[index].patientId.toString(),
+                                    billId:dischargeReportList[index].billId.toString(),
+                                    patientName: dischargeReportList[index].patientName.toString(),
+                                    uhId: dischargeReportList[index].uid.toString(),
+                                    gender: dischargeReportList[index].gender.toString(),
+                                    admDate: dischargeReportList[index].admDate.toString(),
+                                    disChargeDate: dischargeReportList[index].disDate.toString(),
+                                    billLink: dischargeReportList[index].billLink.toString(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                  color: AppColors
+                                      .arrowBackground),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],
@@ -207,6 +297,75 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> getDischargeReportData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> requestData = {
+      "page": currentPage,
+      // "visit_type": selectedVisitType,
+      // "department": selectedDepartment,
+      // "doctor": selectedDoctor,
+      // "referral": selectedReferral,
+      // "market_by": selectedMarketByData,
+      // "provider": selectedProviderData,
+      "from_date": selectedFromDate,
+      "to_date": selectedToDate
+    };
+
+    Resource resource =
+    await _adminReportUsecase.dischargeReportData(requestData: requestData);
+
+    if (resource.status == STATUS.SUCCESS) {
+      List<DischargeReportModel> newData = (resource.data["records"] as List)
+          .map((x) => DischargeReportModel.fromJson(x))
+          .toList();
+
+      maleCount = double.parse(resource.data["totals"]["gender"][0].toString());
+      femaleCount =
+          double.parse(resource.data["totals"]["gender"][1].toString());
+      //
+      dischargeReportGraphData = (resource.data["totalsByType"] as List)
+          .map((x) => DischargeReportGraphModel.fromJson(x))
+          .toList();
+
+      for (int i = 0; i < dischargeReportGraphData.length; i++) {
+        final item = dischargeReportGraphData[i];
+        String t = item.dischargeType.toString();
+        int count = int.tryParse(item.totalCount.toString()) ?? 0;
+
+        type.add(t);
+        totalCount.add(count);
+      }
+
+      setState(() {
+        dischargeReportList.addAll(newData);
+        isLoading = false;
+        if (newData.length < 100) {
+          hasMoreData = false;
+        }
+      });
+
+      if (newData.isEmpty && currentPage > 1) {
+        Fluttertoast.showToast(msg: "No more data found");
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
+  String getCurrentDate() {
+    final DateTime now = DateTime.now();
+    final String formattedDate =
+        "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    return formattedDate;
   }
 
 }

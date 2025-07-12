@@ -9,7 +9,6 @@ class GenderPieChart extends StatefulWidget {
   final int femaleCount;
   final List<String> labels; // For example: ["Jan", "Feb", "Mar"]
   final List<int> lucsCounts;
-  final List<int> normalCounts;
 
   const GenderPieChart({
     super.key,
@@ -17,7 +16,6 @@ class GenderPieChart extends StatefulWidget {
     required this.femaleCount,
     required this.labels,
     required this.lucsCounts,
-    required this.normalCounts,
   });
 
   @override
@@ -160,9 +158,12 @@ class _GenderPieChartState extends State<GenderPieChart> {
                               getTitlesWidget: (value, _) {
                                 int index = value.toInt();
                                 if (index >= 0 && index < widget.labels.length) {
-                                  return Text(
-                                    widget.labels[index],
-                                    style: const TextStyle(fontSize: 10),
+                                  return Transform.rotate(
+                                    angle: 45 * 3.1415926535 / 180,
+                                    child: Text(
+                                      widget.labels[index],
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
                                   );
                                 }
                                 return const SizedBox.shrink();
@@ -194,27 +195,7 @@ class _GenderPieChartState extends State<GenderPieChart> {
                     ),
                   ),
                   //SizedBox(height: ScreenUtils().screenHeight(context) * 0.01),
-                  // Legend
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 5, backgroundColor:Colors.blue ,),
-                          const SizedBox(width: 5),
-                          const Text("LUCS", style: TextStyle(fontSize: 10)),
-                        ],
-                      ),
-                      const SizedBox(width: 20),
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 5, backgroundColor:Colors.green ,),
-                          const SizedBox(width: 5),
-                          const Text("Normal", style: TextStyle(fontSize: 10)),
-                        ],
-                      ),
-                    ],
-                  ),
+
                 ],
               ),
             ),
@@ -235,16 +216,11 @@ class _GenderPieChartState extends State<GenderPieChart> {
           barRods: [
             BarChartRodData(
               toY: widget.lucsCounts[i].toDouble(),
-              width: 15,
+              width: 10,
               borderRadius: BorderRadius.only(topRight: Radius.circular(4), topLeft: Radius.circular(4)),
               color: Colors.blue,
             ),
-            BarChartRodData(
-              toY: widget.normalCounts[i].toDouble(),
-              width: 15,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(4), topLeft: Radius.circular(4)),
-              color: Colors.green,
-            ),
+
           ],
         ),
       );

@@ -47,6 +47,7 @@ dependencies:
   dropdown_search: ^6.0.2
   simple_animations:
   flutter_staggered_animations:
+  url_launcher: ^6.3.2
 
 
 dev_dependencies:

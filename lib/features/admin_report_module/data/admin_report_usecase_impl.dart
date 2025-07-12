@@ -81,4 +81,56 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       return resource;
     }
   }
+
+  @override
+  Future<Resource> birthReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.birthReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+  @override
+  Future<Resource> deathReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.deathReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
+  @override
+  Future<Resource> dischargeReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.dischargeReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 }

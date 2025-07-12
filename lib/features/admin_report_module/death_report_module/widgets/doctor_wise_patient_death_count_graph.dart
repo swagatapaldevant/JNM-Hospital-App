@@ -12,10 +12,14 @@ class DoctorDeathCountLineChart extends StatelessWidget {
   final Color? grad1;
   final Color? grad2;
   final String? title;
+  final String? maleCount;
+  final String? femaleCount;
 
   const DoctorDeathCountLineChart({
     super.key,
     required this.doctorNames,
+    this.maleCount,
+    this.femaleCount,
     required this.deathCounts, this.lineColor, this.grad1,this.grad2, this.title
   });
 
@@ -52,7 +56,7 @@ class DoctorDeathCountLineChart extends StatelessWidget {
                 ),
                 Bounceable(
                     onTap: (){
-                      showCommonModalForDeathGenderDistribution(context);
+                      showCommonModalForDeathGenderDistribution(context, double.parse(maleCount!), double.parse(femaleCount!));
                     },
                     child: Icon(Icons.pie_chart, size: 30,color: AppColors.arrowBackground,))
               ],
@@ -132,11 +136,12 @@ class DoctorDeathCountLineChart extends StatelessWidget {
                   ? doctorNames[index]
                   : "";
               return LineTooltipItem(
-                '$doctor\nDeaths: ${spot.y.toStringAsFixed(0)}',
+                '$doctor\n: ${spot.y.toStringAsFixed(0)}',
                 const TextStyle(
                   color: Colors.white,
                   fontFamily: "Poppins",
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               );
             }).toList();

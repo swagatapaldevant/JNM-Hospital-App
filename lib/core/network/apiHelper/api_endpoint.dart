@@ -18,6 +18,9 @@ class ApiEndPoint{
   static const getFilterData =  "$baseurl/get-filteration-report";
   static const emgPatientReport =  "$baseurl/emg-report";
   static const billingReport =  "$baseurl/billing-reports";
+  static const birthReport =  "$baseurl/birth-report";
+  static const deathReport =  "$baseurl/death-report";
+  static const dischargeReport =  "$baseurl/discharge-report";
 
 
 

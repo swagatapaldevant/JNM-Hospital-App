@@ -8,18 +8,19 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
 
-Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) {
-
+Future<String?> showCommonModalForDeathGenderDistribution(
+    BuildContext context, double maleCount, double femaleCount) {
   return showDialog<String>(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext dialogContext) {
       return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
         child: StatefulBuilder(
           builder: (context, setState) {
             return Container(
-              height: MediaQuery.of(context).size.height * 0.5,
+              height: MediaQuery.of(context).size.height * 0.45,
               width: MediaQuery.of(context).size.width * 0.7,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25.0),
@@ -27,27 +28,35 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
               ),
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
                       SizedBox(
                         width: ScreenUtils().screenWidth(context) * 0.6,
                         child: Padding(
-                          padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.04),
+                          padding: EdgeInsets.all(
+                              ScreenUtils().screenWidth(context) * 0.04),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Bounceable(
-                                  onTap: (){
+                                  onTap: () {
                                     Navigator.pop(context);
                                   },
                                   child: Align(
                                       alignment: Alignment.centerRight,
-                                      child: Icon(Icons.close, size: 30,color: AppColors.redColor,))),
-                              SizedBox(height: ScreenUtils().screenHeight(context)*0.02,),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 30,
+                                        color: AppColors.redColor,
+                                      ))),
+                              SizedBox(
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.02,
+                              ),
                               Center(
                                 child: Text(
                                   "Gender Distribution",
@@ -65,7 +74,7 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
                                   PieChartData(
                                     sections: [
                                       PieChartSectionData(
-                                        value: 90,
+                                        value: maleCount,
                                         color: Colors.blue,
                                         //title: "${malePercentage.toStringAsFixed(1)}%\nMale",
                                         radius: 70,
@@ -76,7 +85,7 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
                                         ),
                                       ),
                                       PieChartSectionData(
-                                        value: 80,
+                                        value: femaleCount,
                                         color: Colors.pink,
                                         //title: "${femalePercentage.toStringAsFixed(1)}%\nFemale",
                                         radius: 70,
@@ -92,7 +101,9 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
                                   ),
                                 ),
                               ),
-                              SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
+                              SizedBox(
+                                  height: ScreenUtils().screenHeight(context) *
+                                      0.02),
 
                               // Legend
                               Row(
@@ -100,17 +111,23 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
                                 children: [
                                   Row(
                                     children: [
-                                      CircleAvatar(backgroundColor: Colors.blue, radius: 5),
+                                      CircleAvatar(
+                                          backgroundColor: Colors.blue,
+                                          radius: 5),
                                       const SizedBox(width: 5),
-                                      const Text("Male", style: TextStyle(fontSize: 10)),
+                                      const Text("Male",
+                                          style: TextStyle(fontSize: 10)),
                                     ],
                                   ),
                                   const SizedBox(width: 10),
                                   Row(
                                     children: [
-                                      CircleAvatar(backgroundColor: Colors.pink, radius: 5),
+                                      CircleAvatar(
+                                          backgroundColor: Colors.pink,
+                                          radius: 5),
                                       const SizedBox(width: 5),
-                                      const Text("Female", style: TextStyle(fontSize: 10)),
+                                      const Text("Female",
+                                          style: TextStyle(fontSize: 10)),
                                     ],
                                   ),
                                 ],
@@ -119,7 +136,6 @@ Future<String?> showCommonModalForDeathGenderDistribution(BuildContext context) 
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),

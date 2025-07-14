@@ -3,39 +3,36 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 
-class BillingReportItemData extends StatelessWidget {
+class IpdPatientItemData extends StatelessWidget {
   final int? index;
   final String? patientName;
-  final String? section;
-  final String? uhid;
-  final String? opdId;
-  final String? uid;
-  final String? total;
+  final String? department;
+  final String? admissionType;
+  final String? gender;
+  final String? dobYear;
   final String? mobile;
-  final String? grandTotal;
-  final String? billingTime;
-  final String? appointmentTime;
+  final String? appointmentDate;
   final String? doctor;
-  final String? discountAmount;
-  final String? refundAmount;
-  final String? totalPayment;
-  final String? dueAmount;
+  final String? departmentName;
+  final String? wardName;
+  final String? bedName;
+  final String? tpaName;
 
-
-  const BillingReportItemData(
+  const IpdPatientItemData(
       {super.key,
-        this.index,
-        this.patientName,
-        this.section,
-        this.uhid,
-        this.opdId,
-        this.uid,
-        this.total,
-        this.mobile,
-        this.grandTotal,
-        this.billingTime,
-        this.appointmentTime,
-        this.doctor, this.discountAmount, this.refundAmount, this.totalPayment, this.dueAmount});
+      this.index,
+      this.patientName,
+      this.department,
+      this.admissionType,
+      this.gender,
+      this.dobYear,
+      this.mobile,
+      this.appointmentDate,
+      this.departmentName,
+      this.wardName,
+      this.bedName,
+      this.tpaName,
+      this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +55,10 @@ class BillingReportItemData extends StatelessWidget {
         children: [
           Center(
               child: Image.asset(
-                "assets/images/admin_report/stetho1.png",
-                height: ScreenUtils().screenHeight(context) * 0.25,
-                width: ScreenUtils().screenWidth(context) * 0.5,
-              )),
+            "assets/images/admin_report/stetho1.png",
+            height: ScreenUtils().screenHeight(context) * 0.25,
+            width: ScreenUtils().screenWidth(context) * 0.5,
+          )),
           Padding(
             padding: EdgeInsets.all(AppDimensions.screenPadding),
             child: Column(
@@ -74,14 +71,14 @@ class BillingReportItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 12),
+                        fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
                           text: patientName,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 12)),
+                              fontSize: 14)),
                     ],
                   ),
                 ),
@@ -91,14 +88,48 @@ class BillingReportItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 12),
+                        fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
-                          text: section,
+                          text: department,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 12)),
+                              fontSize: 14)),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Admission Type : ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.colorBlack,
+                        fontSize: 14),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: admissionType,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.colorBlack,
+                              fontSize: 14)),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Department name : ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.colorBlack,
+                        fontSize: 14),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: departmentName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.colorBlack,
+                              fontSize: 14)),
                     ],
                   ),
                 ),
@@ -107,74 +138,35 @@ class BillingReportItemData extends StatelessWidget {
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'ID : ',
+                        text: 'Gender : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: uhid,
+                              text: gender,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
                     RichText(
                       text: TextSpan(
-                        text: 'OPD ID : ',
+                        text: 'DOB Year : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: opdId,
+                              text: dobYear,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        text: 'UID : ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.colorBlack,
-                            fontSize: 12),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: uid,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.colorBlack,
-                                  fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Total : ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.colorBlack,
-                            fontSize: 12),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: total,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
@@ -189,132 +181,74 @@ class BillingReportItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
                               text: mobile,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
                     RichText(
                       text: TextSpan(
-                        text: 'Grand total : ',
+                        text: 'Tpa : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: grandTotal,
+                              text: tpaName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
                   ],
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     RichText(
                       text: TextSpan(
-                        text: 'Discount Amount : ',
+                        text: 'Ward : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: discountAmount,
+                              text: wardName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
                     RichText(
                       text: TextSpan(
-                        text: 'Refund Amount : ',
+                        text: 'Bed : ',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 12),
+                            fontSize: 14),
                         children: <TextSpan>[
                           TextSpan(
-                              text: refundAmount,
+                              text: bedName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 12)),
+                                  fontSize: 14)),
                         ],
                       ),
                     ),
                   ],
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        text: 'Total Payment : ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.colorBlack,
-                            fontSize: 12),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: totalPayment,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.colorBlack,
-                                  fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Due Amount : ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.colorBlack,
-                            fontSize: 12),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: dueAmount,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.colorBlack,
-                                  fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                RichText(
-                  text: TextSpan(
-                    text: 'Appointment Time : ',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.colorBlack,
-                        fontSize: 12),
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: billingTime,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.colorBlack,
-                              fontSize: 12)),
-                    ],
-                  ),
                 ),
                 RichText(
                   text: TextSpan(
@@ -322,14 +256,14 @@ class BillingReportItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 12),
+                        fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
-                          text: appointmentTime,
+                          text: appointmentDate,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 12)),
+                              fontSize: 14)),
                     ],
                   ),
                 ),
@@ -339,14 +273,14 @@ class BillingReportItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 12),
+                        fontSize: 14),
                     children: <TextSpan>[
                       TextSpan(
                           text: doctor,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 12)),
+                              fontSize: 14)),
                     ],
                   ),
                 ),

@@ -16,4 +16,7 @@ abstract class AdminReportUsecase {
 
   Future<Resource> deathReportData({required Map<String, dynamic> requestData});
   Future<Resource> dischargeReportData({required Map<String, dynamic> requestData});
+  Future<Resource> ipdReportData({required Map<String, dynamic> requestData});
+  Future<Resource> dialysisReportData({required Map<String, dynamic> requestData});
+
 }

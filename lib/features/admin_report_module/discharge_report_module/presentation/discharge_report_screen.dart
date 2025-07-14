@@ -225,69 +225,80 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
                     SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
 
-                    DoctorDeathCountLineChart(
-                      title: "Discharge Report Status",
-                      lineColor: AppColors.colorGreen,
-                      grad1: AppColors.colorGreen.withOpacity(0.6),
-                      grad2: AppColors.colorGreen.withOpacity(0.1),
-                      doctorNames:type,
-                      deathCounts:totalCount,
-                      maleCount:maleCount.toString() ,
-                      femaleCount: femaleCount.toString(),
-                    ),
+                    dischargeReportList.isEmpty?Center(
+                      child: Text("No discharge are there in that timeframe", style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.colorBlack
+                      ),),
+                    ):
+                    Column(
+                      children: [
+                        DoctorDeathCountLineChart(
+                          title: "Discharge Report Status",
+                          lineColor: AppColors.colorGreen,
+                          grad1: AppColors.colorGreen.withOpacity(0.6),
+                          grad2: AppColors.colorGreen.withOpacity(0.1),
+                          doctorNames:type,
+                          deathCounts:totalCount,
+                          maleCount:maleCount.toString() ,
+                          femaleCount: femaleCount.toString(),
+                        ),
 
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: dischargeReportList.length +
-                          (isLoading && hasMoreData ? 1 : 0),
-                      itemBuilder:
-                          (BuildContext context, int index) {
-                        if (index < dischargeReportList.length) {
-                          return AnimationConfiguration
-                              .staggeredList(
-                            position: index,
-                            duration: const Duration(
-                                milliseconds: 500),
-                            child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              curve: Curves.easeOut,
-                              child: FadeInAnimation(
-                                curve: Curves.easeIn,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom: ScreenUtils()
-                                        .screenHeight(
-                                        context) *
-                                        0.02,
-                                  ),
-                                  child:DischargeReportItem(
-                                    index: index,
-                                    patientId: dischargeReportList[index].patientId.toString(),
-                                    billId:dischargeReportList[index].billId.toString(),
-                                    patientName: dischargeReportList[index].patientName.toString(),
-                                    uhId: dischargeReportList[index].uid.toString(),
-                                    gender: dischargeReportList[index].gender.toString(),
-                                    admDate: dischargeReportList[index].admDate.toString(),
-                                    disChargeDate: dischargeReportList[index].disDate.toString(),
-                                    billLink: dischargeReportList[index].billLink.toString(),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: dischargeReportList.length +
+                              (isLoading && hasMoreData ? 1 : 0),
+                          itemBuilder:
+                              (BuildContext context, int index) {
+                            if (index < dischargeReportList.length) {
+                              return AnimationConfiguration
+                                  .staggeredList(
+                                position: index,
+                                duration: const Duration(
+                                    milliseconds: 500),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  curve: Curves.easeOut,
+                                  child: FadeInAnimation(
+                                    curve: Curves.easeIn,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: ScreenUtils()
+                                            .screenHeight(
+                                            context) *
+                                            0.02,
+                                      ),
+                                      child:DischargeReportItem(
+                                        index: index,
+                                        patientId: dischargeReportList[index].patientId.toString(),
+                                        billId:dischargeReportList[index].billId.toString(),
+                                        patientName: dischargeReportList[index].patientName.toString(),
+                                        uhId: dischargeReportList[index].uid.toString(),
+                                        gender: dischargeReportList[index].gender.toString(),
+                                        admDate: dischargeReportList[index].admDate.toString(),
+                                        disChargeDate: dischargeReportList[index].disDate.toString(),
+                                        billLink: dischargeReportList[index].billLink.toString(),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                  color: AppColors
-                                      .arrowBackground),
-                            ),
-                          );
-                        }
-                      },
+                              );
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                      color: AppColors
+                                          .arrowBackground),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

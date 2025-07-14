@@ -133,4 +133,40 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       return resource;
     }
   }
+
+
+  @override
+  Future<Resource> ipdReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.ipdReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
+  @override
+  Future<Resource> dialysisReportData(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.dialysisReport, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 }

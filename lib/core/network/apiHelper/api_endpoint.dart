@@ -21,6 +21,8 @@ class ApiEndPoint{
   static const birthReport =  "$baseurl/birth-report";
   static const deathReport =  "$baseurl/death-report";
   static const dischargeReport =  "$baseurl/discharge-report";
+  static const ipdReport =  "$baseurl/ipd-report";
+  static const dialysisReport =  "$baseurl/dialysis-report";
 
 
 

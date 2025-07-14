@@ -10,6 +10,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
   final List<FlSpot> spotsType2;
   final List<String> yearLabels;
   Function()? onTapFullScreen;
+  Function()? onTapPieChart;
   final String? graphTitle;
 
    DepartmentWiseOpdReport({
@@ -17,6 +18,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
     required this.spotsType1,
     required this.spotsType2,
     required this.yearLabels,
+     this.onTapPieChart,
     this.onTapFullScreen, this.graphTitle
   });
 
@@ -61,7 +63,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                   spacing: 10,
                   children: [
                     Bounceable(
-                        onTap: (){},
+                        onTap: onTapPieChart,
                         child: Icon(Icons.bar_chart, size: 25, color: AppColors.reportDashboardHeaderGrad2,)),
                     Bounceable(
                         onTap:onTapFullScreen,

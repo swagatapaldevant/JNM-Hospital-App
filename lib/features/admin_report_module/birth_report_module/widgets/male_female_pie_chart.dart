@@ -7,7 +7,7 @@ import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 class GenderPieChart extends StatefulWidget {
   final int maleCount;
   final int femaleCount;
-  final List<String> labels; // For example: ["Jan", "Feb", "Mar"]
+  final List<String> labels;
   final List<int> lucsCounts;
 
   const GenderPieChart({
@@ -23,16 +23,24 @@ class GenderPieChart extends StatefulWidget {
 }
 
 class _GenderPieChartState extends State<GenderPieChart> {
+  final List<Color> colors = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.orange,
+    Colors.cyanAccent,
+  ];
+
   @override
   Widget build(BuildContext context) {
     int total = widget.maleCount + widget.femaleCount;
-
     double malePercentage = (widget.maleCount / total) * 100;
     double femalePercentage = (widget.femaleCount / total) * 100;
+    final totalBirth = widget.lucsCounts.fold(0, (sum, item) => sum + item);
 
     return Container(
       width: ScreenUtils().screenWidth(context),
-      height: ScreenUtils().screenHeight(context)*0.3,
+      height: ScreenUtils().screenHeight(context) * 0.33,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -49,7 +57,8 @@ class _GenderPieChartState extends State<GenderPieChart> {
           SizedBox(
             width: ScreenUtils().screenWidth(context) * 0.4,
             child: Padding(
-              padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.04),
+              padding:
+                  EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.04),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -71,10 +80,11 @@ class _GenderPieChartState extends State<GenderPieChart> {
                           PieChartSectionData(
                             value: widget.maleCount.toDouble(),
                             color: Colors.blue,
-                            //title: "${malePercentage.toStringAsFixed(1)}%\nMale",
+                            title:
+                                " ${widget.maleCount.toDouble()} (${malePercentage.toStringAsFixed(1)}%)\nMale",
                             radius: 50,
                             titleStyle: const TextStyle(
-                              fontSize: 10,
+                              fontSize: 8,
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
                             ),
@@ -82,10 +92,11 @@ class _GenderPieChartState extends State<GenderPieChart> {
                           PieChartSectionData(
                             value: widget.femaleCount.toDouble(),
                             color: Colors.pink,
-                            //title: "${femalePercentage.toStringAsFixed(1)}%\nFemale",
+                            title:
+                                "${widget.maleCount.toDouble()} (${femalePercentage.toStringAsFixed(1)}%)\nFemale",
                             radius: 50,
                             titleStyle: const TextStyle(
-                              fontSize: 10,
+                              fontSize: 8,
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
                             ),
@@ -124,9 +135,10 @@ class _GenderPieChartState extends State<GenderPieChart> {
             ),
           ),
           SizedBox(
-            width: ScreenUtils().screenWidth(context)*0.5,
+            width: ScreenUtils().screenWidth(context) * 0.5,
             child: Padding(
-              padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.04),
+              padding:
+                  EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.04),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -138,64 +150,113 @@ class _GenderPieChartState extends State<GenderPieChart> {
                       color: AppColors.colorBlack,
                     ),
                   ),
-                  SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
+                  //SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
                   AspectRatio(
                     aspectRatio: 1,
-                    child: BarChart(
-                      BarChartData(
-                        barGroups: _buildBarGroups(),
-                        gridData: FlGridData(show: false),
-                        titlesData: FlTitlesData(
-                          leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, _) {
-                                int index = value.toInt();
-                                if (index >= 0 && index < widget.labels.length) {
-                                  return Transform.rotate(
-                                    angle: 45 * 3.1415926535 / 180,
-                                    child: Text(
-                                      widget.labels[index],
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
+                    child: PieChart(
+                      PieChartData(
+                        sections: List.generate(widget.labels.length, (index) {
+                          final value = widget.lucsCounts[index];
+                          final percentage =
+                              (value / total * 100).toStringAsFixed(1);
+                          return PieChartSectionData(
+                            value: value.toDouble(),
+                            //title: '${widget.labels[index]}\n$percentage%',
+                            color: colors[index],
+                            radius: 50,
+                            titleStyle: const TextStyle(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
                             ),
-                          ),
-                        ),
-                        borderData: FlBorderData(
-                          show: true,
-                          border: const Border(
-                              bottom: BorderSide(color: Colors.black12)),
-                        ),
-                        barTouchData: BarTouchData(
-                          enabled: true,
-                          touchTooltipData: BarTouchTooltipData(
-                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                              return BarTooltipItem(
-                                rod.toY.toStringAsFixed(0),
-                                const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Poppins",
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                          );
+                        }),
+                        sectionsSpace: 1,
+                        centerSpaceRadius: 10,
                       ),
                     ),
                   ),
+                  // Legend
+                  Wrap(
+                    spacing: 0,
+                    runSpacing: 0,
+                    children: List.generate(widget.labels.length, (index) {
+                      final value = widget.lucsCounts[index];
+                      final percentage =
+                          (value / total * 100).toStringAsFixed(1);
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                              backgroundColor: colors[index], radius: 5),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${widget.labels[index]} ($percentage %)",
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.colorBlack,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                  // AspectRatio(
+                  //   aspectRatio: 1,
+                  //   child: BarChart(
+                  //     BarChartData(
+                  //       barGroups: _buildBarGroups(),
+                  //       gridData: FlGridData(show: false),
+                  //       titlesData: FlTitlesData(
+                  //         leftTitles: AxisTitles(
+                  //             sideTitles: SideTitles(showTitles: false)),
+                  //         topTitles: AxisTitles(
+                  //             sideTitles: SideTitles(showTitles: false)),
+                  //         rightTitles: AxisTitles(
+                  //             sideTitles: SideTitles(showTitles: false)),
+                  //         bottomTitles: AxisTitles(
+                  //           sideTitles: SideTitles(
+                  //             showTitles: true,
+                  //             getTitlesWidget: (value, _) {
+                  //               int index = value.toInt();
+                  //               if (index >= 0 && index < widget.labels.length) {
+                  //                 return Transform.rotate(
+                  //                   angle: 45 * 3.1415926535 / 180,
+                  //                   child: Text(
+                  //                     widget.labels[index],
+                  //                     style: const TextStyle(fontSize: 10),
+                  //                   ),
+                  //                 );
+                  //               }
+                  //               return const SizedBox.shrink();
+                  //             },
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       borderData: FlBorderData(
+                  //         show: true,
+                  //         border: const Border(
+                  //             bottom: BorderSide(color: Colors.black12)),
+                  //       ),
+                  //       barTouchData: BarTouchData(
+                  //         enabled: true,
+                  //         touchTooltipData: BarTouchTooltipData(
+                  //           getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  //             return BarTooltipItem(
+                  //               rod.toY.toStringAsFixed(0),
+                  //               const TextStyle(
+                  //                 color: Colors.white,
+                  //                 fontFamily: "Poppins",
+                  //                 fontWeight: FontWeight.bold,
+                  //               ),
+                  //             );
+                  //           },
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   //SizedBox(height: ScreenUtils().screenHeight(context) * 0.01),
-
                 ],
               ),
             ),
@@ -217,10 +278,10 @@ class _GenderPieChartState extends State<GenderPieChart> {
             BarChartRodData(
               toY: widget.lucsCounts[i].toDouble(),
               width: 10,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(4), topLeft: Radius.circular(4)),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(4), topLeft: Radius.circular(4)),
               color: Colors.blue,
             ),
-
           ],
         ),
       );

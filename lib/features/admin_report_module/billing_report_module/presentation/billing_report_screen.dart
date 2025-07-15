@@ -122,7 +122,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                     color: AppColors.arrowBackground,
                   ))
                 : SingleChildScrollView(
-              controller: _scrollController,
+                    controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: AppDimensions.screenPadding),
@@ -270,7 +270,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           BarChartDetails(
                               type: type,
                               total: total,
-                              grandTotal: grandTotal,
+                              //grandTotal: grandTotal,
                               discount: discount,
                               paid: paid,
                               due: due),
@@ -292,7 +292,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                       child: Padding(
                                         padding: EdgeInsets.only(
                                           bottom: ScreenUtils()
-                                              .screenHeight(context) *
+                                                  .screenHeight(context) *
                                               0.02,
                                         ),
                                         child: BillingReportItemData(
@@ -307,10 +307,9 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                               .patientId
                                               .toString(),
                                           opdId:
-                                          billingList[index].id.toString(),
-                                          uid: billingList[index]
-                                              .uid
-                                              .toString(),
+                                              billingList[index].id.toString(),
+                                          uid:
+                                              billingList[index].uid.toString(),
                                           total: billingList[index]
                                               .total
                                               .toString(),

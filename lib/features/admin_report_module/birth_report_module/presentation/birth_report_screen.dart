@@ -341,7 +341,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
       for(int i = 0; i<deliveryTypeList.length; i++)
         {
           final item = deliveryTypeList[i];
-          String t = item.deliveryMode.toString();
+          String t =item.deliveryMode.toString() == "null"?"other": item.deliveryMode.toString();
           int count = int.tryParse(item.totalCount.toString()) ?? 0;
 
           type.add(t);

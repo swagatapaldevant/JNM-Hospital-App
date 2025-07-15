@@ -6,7 +6,7 @@ import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 class BarChartDetails extends StatefulWidget {
   final List<String> type;
   final List<double> total;
-  final List<double> grandTotal;
+ // final List<double> grandTotal;
   final List<double> discount;
   final List<double> paid;
   final List<double> due;
@@ -15,7 +15,7 @@ class BarChartDetails extends StatefulWidget {
     super.key,
     required this.type,
     required this.total,
-    required this.grandTotal,
+ //   required this.grandTotal,
     required this.discount,
     required this.paid,
     required this.due,
@@ -62,7 +62,7 @@ class _BarChartDetailsState extends State<BarChartDetails> {
               children: [
                 graphData(Colors.blue, "Total"),
                 graphData(Colors.green, "Discount"),
-                graphData(Colors.orange, "Grand Total"),
+                //graphData(Colors.orange, "Grand Total"),
                 graphData(Colors.purple, "Paid"),
                 graphData(Colors.red, "Due"),
               ],
@@ -72,7 +72,7 @@ class _BarChartDetailsState extends State<BarChartDetails> {
             BarChartDetailsForBilling(
               type: widget.type,
               total: widget.total,
-              grandTotal: widget.grandTotal,
+             // grandTotal: widget.grandTotal,
               discount: widget.discount,
               paid: widget.paid,
               due: widget.due,
@@ -106,7 +106,7 @@ class _BarChartDetailsState extends State<BarChartDetails> {
 class BarChartDetailsForBilling extends StatelessWidget {
   final List<String> type;
   final List<double> total;
-  final List<double> grandTotal;
+ // final List<double> grandTotal;
   final List<double> discount;
   final List<double> paid;
   final List<double> due;
@@ -115,7 +115,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
     super.key,
     required this.type,
     required this.total,
-    required this.grandTotal,
+ //   required this.grandTotal,
     required this.discount,
     required this.paid,
     required this.due,
@@ -123,7 +123,9 @@ class BarChartDetailsForBilling extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double maxY = getMaxY([...total, ...grandTotal, ...discount, ...paid, ...due]);
+    double maxY = getMaxY([...total,
+     // ...grandTotal,
+      ...discount, ...paid, ...due]);
     return AspectRatio(
       aspectRatio: 2,
       child: BarChart(
@@ -142,15 +144,15 @@ class BarChartDetailsForBilling extends StatelessWidget {
                   ),
                   color: Colors.blue,
                 ),
-                BarChartRodData(
-                  toY: grandTotal[index],
-                  width: 10,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      topRight: Radius.circular(4)
-                  ),
-                  color: Colors.green,
-                ),
+                // BarChartRodData(
+                //   toY: grandTotal[index],
+                //   width: 10,
+                //   borderRadius: BorderRadius.only(
+                //       topLeft: Radius.circular(4),
+                //       topRight: Radius.circular(4)
+                //   ),
+                //   color: Colors.green,
+                // ),
                 BarChartRodData(
                   toY: discount[index],
                   width: 10,
@@ -158,7 +160,7 @@ class BarChartDetailsForBilling extends StatelessWidget {
                       topLeft: Radius.circular(4),
                       topRight: Radius.circular(4)
                   ),
-                  color: Colors.orange,
+                  color: Colors.green,
                 ),
                 BarChartRodData(
                   toY: paid[index],
@@ -224,10 +226,10 @@ class BarChartDetailsForBilling extends StatelessWidget {
                 String label;
                 switch (rodIndex) {
                   case 0: label = "Total"; break;
-                  case 1: label = "Grand Total"; break;
-                  case 2: label = "Discount"; break;
-                  case 3: label = "Paid"; break;
-                  case 4: label = "Due"; break;
+                  //case 1: label = "Grand Total"; break;
+                  case 1: label = "Discount"; break;
+                  case 2: label = "Paid"; break;
+                  case 3: label = "Due"; break;
                   default: label = "";
                 }
                 return BarTooltipItem(

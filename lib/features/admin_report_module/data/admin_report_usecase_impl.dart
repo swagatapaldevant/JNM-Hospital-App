@@ -169,4 +169,21 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       return resource;
     }
   }
+
+  @override
+  Future<Resource> getFilteredDataForIpd(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer$token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.getRequest(
+        url: ApiEndPoint.filteredReportIpd, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 }

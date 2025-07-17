@@ -18,8 +18,15 @@ import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/death_report_modal_for_death_gender_distribution.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/widgets/ipd_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/widgets/ipd_patient_report_item.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/charge_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/ipd_patient_report_graph.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/ipd_patient_report_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/tpa_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/ward_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/department_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
@@ -54,6 +61,42 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
   List<FlSpot> oldCount = [];
   List<String> departmentName = [];
 
+  // for advanced filter
+
+  String? selectedVisitType = "";
+
+  List<DepartmentListModel> departmentList = [];
+  Map<int, String> departmentMap = {};
+  String? selectedDepartment = "";
+
+  List<DoctorListModel> consultantDoctorList = [];
+  Map<int, String> doctorDataMap = {};
+  String? selectedDoctor = "";
+
+  List<ReferralListModel> referralList = [];
+  Map<int, String> referralDataMap = {};
+  String? selectedReferral = "";
+
+  List<ReferralListModel> marketByList = [];
+  Map<int, String> marketByDataMap = {};
+  String? selectedMarketByData = "";
+
+  List<ReferralListModel> providerByList = [];
+  Map<int, String> providerByDataMap = {};
+  String? selectedProviderData = "";
+
+  List<TpaListModel> tpaByList = [];
+  Map<int, String> tpaByDataMap = {};
+  String? selectedTpaData = "";
+
+  List<WardListModel> wardByList = [];
+  Map<int, String> wardByDataMap = {};
+  String? selectedWardData = "";
+
+  List<ChargeListModel> chargeByList = [];
+  Map<int, String> chargeByDataMap = {};
+  String? selectedChargeData = "";
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -67,7 +110,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
     getIpdPatientData();
-    //getBirthChartData();
+    getAllFilteredListForIpd();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -93,8 +136,43 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                 isVisible = true;
               });
             },
-            filterTap: () {
-              showCommonModalForAdvancedSearchForIpdDaycare(context);
+            filterTap: () async {
+              final SelectedFilterData? selectedData =
+                  await showCommonModalForAdvancedSearchForIpdDaycare(
+                      context,
+                      {1: "New", 2: "Old"},
+                      departmentMap,
+                      doctorDataMap,
+                      referralDataMap,
+                      marketByDataMap,
+                      providerByDataMap,
+                      tpaByDataMap,
+                      wardByDataMap,
+                      chargeByDataMap);
+
+              if (selectedData != null) {
+                selectedVisitType = selectedData["visitType"]?.value.toString();
+                selectedDepartment = selectedData["department"]?.key.toString();
+                selectedDoctor = selectedData["doctor"]?.key.toString();
+                selectedReferral = selectedData["referral"]?.key.toString();
+                selectedMarketByData = selectedData["marketBy"]?.key.toString();
+                selectedProviderData = selectedData["provider"]?.key.toString();
+                selectedTpaData = selectedData["tpa"]?.key.toString();
+                selectedWardData = selectedData["wards"]?.key.toString();
+                selectedChargeData = selectedData["charges"]?.key.toString();
+                setState(() {
+                  ipdReportList.clear();
+                  graphData.clear();
+                  newCount.clear();
+                  oldCount.clear();
+                  departmentName.clear();
+
+                  currentPage = 1;
+                  getIpdPatientData();
+                });
+              } else {
+                print("Modal closed without filtering");
+              }
             },
           ),
           Expanded(
@@ -217,12 +295,15 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                     newCount.clear();
                                     oldCount.clear();
                                     departmentName.clear();
-                                    // selectedVisitType = "";
-                                    // selectedDepartment = "";
-                                    // selectedDoctor = "";
-                                    // selectedReferral = "";
-                                    // selectedMarketByData = "";
-                                    // selectedProviderData = "";
+                                    selectedVisitType = "";
+                                    selectedDepartment = "";
+                                    selectedDoctor = "";
+                                    selectedReferral = "";
+                                    selectedMarketByData = "";
+                                    selectedProviderData = "";
+                                    selectedTpaData = "";
+                                    selectedWardData = "";
+                                    selectedChargeData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
                                     getIpdPatientData();
@@ -245,19 +326,28 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                             graphTitle: "Department-wise IPD Patient Report",
                             onTapFullScreen: () {
                               Navigator.pushNamed(context,
-                                  "/DepartmentWiseOpdReportLandscapeScreen", arguments: {
+                                  "/DepartmentWiseOpdReportLandscapeScreen",
+                                  arguments: {
                                     "newCount": newCount,
                                     "oldCount": oldCount,
                                     "departmentName": departmentName
                                   });
                             },
-                            yearLabels: departmentName.length>10?departmentName.take(10).toList():departmentName,
-                            spotsType1: newCount.length>10? newCount.take(10).toList():newCount,
-                            spotsType2: oldCount.length>10? oldCount.take(10).toList():oldCount,
-                            onTapPieChart: (){
-                              showCommonModalForDeathGenderDistribution(context, double.parse(maleCount.toString()), double.parse(femaleCount.toString()));
+                            yearLabels: departmentName.length > 10
+                                ? departmentName.take(10).toList()
+                                : departmentName,
+                            spotsType1: newCount.length > 10
+                                ? newCount.take(10).toList()
+                                : newCount,
+                            spotsType2: oldCount.length > 10
+                                ? oldCount.take(10).toList()
+                                : oldCount,
+                            onTapPieChart: () {
+                              showCommonModalForDeathGenderDistribution(
+                                  context,
+                                  double.parse(maleCount.toString()),
+                                  double.parse(femaleCount.toString()));
                             },
-
                           ),
                           ListView.builder(
                             shrinkWrap: true,
@@ -348,12 +438,15 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      // "visit_type": selectedVisitType,
-      // "department": selectedDepartment,
-      // "doctor": selectedDoctor,
-      // "referral": selectedReferral,
-      // "market_by": selectedMarketByData,
-      // "provider": selectedProviderData,
+      "visit_type": selectedVisitType,
+      "department": selectedDepartment,
+      "doctor": selectedDoctor,
+      "referral": selectedReferral,
+      "market_by": selectedMarketByData,
+      "provider": selectedProviderData,
+      'ward': selectedWardData,
+      "tpa": selectedTpaData,
+      "charge": selectedChargeData,
       "from_date": selectedFromDate,
       "to_date": selectedToDate
     };
@@ -383,8 +476,10 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
         departmentName.add(dept);
       }
 
-      maleCount = int.parse(resource.data["totals"]["admission_type"][0].toString());
-      femaleCount = int.parse(resource.data["totals"]["admission_type"][1].toString());
+      maleCount =
+          int.parse(resource.data["totals"]["admission_type"][0].toString());
+      femaleCount =
+          int.parse(resource.data["totals"]["admission_type"][1].toString());
 
       setState(() {
         ipdReportList.addAll(newData);
@@ -396,6 +491,106 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
 
       if (newData.isEmpty && currentPage > 1) {
         Fluttertoast.showToast(msg: "No more data found");
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
+  Future<void> getAllFilteredListForIpd() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> requestData = {};
+
+    Resource resource = await _adminReportUsecase.getFilteredDataForIpd(
+        requestData: requestData);
+
+    if (resource.status == STATUS.SUCCESS) {
+      // for department list
+      departmentList = (resource.data["department"] as List)
+          .map((x) => DepartmentListModel.fromJson(x))
+          .toList();
+      for (var item in departmentList) {
+        if (item.id != null) {
+          departmentMap[(item.id ?? 0.0).toInt()] = item.departmentName!;
+        }
+      }
+
+      // for consultant doctor list
+
+      consultantDoctorList = (resource.data["doctor"] as List)
+          .map((x) => DoctorListModel.fromJson(x))
+          .toList();
+      for (var item in consultantDoctorList) {
+        if (item.id != null) {
+          doctorDataMap[(item.id ?? 0.0).toInt()] = item.name ?? "";
+        }
+      }
+
+      // for referral list
+      referralList = (resource.data["referral"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in referralList) {
+        if (item.id != null) {
+          referralDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for market by list
+      marketByList = (resource.data["market_by"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in marketByList) {
+        if (item.id != null) {
+          marketByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for provider name
+      providerByList = (resource.data["provider"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in providerByList) {
+        if (item.id != null) {
+          providerByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for tpa name
+      tpaByList = (resource.data["tpa"] as List)
+          .map((x) => TpaListModel.fromJson(x))
+          .toList();
+      for (var item in tpaByList) {
+        if (item.id != null) {
+          tpaByDataMap[(item.id ?? 0.0).toInt()] = item.tpaName ?? "";
+        }
+      }
+
+      // for wards name
+      wardByList = (resource.data["wards"] as List)
+          .map((x) => WardListModel.fromJson(x))
+          .toList();
+      for (var item in wardByList) {
+        if (item.id != null) {
+          wardByDataMap[(item.id ?? 0.0).toInt()] = item.wardName ?? "";
+        }
+      }
+
+      // for charges name
+      chargeByList = (resource.data["charges"] as List)
+          .map((x) => ChargeListModel.fromJson(x))
+          .toList();
+      for (var item in chargeByList) {
+        if (item.id != null) {
+          chargeByDataMap[(item.id ?? 0.0).toInt()] = item.chargeName ?? "";
+        }
       }
     } else {
       setState(() {

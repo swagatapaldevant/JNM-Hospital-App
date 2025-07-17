@@ -38,6 +38,7 @@ Future<SelectedFilterData?> showCommonModalForAdvancedSearch(
   final List<MapEntry<int, String>> providerByEntries =
       providerByDataMap.entries.toList();
   MapEntry<int, String>? selectedProviderByEntry;
+
   return showDialog<SelectedFilterData>(
     context: context,
     barrierDismissible: true,

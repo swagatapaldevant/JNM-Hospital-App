@@ -23,6 +23,7 @@ class ApiEndPoint{
   static const dischargeReport =  "$baseurl/discharge-report";
   static const ipdReport =  "$baseurl/ipd-report";
   static const dialysisReport =  "$baseurl/dialysis-report";
+  static const filteredReportIpd =  "$baseurl/get-filteration-ipd-report";
 
 
 

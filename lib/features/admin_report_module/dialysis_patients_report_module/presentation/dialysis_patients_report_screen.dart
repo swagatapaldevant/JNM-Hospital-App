@@ -98,7 +98,6 @@ class _DialysisPatientsReportScreenState
   Map<int, String> chargeByDataMap = {};
   String? selectedChargeData = "";
 
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -140,17 +139,17 @@ class _DialysisPatientsReportScreenState
             },
             filterTap: () async {
               final SelectedFilterData? selectedData =
-              await showCommonModalForAdvancedSearchForDialysis(
-                  context,
-                  {1: "New", 2: "Old"},
-                  departmentMap,
-                  doctorDataMap,
-                  referralDataMap,
-                  marketByDataMap,
-                  providerByDataMap,
-                  tpaByDataMap,
-                  wardByDataMap,
-                  chargeByDataMap);
+                  await showCommonModalForAdvancedSearchForDialysis(
+                      context,
+                      {1: "New", 2: "Old"},
+                      departmentMap,
+                      doctorDataMap,
+                      referralDataMap,
+                      marketByDataMap,
+                      providerByDataMap,
+                      tpaByDataMap,
+                      wardByDataMap,
+                      chargeByDataMap);
 
               if (selectedData != null) {
                 selectedVisitType = selectedData["visitType"]?.value.toString();
@@ -323,120 +322,146 @@ class _DialysisPatientsReportScreenState
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.01),
-                          dialysisReportList.isEmpty?Center(
-                            child: Text("No dialysis in this time frame", style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.colorBlack
-                            ),),
-                          ):
-                          Column(
-                            children: [
-                              DepartmentWiseOpdReport(
-                                graphTitle: "Department wise Dialysis Patient",
-                                onTapFullScreen: () {
-                                  Navigator.pushNamed(context,
-                                      "/DepartmentWiseOpdReportLandscapeScreen",
-                                      arguments: {
-                                        "newCount": newCount,
-                                        "oldCount": oldCount,
-                                        "departmentName": departmentName
-                                      });
-                                },
-                                yearLabels: departmentName.length > 10
-                                    ? departmentName.take(10).toList()
-                                    : departmentName,
-                                spotsType1: newCount.length > 10
-                                    ? newCount.take(10).toList()
-                                    : newCount,
-                                spotsType2: oldCount.length > 10
-                                    ? oldCount.take(10).toList()
-                                    : oldCount,
-                                onTapPieChart: () {
-                                  showCommonModalForDeathGenderDistribution(
-                                      context,
-                                      double.parse(maleCount.toString()),
-                                      double.parse(femaleCount.toString()));
-                                },
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: dialysisReportList.length +
-                                    (isLoading && hasMoreData ? 1 : 0),
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index < dialysisReportList.length) {
-                                    return AnimationConfiguration.staggeredList(
-                                      position: index,
-                                      duration: const Duration(milliseconds: 500),
-                                      child: SlideAnimation(
-                                        verticalOffset: 50.0,
-                                        curve: Curves.easeOut,
-                                        child: FadeInAnimation(
-                                          curve: Curves.easeIn,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              bottom: ScreenUtils()
-                                                      .screenHeight(context) *
-                                                  0.02,
+                          dialysisReportList.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No dialysis in this time frame",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.colorBlack),
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    DepartmentWiseOpdReport(
+                                      graphTitle:
+                                          "Department wise Dialysis Patient",
+                                      onTapFullScreen: () {
+                                        Navigator.pushNamed(context,
+                                            "/DepartmentWiseOpdReportLandscapeScreen",
+                                            arguments: {
+                                              "newCount": newCount,
+                                              "oldCount": oldCount,
+                                              "departmentName": departmentName
+                                            });
+                                      },
+                                      yearLabels: departmentName.length > 10
+                                          ? departmentName.take(10).toList()
+                                          : departmentName,
+                                      spotsType1: newCount.length > 10
+                                          ? newCount.take(10).toList()
+                                          : newCount,
+                                      spotsType2: oldCount.length > 10
+                                          ? oldCount.take(10).toList()
+                                          : oldCount,
+                                      onTapPieChart: () {
+                                        showCommonModalForDeathGenderDistribution(
+                                            context,
+                                            double.parse(maleCount.toString()),
+                                            double.parse(
+                                                femaleCount.toString()));
+                                      },
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: dialysisReportList.length +
+                                          (isLoading && hasMoreData ? 1 : 0),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (index < dialysisReportList.length) {
+                                          return AnimationConfiguration
+                                              .staggeredList(
+                                            position: index,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: SlideAnimation(
+                                              verticalOffset: 50.0,
+                                              curve: Curves.easeOut,
+                                              child: FadeInAnimation(
+                                                curve: Curves.easeIn,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    bottom: ScreenUtils()
+                                                            .screenHeight(
+                                                                context) *
+                                                        0.02,
+                                                  ),
+                                                  child: DialysisPatientItem(
+                                                    index: index,
+                                                    patientName:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .patientName
+                                                            .toString(),
+                                                    department:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .departmentName
+                                                            .toString(),
+                                                    admissionType:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .type
+                                                            .toString(),
+                                                    gender: dialysisReportList[
+                                                            index]
+                                                        .gender
+                                                        .toString(),
+                                                    dobYear: dialysisReportList[
+                                                            index]
+                                                        .dobYear
+                                                        .toString(),
+                                                    mobile: dialysisReportList[
+                                                            index]
+                                                        .phone
+                                                        .toString(),
+                                                    appointmentDate:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .admissionDate
+                                                            .toString(),
+                                                    departmentName:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .departmentName
+                                                            .toString(),
+                                                    wardName:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .wardName
+                                                            .toString(),
+                                                    bedName: dialysisReportList[
+                                                            index]
+                                                        .bedName
+                                                        .toString(),
+                                                    tpaName: dialysisReportList[
+                                                            index]
+                                                        .tpaName,
+                                                    doctor: dialysisReportList[
+                                                            index]
+                                                        .doctorName,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                            child: DialysisPatientItem(
-                                              index: index,
-                                              patientName: dialysisReportList[index]
-                                                  .patientName
-                                                  .toString(),
-                                              department: dialysisReportList[index]
-                                                  .departmentName
-                                                  .toString(),
-                                              admissionType:
-                                                  dialysisReportList[index]
-                                                      .type
-                                                      .toString(),
-                                              gender: dialysisReportList[index]
-                                                  .gender
-                                                  .toString(),
-                                              dobYear: dialysisReportList[index]
-                                                  .dobYear
-                                                  .toString(),
-                                              mobile: dialysisReportList[index]
-                                                  .phone
-                                                  .toString(),
-                                              appointmentDate:
-                                                  dialysisReportList[index]
-                                                      .admissionDate
-                                                      .toString(),
-                                              departmentName:
-                                                  dialysisReportList[index]
-                                                      .departmentName
-                                                      .toString(),
-                                              wardName: dialysisReportList[index]
-                                                  .wardName
-                                                  .toString(),
-                                              bedName: dialysisReportList[index]
-                                                  .bedName
-                                                  .toString(),
-                                              tpaName:
-                                                  dialysisReportList[index].tpaName,
-                                              doctor: dialysisReportList[index]
-                                                  .doctorName,
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                  color: AppColors
+                                                      .arrowBackground),
                                             ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    return Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 16),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                            color: AppColors.arrowBackground),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
                         ],
                       ),
                     ),
@@ -518,7 +543,6 @@ class _DialysisPatientsReportScreenState
           context: context, mes: resource.message ?? "", messageType: 4);
     }
   }
-
 
   Future<void> getAllFilteredListForDialysis() async {
     setState(() {
@@ -619,7 +643,6 @@ class _DialysisPatientsReportScreenState
           context: context, mes: resource.message ?? "", messageType: 4);
     }
   }
-
 
   String getCurrentDate() {
     final DateTime now = DateTime.now();

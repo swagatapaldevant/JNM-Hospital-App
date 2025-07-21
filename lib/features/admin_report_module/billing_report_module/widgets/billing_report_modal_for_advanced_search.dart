@@ -5,20 +5,49 @@ import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 
-Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext context) {
-  String? selectedFruit;
+Future<SelectedFilterData?> showCommonModalForAdvancedSearchForBillingReport(
+    BuildContext context,
+    Map<int, String> usersByDataMap,
+    Map<int, String> doctorByDataMap,
+    Map<int, String> chargeByDataMap,
+    Map<int, String> sectionByDataMap,
+    Map<int, String> referralByDataMap,
+    Map<int, String> marketByDataMap,
+    Map<int, String> providerByDataMap,
+    ) {
 
-  final List<String> fruits = [
-    "Apple", "Banana", "Cherry", "Date", "Fig", "Grapes", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon",
-  ];
+  final List<MapEntry<int, String>> usersTypeEntries =
+  usersByDataMap.entries.toList();
+  MapEntry<int, String>? selectedUsersTypeEntry;
 
-  Future<List<String>> getFruits(String filter, LoadProps? props) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return fruits.where((item) => item.toLowerCase().contains(filter.toLowerCase())).toList();
-  }
+  final List<MapEntry<int, String>> doctorEntries =
+  doctorByDataMap.entries.toList();
+  MapEntry<int, String>? selectedDoctorEntry;
 
-  return showDialog<String>(
+  final List<MapEntry<int, String>> chargeByEntries =
+  chargeByDataMap.entries.toList();
+  MapEntry<int, String>? selectedChargeByEntry;
+
+  final List<MapEntry<int, String>> sectionByEntries =
+  sectionByDataMap.entries.toList();
+  MapEntry<int, String>? selectedSectionByEntry;
+
+  final List<MapEntry<int, String>> referralEntries =
+  referralByDataMap.entries.toList();
+  MapEntry<int, String>? selectedReferralEntry;
+
+  final List<MapEntry<int, String>> marketByEntries =
+  marketByDataMap.entries.toList();
+  MapEntry<int, String>? selectedMarketByEntry;
+
+  final List<MapEntry<int, String>> providerByEntries =
+  providerByDataMap.entries.toList();
+  MapEntry<int, String>? selectedProviderByEntry;
+
+
+  return showDialog<SelectedFilterData?>(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext dialogContext) {
@@ -51,232 +80,272 @@ Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext co
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.03),
 
-                      Text("Selection Type", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select billing type",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
+                      // Text("Selection Type", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "Select billing type",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
                       Text("User Type", style: TextStyle(
                           fontSize: 12,
                           color: AppColors.colorBlack,
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return usersTypeEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
                         hintText: "Select user type",
-                        selectedItem: selectedFruit,
+                        selectedItem: selectedUsersTypeEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedUsersTypeEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
+                      //
+                      //
                       Text("Doctor", style: TextStyle(
                           fontSize: 12,
                           color: AppColors.colorBlack,
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select doctor",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return doctorEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-                      Text("Doctor Type", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
                         hintText: "Select doctor type",
-                        selectedItem: selectedFruit,
+                        selectedItem: selectedDoctorEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedDoctorEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
+                      //
+                      // Text("Doctor Type", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "Select doctor type",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      //
                       Text("Charge", style: TextStyle(
                           fontSize: 12,
                           color: AppColors.colorBlack,
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select charge",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return chargeByEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select charge type",
+                        selectedItem: selectedChargeByEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedChargeByEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
-                      Text("Charge Category", style: TextStyle(
+                      //
+                      //
+                      Text("Section", style: TextStyle(
                           fontSize: 12,
                           color: AppColors.colorBlack,
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select charge category",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return sectionByEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select section type",
+                        selectedItem: selectedSectionByEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedSectionByEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
-                      Text("Charge sub category", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select charge sub category",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-                      Text("Payment Type", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select payment type",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
-                      Text("Patient Type", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select patient type",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
-                      Text("Discount", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String> (
-                        items: getFruits,
-                        hintText: "Select discount type",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
-
-
-                      Text("Discount amount", style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.colorBlack,
-                          fontWeight: FontWeight.w600
-                      ),),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "enter discount amount",
-                        selectedItem: selectedFruit,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedFruit = value;
-                          });
-                        },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      //
+                      // Text("Charge sub category", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "Select charge sub category",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      // Text("Payment Type", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "Select payment type",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      //
+                      // Text("Patient Type", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "Select patient type",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      //
+                      // Text("Discount", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String> (
+                      //   items: getFruits,
+                      //   hintText: "Select discount type",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
+                      //
+                      //
+                      // Text("Discount amount", style: TextStyle(
+                      //     fontSize: 12,
+                      //     color: AppColors.colorBlack,
+                      //     fontWeight: FontWeight.w600
+                      // ),),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
+                      // CommonSearchableDropdown<String>(
+                      //   items: getFruits,
+                      //   hintText: "enter discount amount",
+                      //   selectedItem: selectedFruit,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       selectedFruit = value;
+                      //     });
+                      //   },
+                      //   itemAsString: (item) => item,
+                      //   //validator: (value) => value == null ? "Please select a fruit" : null,
+                      // ),
+                      // SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
 
 
                       Text("Referral", style: TextStyle(
@@ -285,17 +354,25 @@ Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext co
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select referral name",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return referralEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select Referral name",
+                        selectedItem: selectedReferralEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedReferralEntry = value;
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
 
@@ -307,17 +384,25 @@ Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext co
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select market by",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return marketByEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select market by name",
+                        selectedItem: selectedMarketByEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedMarketByEntry = value;
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
 
@@ -328,17 +413,25 @@ Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext co
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select provider name",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return providerByEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select provider by name",
+                        selectedItem: selectedProviderByEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedProviderByEntry = value;
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.04),
 
@@ -346,6 +439,17 @@ Future<String?> showCommonModalForAdvancedSearchForBillingReport(BuildContext co
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CommonButton(
+                            onTap: (){
+                              Navigator.pop(context, {
+                                "userType":selectedUsersTypeEntry,
+                                "doctor": selectedDoctorEntry,
+                                "charges": selectedChargeByEntry,
+                                "section":selectedSectionByEntry,
+                                "referral": selectedReferralEntry,
+                                "marketBy": selectedMarketByEntry,
+                                "provider": selectedProviderByEntry,
+                              });
+                            },
                               borderRadius: 8,
                               bgColor: AppColors.arrowBackground,
                               height: ScreenUtils().screenHeight(context)*0.05,

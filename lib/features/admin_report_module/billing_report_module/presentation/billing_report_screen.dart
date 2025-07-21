@@ -18,11 +18,16 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/com
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/widgets/dialysis_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/bar_chart_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_report_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/charges_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/section_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/users_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/department_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class BillingReportScreen extends StatefulWidget {
@@ -57,12 +62,6 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
 
   // for advanced filter
 
-  String? selectedVisitType = "";
-
-  List<DepartmentListModel> departmentList = [];
-  Map<int, String> departmentMap = {};
-  String? selectedDepartment = "";
-
   List<DoctorListModel> consultantDoctorList = [];
   Map<int, String> doctorDataMap = {};
   String? selectedDoctor = "";
@@ -79,13 +78,25 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
   Map<int, String> providerByDataMap = {};
   String? selectedProviderData = "";
 
+  List<ChargesListModel> chargeList = [];
+  Map<int, String> chargeByDataMap = {};
+  String? selectedChargeData = "";
+
+  List<SectionListModel> sectionList = [];
+  Map<int, String> sectionByDataMap = {};
+  String? selectedSectionData = "";
+
+  List<UsersListModel> userList = [];
+  Map<int, String> userByDataMap = {};
+  String? selectedUserData = "";
+
   @override
   void initState() {
     super.initState();
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
     getBillingReportData();
-    // getAllFilteredList();
+    getAllFilteredListForBillingReport();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -111,8 +122,42 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                 isVisible = true;
               });
             },
-            filterTap: () {
-              showCommonModalForAdvancedSearchForBillingReport(context);
+            filterTap: () async {
+              final SelectedFilterData? selectedData =
+                  await showCommonModalForAdvancedSearchForBillingReport(
+                      context,
+                      userByDataMap,
+                      doctorDataMap,
+                      chargeByDataMap,
+                      sectionByDataMap,
+                      referralDataMap,
+                      marketByDataMap,
+                      providerByDataMap);
+
+              if (selectedData != null) {
+                selectedUserData = selectedData["userType"]?.key.toString();
+                selectedDoctor = selectedData["doctor"]?.key.toString();
+                selectedChargeData = selectedData["charges"]?.key.toString();
+                selectedSectionData = selectedData["section"]?.key.toString();
+                selectedReferral = selectedData["referral"]?.key.toString();
+                selectedMarketByData = selectedData["marketBy"]?.key.toString();
+                selectedProviderData = selectedData["provider"]?.key.toString();
+
+                setState(() {
+                  billingList.clear();
+                  barChartData.clear();
+                  total.clear();
+                  discount.clear();
+                  grandTotal.clear();
+                  paid.clear();
+                  due.clear();
+                  type.clear();
+                  currentPage = 1;
+                  getBillingReportData();
+                });
+              } else {
+                print("Modal closed without filtering");
+              }
             },
           ),
           Expanded(
@@ -243,10 +288,11 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                     paid.clear();
                                     due.clear();
                                     type.clear();
-                                    selectedVisitType = "";
-                                    selectedDepartment = "";
+                                    selectedUserData = "";
                                     selectedDoctor = "";
+                                    selectedChargeData = "";
                                     selectedReferral = "";
+                                    selectedSectionData = "";
                                     selectedMarketByData = "";
                                     selectedProviderData = "";
                                     currentPage = 1;
@@ -267,95 +313,125 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.01),
-                          BarChartDetails(
-                              type: type,
-                              total: total,
-                              //grandTotal: grandTotal,
-                              discount: discount,
-                              paid: paid,
-                              due: due),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: billingList.length +
-                                (isLoading && hasMoreData ? 1 : 0),
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < billingList.length) {
-                                return AnimationConfiguration.staggeredList(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 500),
-                                  child: SlideAnimation(
-                                    verticalOffset: 50.0,
-                                    curve: Curves.easeOut,
-                                    child: FadeInAnimation(
-                                      curve: Curves.easeIn,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: ScreenUtils()
-                                                  .screenHeight(context) *
-                                              0.02,
-                                        ),
-                                        child: BillingReportItemData(
-                                          index: index,
-                                          patientName: billingList[index]
-                                              .patientName
-                                              .toString(),
-                                          section: billingList[index]
-                                              .section
-                                              .toString(),
-                                          uhid: billingList[index]
-                                              .patientId
-                                              .toString(),
-                                          opdId:
-                                              billingList[index].id.toString(),
-                                          uid:
-                                              billingList[index].uid.toString(),
-                                          total: billingList[index]
-                                              .total
-                                              .toString(),
-                                          mobile: billingList[index]
-                                              .phone
-                                              .toString(),
-                                          grandTotal: billingList[index]
-                                              .grandTotal
-                                              .toString(),
-                                          billingTime: billingList[index]
-                                              .billDate
-                                              .toString(),
-                                          appointmentTime: billingList[index]
-                                              .creDate
-                                              .toString(),
-                                          doctor: billingList[index]
-                                              .doctorName
-                                              .toString(),
-                                          discountAmount: billingList[index]
-                                              .discountAmount
-                                              .toString(),
-                                          totalPayment: billingList[index]
-                                              .totalPayment
-                                              .toString(),
-                                          refundAmount: billingList[index]
-                                              .refundAmount
-                                              .toString(),
-                                          dueAmount: billingList[index]
-                                              .dueAmount
-                                              .toString(),
-                                        ),
-                                      ),
+                          billingList.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No billing list is there in this time frame",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.colorBlack),
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    BarChartDetails(
+                                        type: type,
+                                        total: total,
+                                        //grandTotal: grandTotal,
+                                        discount: discount,
+                                        paid: paid,
+                                        due: due),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: billingList.length +
+                                          (isLoading && hasMoreData ? 1 : 0),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (index < billingList.length) {
+                                          return AnimationConfiguration
+                                              .staggeredList(
+                                            position: index,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: SlideAnimation(
+                                              verticalOffset: 50.0,
+                                              curve: Curves.easeOut,
+                                              child: FadeInAnimation(
+                                                curve: Curves.easeIn,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    bottom: ScreenUtils()
+                                                            .screenHeight(
+                                                                context) *
+                                                        0.02,
+                                                  ),
+                                                  child: BillingReportItemData(
+                                                    index: index,
+                                                    patientName:
+                                                        billingList[index]
+                                                            .patientName
+                                                            .toString(),
+                                                    section: billingList[index]
+                                                        .section
+                                                        .toString(),
+                                                    uhid: billingList[index]
+                                                        .patientId
+                                                        .toString(),
+                                                    opdId: billingList[index]
+                                                        .id
+                                                        .toString(),
+                                                    uid: billingList[index]
+                                                        .uid
+                                                        .toString(),
+                                                    total: billingList[index]
+                                                        .total
+                                                        .toString(),
+                                                    mobile: billingList[index]
+                                                        .phone
+                                                        .toString(),
+                                                    grandTotal:
+                                                        billingList[index]
+                                                            .grandTotal
+                                                            .toString(),
+                                                    billingTime:
+                                                        billingList[index]
+                                                            .billDate
+                                                            .toString(),
+                                                    appointmentTime:
+                                                        billingList[index]
+                                                            .creDate
+                                                            .toString(),
+                                                    doctor: billingList[index]
+                                                        .doctorName
+                                                        .toString(),
+                                                    discountAmount:
+                                                        billingList[index]
+                                                            .discountAmount
+                                                            .toString(),
+                                                    totalPayment:
+                                                        billingList[index]
+                                                            .totalPayment
+                                                            .toString(),
+                                                    refundAmount:
+                                                        billingList[index]
+                                                            .refundAmount
+                                                            .toString(),
+                                                    dueAmount:
+                                                        billingList[index]
+                                                            .dueAmount
+                                                            .toString(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                  color: AppColors
+                                                      .arrowBackground),
+                                            ),
+                                          );
+                                        }
+                                      },
                                     ),
-                                  ),
-                                );
-                              } else {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: AppColors.arrowBackground),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
+                                  ],
+                                ),
                         ],
                       ),
                     ),
@@ -373,9 +449,10 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      "visit_type": selectedVisitType,
-      "department": selectedDepartment,
+      "user": selectedUserData,
       "doctor": selectedDoctor,
+      //"doctor_type": selectedChargeData,
+      "section": selectedSectionData,
       "referral": selectedReferral,
       "market_by": selectedMarketByData,
       "provider": selectedProviderData,
@@ -422,6 +499,97 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
 
       if (newData.isEmpty && currentPage > 1) {
         Fluttertoast.showToast(msg: "No more data found");
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
+  Future<void> getAllFilteredListForBillingReport() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> requestData = {};
+
+    Resource resource = await _adminReportUsecase
+        .getFilteredDataForBillingReport(requestData: requestData);
+
+    if (resource.status == STATUS.SUCCESS) {
+      // for consultant doctor list
+
+      consultantDoctorList = (resource.data["doctor"] as List)
+          .map((x) => DoctorListModel.fromJson(x))
+          .toList();
+      for (var item in consultantDoctorList) {
+        if (item.id != null) {
+          doctorDataMap[(item.id ?? 0.0).toInt()] = item.name ?? "";
+        }
+      }
+
+      // for referral list
+      referralList = (resource.data["referral"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in referralList) {
+        if (item.id != null) {
+          referralDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for market by list
+      marketByList = (resource.data["market_by"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in marketByList) {
+        if (item.id != null) {
+          marketByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for provider name
+      providerByList = (resource.data["provider"] as List)
+          .map((x) => ReferralListModel.fromJson(x))
+          .toList();
+      for (var item in providerByList) {
+        if (item.id != null) {
+          providerByDataMap[(item.id ?? 0.0).toInt()] = item.referralName ?? "";
+        }
+      }
+
+      // for charges list
+      chargeList = (resource.data["charges"] as List)
+          .map((x) => ChargesListModel.fromJson(x))
+          .toList();
+      for (var item in chargeList) {
+        if (item.id != null) {
+          chargeByDataMap[(item.id ?? 0.0).toInt()] = item.chargeName ?? "";
+        }
+      }
+
+      // for section list
+      sectionList = (resource.data["section"] as List)
+          .map((x) => SectionListModel.fromJson(x))
+          .toList();
+      for (var item in sectionList) {
+        if (item.id != null) {
+          sectionByDataMap[(item.id ?? 0.0).toInt()] =
+              item.chargesSectionName ?? "";
+        }
+      }
+
+      // for users list
+      userList = (resource.data["users"] as List)
+          .map((x) => UsersListModel.fromJson(x))
+          .toList();
+      for (var item in userList) {
+        if (item.id != null) {
+          userByDataMap[(item.id ?? 0.0).toInt()] = item.name ?? "";
+        }
       }
     } else {
       setState(() {

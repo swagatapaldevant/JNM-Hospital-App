@@ -5,20 +5,17 @@ import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 
-Future<String?> showCommonModalForAdvancedSearchForDischargeReport(BuildContext context) {
-  String? selectedFruit;
+Future<SelectedFilterData?> showCommonModalForAdvancedSearchForDischargeReport(
+    BuildContext context,
+    Map<int, String> dischargeMap,
+    ) {
+  final List<MapEntry<int, String>> dischargeTypeEntries =
+  dischargeMap.entries.toList();
+  MapEntry<int, String>? selectedDischargeTypeEntry;
 
-  final List<String> fruits = [
-    "Apple", "Banana", "Cherry", "Date", "Fig", "Grapes", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon",
-  ];
-
-  Future<List<String>> getFruits(String filter, LoadProps? props) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return fruits.where((item) => item.toLowerCase().contains(filter.toLowerCase())).toList();
-  }
-
-  return showDialog<String>(
+  return showDialog<SelectedFilterData?>(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext dialogContext) {
@@ -57,17 +54,27 @@ Future<String?> showCommonModalForAdvancedSearchForDischargeReport(BuildContext 
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return dischargeTypeEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
                         hintText: "Select discharge status",
-                        selectedItem: selectedFruit,
+                        selectedItem: selectedDischargeTypeEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedDischargeTypeEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
 
 
@@ -77,6 +84,11 @@ Future<String?> showCommonModalForAdvancedSearchForDischargeReport(BuildContext 
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CommonButton(
+                            onTap: (){
+                              Navigator.pop(context, {
+                                "dischargeStatus": selectedDischargeTypeEntry,
+                              });
+                            },
                               borderRadius: 8,
                               bgColor: AppColors.arrowBackground,
                               height: ScreenUtils().screenHeight(context)*0.05,

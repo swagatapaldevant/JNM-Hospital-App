@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_header.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_textField.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/animation.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
+import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +27,9 @@ class _LoginScreenState extends State<LoginScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool isLoading = false;
+  final AuthUsecase _authUsecase = getIt<AuthUsecase>();
+  final SharedPref _pref = getIt<SharedPref>();
 
   @override
   void initState() {
@@ -121,13 +130,27 @@ class _LoginScreenState extends State<LoginScreen>
                 SizedBox(
                   height: AppDimensions.contentGap3,
                 ),
+                isLoading?CircularProgressIndicator(
+                  color: AppColors.arrowBackground,
+                ):
                 StaggeredAnimatedWidget(
                   index: 3,
                   controller: _controller,
                   child: CommonButton(
                     onTap: () {
-                      //Navigator.pushNamedAndRemoveUntil(context, "/PatientButtonNavigation", (Route<dynamic> route) => false,);
                       Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
+
+                      // if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty)
+                      // {
+                      //   loginAdmin();
+                      // }
+                      // else{
+                      //   CommonUtils().flutterSnackBar(
+                      //       context: context, mes:"Please enter email and password", messageType: 4);
+                      //
+                      // }
+                      //Navigator.pushNamedAndRemoveUntil(context, "/PatientButtonNavigation", (Route<dynamic> route) => false,);
+                      //Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
                     },
                     width: AppDimensions.screenWidth * 0.7,
                     buttonName: 'Login',
@@ -200,4 +223,49 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
+
+
+  loginAdmin() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    Map<String, dynamic> requestData = {
+      "email": emailController.text.trim(),
+      "password": passwordController.text.trim()
+    };
+
+    Resource resource = await _authUsecase.login(requestData: requestData);
+
+    if (resource.status == STATUS.SUCCESS) {
+      _pref.setLoginStatus(true);
+      _pref.setUserAuthToken(resource.data["access_token"]);
+      // _pref.setProfileImage(resource.data['image']);
+      // _pref.setUserName(
+      //     resource.data['first_name'] +" "+ resource.data['last_name']);
+      // if (resource.data['user_type_id'] == 1) {
+      //   Navigator.pushNamed(context, "/BottomNavbar");
+      // }
+      // else{
+      //   CommonUtils().flutterSnackBar(
+      //       context: context, mes:"You are not an admin, you have not permission to view the app", messageType: 4);
+      // }
+
+      setState(() {
+        isLoading = false;
+        Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
+      });
+
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
+
+
+
 }

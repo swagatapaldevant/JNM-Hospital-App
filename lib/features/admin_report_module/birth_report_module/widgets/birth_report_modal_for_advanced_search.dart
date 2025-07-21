@@ -5,20 +5,23 @@ import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 
-Future<String?> showCommonModalForAdvancedSearchForBirthReport(BuildContext context) {
-  String? selectedFruit;
+Future<SelectedFilterData?> showCommonModalForAdvancedSearchForBirthReport(
+    BuildContext context,
+    Map<int, String> genderMap,
+    Map<int, String> deliveryModeMap,
+    ) {
+  final List<MapEntry<int, String>> genderTypeEntries =
+  genderMap.entries.toList();
+  MapEntry<int, String>? selectedGenderTypeEntry;
 
-  final List<String> fruits = [
-    "Apple", "Banana", "Cherry", "Date", "Fig", "Grapes", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon",
-  ];
+  final List<MapEntry<int, String>> deliveryModeEntries =
+  deliveryModeMap.entries.toList();
+  MapEntry<int, String>? selectedDeliveryEntry;
 
-  Future<List<String>> getFruits(String filter, LoadProps? props) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return fruits.where((item) => item.toLowerCase().contains(filter.toLowerCase())).toList();
-  }
 
-  return showDialog<String>(
+  return showDialog<SelectedFilterData?>(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext dialogContext) {
@@ -57,17 +60,27 @@ Future<String?> showCommonModalForAdvancedSearchForBirthReport(BuildContext cont
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
-                        hintText: "Select your gender",
-                        selectedItem: selectedFruit,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return genderTypeEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
+                        hintText: "Select gender type",
+                        selectedItem: selectedGenderTypeEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedGenderTypeEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
 
@@ -77,17 +90,27 @@ Future<String?> showCommonModalForAdvancedSearchForBirthReport(BuildContext cont
                           fontWeight: FontWeight.w600
                       ),),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.015),
-                      CommonSearchableDropdown<String>(
-                        items: getFruits,
+                      CommonSearchableDropdown<MapEntry<int, String>>(
+                        items: (String filter, LoadProps? props) async {
+                          await Future.delayed(
+                              const Duration(milliseconds: 500));
+                          return deliveryModeEntries
+                              .where((entry) => entry.value
+                              .toLowerCase()
+                              .contains(filter.toLowerCase()))
+                              .toList();
+                        },
                         hintText: "Select delivery mode",
-                        selectedItem: selectedFruit,
+                        selectedItem: selectedDeliveryEntry,
                         onChanged: (value) {
                           setState(() {
-                            selectedFruit = value;
+                            selectedDeliveryEntry = value;
+                            // print("Selected ID: ${selectedVisitTypeEntry?.key}");
+                            // print("Selected Name: ${selectedVisitTypeEntry?.value}");
                           });
                         },
-                        itemAsString: (item) => item,
-                        //validator: (value) => value == null ? "Please select a fruit" : null,
+                        itemAsString: (entry) => entry.value,
+                        compareFn: (a, b) => a.key == b.key,
                       ),
                       SizedBox(height: ScreenUtils().screenHeight(context)*0.02),
 
@@ -99,6 +122,12 @@ Future<String?> showCommonModalForAdvancedSearchForBirthReport(BuildContext cont
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           CommonButton(
+                            onTap: (){
+                              Navigator.pop(context, {
+                                "gender": selectedGenderTypeEntry,
+                                "deliveryMode": selectedDeliveryEntry,
+                              });
+                            },
                               borderRadius: 8,
                               bgColor: AppColors.arrowBackground,
                               height: ScreenUtils().screenHeight(context)*0.05,

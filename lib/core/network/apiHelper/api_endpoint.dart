@@ -11,6 +11,12 @@ class ApiEndPoint{
 
   //static const baseurl = "http://192.168.29.243:8001/api";
   static const baseurl = "https://devanthims.in/rainbow/api";
+ // static const baseurl = "https://devanttest.in/kgh-demo/api";
+
+  // auth api
+  static const login =  "$baseurl/login";
+
+
 
   // admin report
 
@@ -24,6 +30,7 @@ class ApiEndPoint{
   static const ipdReport =  "$baseurl/ipd-report";
   static const dialysisReport =  "$baseurl/dialysis-report";
   static const filteredReportIpd =  "$baseurl/get-filteration-ipd-report";
+  static const billingFilterData =  "$baseurl/get-filteration-data";
 
 
 

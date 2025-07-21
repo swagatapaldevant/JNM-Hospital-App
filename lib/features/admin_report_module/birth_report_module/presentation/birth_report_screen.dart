@@ -19,6 +19,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/w
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/birth_chart_report/birth_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/birth_chart_report/delivery_mode_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 
 class BirthReportScreen extends StatefulWidget {
   const BirthReportScreen({super.key});
@@ -49,7 +50,10 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
   List<String> type = [];
   List<int> totalCount = [];
 
+// for advanced filter
 
+  String? selectedGenderType = "";
+  String? selectedDeliveryModeType = "";
 
   @override
   void initState() {
@@ -61,7 +65,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
     //getBirthChartData();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           !isLoading &&
           hasMoreData) {
         currentPage += 1;
@@ -90,220 +94,266 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                 isVisible = true;
               });
             },
-            filterTap: () {
-              showCommonModalForAdvancedSearchForBirthReport(context);
+            filterTap: () async {
+              final SelectedFilterData? selectedData =
+                  await showCommonModalForAdvancedSearchForBirthReport(context,
+                      {1: "Male", 2: "Female"}, {1: "LUCS", 2: "NORMAL"});
+
+              if (selectedData != null) {
+                selectedGenderType = selectedData["gender"]?.value.toString();
+                selectedDeliveryModeType = selectedData["deliveryMode"]?.key.toString();
+                setState(() {
+                  birthReportList.clear();
+                  deliveryTypeList.clear();
+                  type.clear();
+                  totalCount.clear();
+                  currentPage = 1;
+                  getBirthChartData();
+                });
+              } else {
+                print("Modal closed without filtering");
+              }
             },
           ),
           Expanded(
-            child:isLoading && birthReportList.isEmpty
+            child: isLoading && birthReportList.isEmpty
                 ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.arrowBackground,
-                ))
-                :  SingleChildScrollView(
-              controller: _scrollController,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: AppDimensions.screenPadding),
-                child: Column(
-                  children: [
-                    SizedBox(height: AppDimensions.contentGap3),
-                    if (isVisible) ...[
-                      CommonSearchBar(
-                        controller: _searchController,
-                        hintText: "Search something...",
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        onTap: () {
-                          setState(() {
-                            isVisible = false;
-                          });
-                        },
-                      ),
-                      SizedBox(
-                          height: ScreenUtils().screenHeight(context) * 0.02),
-                    ],
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: CustomDatePickerField(
-                            selectedDate: selectedFromDate,
-                            onDateChanged: (String value) {
-                              setState(() {
-                                selectedFromDate = value;
-                              });
-                            },
-                            placeholderText: 'From date',
+                    child: CircularProgressIndicator(
+                    color: AppColors.arrowBackground,
+                  ))
+                : SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.screenPadding),
+                      child: Column(
+                        children: [
+                          SizedBox(height: AppDimensions.contentGap3),
+                          if (isVisible) ...[
+                            CommonSearchBar(
+                              controller: _searchController,
+                              hintText: "Search something...",
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value;
+                                });
+                              },
+                              onTap: () {
+                                setState(() {
+                                  isVisible = false;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.02),
+                          ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: CustomDatePickerField(
+                                  selectedDate: selectedFromDate,
+                                  onDateChanged: (String value) {
+                                    setState(() {
+                                      selectedFromDate = value;
+                                    });
+                                  },
+                                  placeholderText: 'From date',
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: CustomDatePickerField(
+                                  selectedDate: selectedToDate,
+                                  onDateChanged: (String value) {
+                                    setState(() {
+                                      selectedToDate = value;
+                                    });
+                                  },
+                                  placeholderText: 'To date',
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: CustomDatePickerField(
-                            selectedDate: selectedToDate,
-                            onDateChanged: (String value) {
-                              setState(() {
-                                selectedToDate = value;
-                              });
-                            },
-                            placeholderText: 'To date',
+                          SizedBox(
+                              height:
+                                  ScreenUtils().screenHeight(context) * 0.02),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CommonButton(
+                                onTap: () {
+                                  birthReportList.clear();
+                                  type.clear();
+                                  totalCount.clear();
+                                  // oldCount.clear();
+
+                                  currentPage = 1;
+                                  hasMoreData = true;
+                                  getBirthChartData();
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Filter",
+                              ),
+                              CommonButton(
+                                onTap: () {
+                                  setState(() {
+                                    selectedFromDate = getCurrentDate();
+                                    selectedToDate = getCurrentDate();
+                                    birthReportList.clear();
+                                    type.clear();
+                                    totalCount.clear();
+                                    // oldCount.clear();
+                                    currentPage = 1;
+                                    hasMoreData = true;
+                                    getBirthChartData();
+                                  });
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Today",
+                              ),
+                              CommonButton(
+                                onTap: () {
+                                  setState(() {
+                                    selectedFromDate = "";
+                                    selectedToDate = "";
+                                    birthReportList.clear();
+                                    type.clear();
+                                    totalCount.clear();
+                                    selectedGenderType = "";
+                                    selectedDeliveryModeType = "";
+                                    currentPage = 1;
+                                    hasMoreData = true;
+                                    getBirthChartData();
+                                  });
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Reset",
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                        height: ScreenUtils().screenHeight(context) * 0.02),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonButton(
-                          onTap: () {
-                            birthReportList.clear();
-                             type.clear();
-                             totalCount.clear();
-                            // oldCount.clear();
-
-                            currentPage = 1;
-                            hasMoreData = true;
-                            getBirthChartData();
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Filter",
-                        ),
-                        CommonButton(
-                          onTap: () {
-                            setState(() {
-                              selectedFromDate = getCurrentDate();
-                              selectedToDate = getCurrentDate();
-                              birthReportList.clear();
-                              type.clear();
-                              totalCount.clear();
-                              // oldCount.clear();
-                              currentPage = 1;
-                              hasMoreData = true;
-                              getBirthChartData();
-                            });
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Today",
-                        ),
-                        CommonButton(
-                          onTap: () {
-                            setState(() {
-                              selectedFromDate = "";
-                              selectedToDate = "";
-                              birthReportList.clear();
-                              type.clear();
-                              totalCount.clear();
-                              // oldCount.clear();
-                              // selectedVisitType = "";
-                              // selectedDepartment = "";
-                              // selectedDoctor = "";
-                              // selectedReferral = "";
-                              // selectedMarketByData = "";
-                              // selectedProviderData = "";
-                              currentPage = 1;
-                              hasMoreData = true;
-                              getBirthChartData();
-                            });
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Reset",
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                        height: ScreenUtils().screenHeight(context) * 0.02),
-                    birthReportList.isEmpty?Center(
-                      child: Text("No baby is born in this time frame", style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.colorBlack
-                      ),),
-                    ):
-                    Column(
-                      children: [
-                        GenderPieChart(
-                          maleCount: maleCount??0,
-                          femaleCount: femaleCount??0,
-                          labels: type,
-                          lucsCounts:totalCount,
-                        ),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: birthReportList.length +
-                              (isLoading && hasMoreData ? 1 : 0),
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index < birthReportList.length) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 500),
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  curve: Curves.easeOut,
-                                  child: FadeInAnimation(
-                                    curve: Curves.easeIn,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom: ScreenUtils()
-                                            .screenHeight(context) *
-                                            0.02,
-                                      ),
-                                      child: BirthReportItem(
-                                        index: index,
-                                         name:birthReportList[index].name,
-                                      gender: birthReportList[index].gender,
-                                      address:birthReportList[index].address,
-                                      guardianName: birthReportList[index].guardianName,
-                                       doctorName: birthReportList[index].doctorName,
-                                      dob: birthReportList[index].dateOfBirth,
-                                      weight:birthReportList[index].weight,
-                                      diagnosis: birthReportList[index].diagnosis,
-                                      operation: birthReportList[index].operation,
-                                      deliveryMode: birthReportList[index].deliveryMode,
-                                      creDate: birthReportList[index].creDate
-                                      ),
-                                    ),
+                          SizedBox(
+                              height:
+                                  ScreenUtils().screenHeight(context) * 0.02),
+                          birthReportList.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No baby is born in this time frame",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.colorBlack),
                                   ),
+                                )
+                              : Column(
+                                  children: [
+                                    GenderPieChart(
+                                      maleCount: maleCount ?? 0,
+                                      femaleCount: femaleCount ?? 0,
+                                      labels: type,
+                                      lucsCounts: totalCount,
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: birthReportList.length +
+                                          (isLoading && hasMoreData ? 1 : 0),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (index < birthReportList.length) {
+                                          return AnimationConfiguration
+                                              .staggeredList(
+                                            position: index,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: SlideAnimation(
+                                              verticalOffset: 50.0,
+                                              curve: Curves.easeOut,
+                                              child: FadeInAnimation(
+                                                curve: Curves.easeIn,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    bottom: ScreenUtils()
+                                                            .screenHeight(
+                                                                context) *
+                                                        0.02,
+                                                  ),
+                                                  child: BirthReportItem(
+                                                      index: index,
+                                                      name: birthReportList[index]
+                                                          .name,
+                                                      gender:
+                                                          birthReportList[index]
+                                                              .gender,
+                                                      address: birthReportList[index]
+                                                          .address,
+                                                      guardianName:
+                                                          birthReportList[index]
+                                                              .guardianName,
+                                                      doctorName:
+                                                          birthReportList[index]
+                                                              .doctorName,
+                                                      dob: birthReportList[index]
+                                                          .dateOfBirth,
+                                                      weight:
+                                                          birthReportList[index]
+                                                              .weight,
+                                                      diagnosis:
+                                                          birthReportList[index]
+                                                              .diagnosis,
+                                                      operation:
+                                                          birthReportList[index]
+                                                              .operation,
+                                                      deliveryMode:
+                                                          birthReportList[index]
+                                                              .deliveryMode,
+                                                      creDate:
+                                                          birthReportList[index]
+                                                              .creDate),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                  color: AppColors
+                                                      .arrowBackground),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              );
-                            } else {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                      color: AppColors.arrowBackground),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),
     );
   }
-
 
   Future<void> getBirthChartData() async {
     setState(() {
@@ -312,18 +362,14 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      // "visit_type": selectedVisitType,
-      // "department": selectedDepartment,
-      // "doctor": selectedDoctor,
-      // "referral": selectedReferral,
-      // "market_by": selectedMarketByData,
-      // "provider": selectedProviderData,
+      "gender":selectedGenderType,
+      "delivery_mode": selectedDeliveryModeType == "1" ?"LUCS":selectedDeliveryModeType =="2" ?"NORMAL": "",
       "from_date": selectedFromDate,
       "to_date": selectedToDate
     };
 
-    Resource resource = await _adminReportUsecase.birthReportData(
-        requestData: requestData);
+    Resource resource =
+        await _adminReportUsecase.birthReportData(requestData: requestData);
 
     if (resource.status == STATUS.SUCCESS) {
       List<BirthReportModel> newData = (resource.data["records"] as List)
@@ -331,22 +377,22 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
           .toList();
 
       maleCount = int.parse(resource.data["totals"]["gender"][0].toString());
-      femaleCount  = int.parse(resource.data["totals"]["gender"][1].toString());
-
+      femaleCount = int.parse(resource.data["totals"]["gender"][1].toString());
 
       deliveryTypeList = (resource.data["totalsByMode"] as List)
           .map((x) => DeliveryModeModel.fromJson(x))
           .toList();
 
-      for(int i = 0; i<deliveryTypeList.length; i++)
-        {
-          final item = deliveryTypeList[i];
-          String t =item.deliveryMode.toString() == "null"?"other": item.deliveryMode.toString();
-          int count = int.tryParse(item.totalCount.toString()) ?? 0;
+      for (int i = 0; i < deliveryTypeList.length; i++) {
+        final item = deliveryTypeList[i];
+        String t = item.deliveryMode.toString() == "null"
+            ? "other"
+            : item.deliveryMode.toString();
+        int count = int.tryParse(item.totalCount.toString()) ?? 0;
 
-          type.add(t);
-          totalCount.add(count);
-        }
+        type.add(t);
+        totalCount.add(count);
+      }
 
       setState(() {
         birthReportList.addAll(newData);
@@ -374,5 +420,4 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
         "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     return formattedDate;
   }
-
 }

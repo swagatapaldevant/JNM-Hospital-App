@@ -16,7 +16,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -34,7 +34,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.getRequest(
@@ -52,7 +52,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -70,7 +70,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -87,7 +87,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -104,7 +104,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -122,7 +122,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -140,7 +140,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -158,7 +158,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.postRequest(
@@ -175,7 +175,7 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       {required Map<String, dynamic> requestData}) async {
     String token = await _pref.getUserAuthToken();
     Map<String, String> header = {
-      "Authorization": "Bearer$token"
+      "Authorization": "Bearer $token"
     };
     print("Bearer$token");
     Resource resource = await _apiClient.getRequest(
@@ -186,4 +186,24 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
       return resource;
     }
   }
+
+
+  @override
+  Future<Resource> getFilteredDataForBillingReport(
+      {required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.getRequest(
+        url: ApiEndPoint.billingFilterData, header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
 }

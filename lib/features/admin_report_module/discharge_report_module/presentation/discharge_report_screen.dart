@@ -20,6 +20,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_m
 import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/widgets/discrage_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_graph_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_model.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class DischargeReportScreen extends StatefulWidget {
@@ -50,6 +51,10 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
   List<DischargeReportGraphModel> dischargeReportGraphData = [];
   List<String> type = [];
   List<int> totalCount = [];
+
+  // for advanced filter
+  String? selectedDischargeStatus = "";
+
 
   @override
   void initState() {
@@ -86,8 +91,24 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
               });
             },
             isVisibleFilter: true,
-            filterTap: () {
-              showCommonModalForAdvancedSearchForDischargeReport(context);
+            filterTap: () async {
+              final SelectedFilterData? selectedData =
+              await showCommonModalForAdvancedSearchForDischargeReport(context,
+                  {1: "Death", 2: "Refferal", 3: "Normal", 4: "LAMA", 5: "DORB", 6:"DMA"},
+              );
+
+              if (selectedData != null) {
+                selectedDischargeStatus = selectedData["dischargeStatus"]?.value.toString();
+                setState(() {
+                  dischargeReportList.clear();
+                  type.clear();
+                  totalCount.clear();
+                  currentPage = 1;
+                  getDischargeReportData();
+                });
+              } else {
+                print("Modal closed without filtering");
+              }
             },
           ),
           Expanded(
@@ -198,15 +219,10 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                               selectedFromDate = "";
                               selectedToDate = "";
                               dischargeReportList.clear();
+                              selectedDischargeStatus = "";
                               //deathCountByDoctorList.clear();
                               totalCount.clear();
                               type.clear();
-                              // selectedVisitType = "";
-                              // selectedDepartment = "";
-                              // selectedDoctor = "";
-                              // selectedReferral = "";
-                              // selectedMarketByData = "";
-                              // selectedProviderData = "";
                               currentPage = 1;
                               hasMoreData = true;
                               getDischargeReportData();
@@ -317,12 +333,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      // "visit_type": selectedVisitType,
-      // "department": selectedDepartment,
-      // "doctor": selectedDoctor,
-      // "referral": selectedReferral,
-      // "market_by": selectedMarketByData,
-      // "provider": selectedProviderData,
+      "discharge_status": selectedDischargeStatus,
       "from_date": selectedFromDate,
       "to_date": selectedToDate
     };

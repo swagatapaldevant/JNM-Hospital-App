@@ -131,6 +131,18 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                birthReportList.clear();
+                                type.clear();
+                                totalCount.clear();
+                                selectedGenderType = "";
+                                selectedDeliveryModeType = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getBirthChartData();
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -235,6 +247,8 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                     selectedDeliveryModeType = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
                                     getBirthChartData();
                                   });
                                 },
@@ -362,6 +376,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
+      "search_data":_searchQuery,
       "gender":selectedGenderType,
       "delivery_mode": selectedDeliveryModeType == "1" ?"LUCS":selectedDeliveryModeType =="2" ?"NORMAL": "",
       "from_date": selectedFromDate,

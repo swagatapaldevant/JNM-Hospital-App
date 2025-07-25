@@ -725,8 +725,6 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Optional: add auth token here
-          // options.headers['Authorization'] = 'Bearer YOUR_TOKEN';
           print('➡️ REQUEST[${options.method}] => PATH: ${options.path}');
           return handler.next(options);
         },

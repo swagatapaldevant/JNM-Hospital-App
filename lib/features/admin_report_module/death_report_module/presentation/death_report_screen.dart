@@ -103,6 +103,17 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                deathReportList.clear();
+                                deathCountByDoctorList.clear();
+                                totalCount.clear();
+                                doctor.clear();
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getDeathReportData();
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -204,14 +215,10 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                                     deathCountByDoctorList.clear();
                                     totalCount.clear();
                                     doctor.clear();
-                                    // selectedVisitType = "";
-                                    // selectedDepartment = "";
-                                    // selectedDoctor = "";
-                                    // selectedReferral = "";
-                                    // selectedMarketByData = "";
-                                    // selectedProviderData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
                                     getDeathReportData();
                                   });
                                 },
@@ -334,6 +341,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
+      "search_data":_searchQuery,
       // "visit_type": selectedVisitType,
       // "department": selectedDepartment,
       // "doctor": selectedDoctor,

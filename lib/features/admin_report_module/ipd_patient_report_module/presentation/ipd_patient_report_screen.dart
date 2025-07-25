@@ -191,6 +191,27 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                ipdReportList.clear();
+                                graphData.clear();
+                                newCount.clear();
+                                oldCount.clear();
+                                departmentName.clear();
+                                selectedVisitType = "";
+                                selectedDepartment = "";
+                                selectedDoctor = "";
+                                selectedReferral = "";
+                                selectedMarketByData = "";
+                                selectedProviderData = "";
+                                selectedTpaData = "";
+                                selectedWardData = "";
+                                selectedChargeData = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getIpdPatientData();
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -306,6 +327,8 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                     selectedChargeData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
                                     getIpdPatientData();
                                   });
                                 },
@@ -439,6 +462,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
     Map<String, dynamic> requestData = {
       "page": currentPage,
       "visit_type": selectedVisitType,
+      "search_data":_searchQuery,
       "department": selectedDepartment,
       "doctor": selectedDoctor,
       "referral": selectedReferral,

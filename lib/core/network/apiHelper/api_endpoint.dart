@@ -31,6 +31,7 @@ class ApiEndPoint{
   static const dialysisReport =  "$baseurl/dialysis-report";
   static const filteredReportIpd =  "$baseurl/get-filteration-ipd-report";
   static const billingFilterData =  "$baseurl/get-filteration-data";
+  static const dashboard =  "$baseurl/dashboard";
 
 
 

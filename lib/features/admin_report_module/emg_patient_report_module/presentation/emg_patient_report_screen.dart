@@ -158,6 +158,24 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
 
                     if (isVisible) ...[
                       CommonSearchBar(
+                        searchIconOnClick: (){
+                          selectedFromDate = "";
+                          selectedToDate = "";
+                          patientList.clear();
+                          graphData.clear();
+                          newCount.clear();
+                          oldCount.clear();
+                          departmentName.clear();
+                          selectedVisitType = "";
+                          selectedDepartment = "";
+                          selectedDoctor = "";
+                          selectedReferral ="";
+                          selectedMarketByData ="";
+                          selectedProviderData = "";
+                          currentPage = 1;
+                          hasMoreData = true;
+                          getEmgPatientData();
+                        },
                         controller: _searchController,
                         hintText: "Search something...",
                         onChanged: (value) {
@@ -267,6 +285,8 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                               selectedProviderData = "";
                               currentPage = 1;
                               hasMoreData = true;
+                              _searchQuery = "";
+                              isVisible = false;
                               getEmgPatientData();
                             });
                           },
@@ -394,6 +414,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
     Map<String, dynamic> requestData = {
       "page": currentPage,
       "visit_type": selectedVisitType,
+      "search_data":_searchQuery,
       "department": selectedDepartment,
       "doctor": selectedDoctor,
       "referral": selectedReferral,

@@ -192,6 +192,27 @@ class _DialysisPatientsReportScreenState
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                dialysisReportList.clear();
+                                graphData.clear();
+                                newCount.clear();
+                                oldCount.clear();
+                                departmentName.clear();
+                                selectedVisitType = "";
+                                selectedDepartment = "";
+                                selectedDoctor = "";
+                                selectedReferral = "";
+                                selectedMarketByData = "";
+                                selectedProviderData = "";
+                                selectedTpaData = "";
+                                selectedWardData = "";
+                                selectedChargeData = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getDialysisPatientData();
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -306,6 +327,8 @@ class _DialysisPatientsReportScreenState
                                     selectedChargeData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
                                     getDialysisPatientData();
                                   });
                                 },
@@ -481,6 +504,7 @@ class _DialysisPatientsReportScreenState
       "page": currentPage,
       "visit_type": selectedVisitType,
       "department": selectedDepartment,
+      "search_data":_searchQuery,
       "doctor": selectedDoctor,
       "referral": selectedReferral,
       "market_by": selectedMarketByData,

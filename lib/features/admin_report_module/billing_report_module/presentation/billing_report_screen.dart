@@ -176,6 +176,28 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                billingList.clear();
+                                barChartData.clear();
+                                total.clear();
+                                discount.clear();
+                                grandTotal.clear();
+                                paid.clear();
+                                due.clear();
+                                type.clear();
+                                selectedUserData = "";
+                                selectedDoctor = "";
+                                selectedChargeData = "";
+                                selectedReferral = "";
+                                selectedSectionData = "";
+                                selectedMarketByData = "";
+                                selectedProviderData = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getBillingReportData();
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -297,6 +319,8 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                     selectedProviderData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
                                     getBillingReportData();
                                   });
                                 },
@@ -451,7 +475,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
       "page": currentPage,
       "user": selectedUserData,
       "doctor": selectedDoctor,
-      //"doctor_type": selectedChargeData,
+      "search_data":_searchQuery,
       "section": selectedSectionData,
       "referral": selectedReferral,
       "market_by": selectedMarketByData,

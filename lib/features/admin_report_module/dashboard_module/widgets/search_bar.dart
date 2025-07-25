@@ -8,13 +8,15 @@ class CommonSearchBar extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final TextEditingController? controller;
   Function() onTap;
+  Function()? searchIconOnClick;
 
-   CommonSearchBar({
+  CommonSearchBar({
     super.key,
     this.hintText = "Search...",
     required this.onChanged,
     this.controller,
-    required this.onTap
+    required this.onTap,
+    this.searchIconOnClick,
   });
 
   @override
@@ -24,7 +26,7 @@ class CommonSearchBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
-          width: AppDimensions.screenWidth*0.8,
+          width: AppDimensions.screenWidth * 0.8,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -39,7 +41,6 @@ class CommonSearchBar extends StatelessWidget {
           ),
           child: Row(
             children: [
-               Icon(Icons.search, color: AppColors.gray8),
               const SizedBox(width: 8),
               Expanded(
                 child: TextField(
@@ -57,20 +58,27 @@ class CommonSearchBar extends StatelessWidget {
                   ),
                 ),
               ),
+              GestureDetector(
+                  onTap: searchIconOnClick,
+                  child: Icon(Icons.search, color: AppColors.gray8)),
+              const SizedBox(width: 8),
               if (controller != null && controller!.text.isNotEmpty)
                 GestureDetector(
                   onTap: () {
                     controller!.clear();
                     onChanged('');
                   },
-                  child: const Icon(Icons.clear, color:  AppColors.gray8),
+                  child: const Icon(Icons.clear, color: AppColors.gray8),
                 ),
             ],
           ),
         ),
         Bounceable(
             onTap: onTap,
-            child: Icon(Icons.clear, color: AppColors.colorBlack,))
+            child: Icon(
+              Icons.clear,
+              color: AppColors.colorBlack,
+            ))
       ],
     );
   }

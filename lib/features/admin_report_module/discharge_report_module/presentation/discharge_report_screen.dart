@@ -127,6 +127,18 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
                     if (isVisible) ...[
                       CommonSearchBar(
+                        searchIconOnClick: (){
+                          selectedFromDate = "";
+                          selectedToDate = "";
+                          dischargeReportList.clear();
+                          selectedDischargeStatus = "";
+                          //deathCountByDoctorList.clear();
+                          totalCount.clear();
+                          type.clear();
+                          currentPage = 1;
+                          hasMoreData = true;
+                          getDischargeReportData();
+                        },
                         controller: _searchController,
                         hintText: "Search something...",
                         onChanged: (value) {
@@ -225,6 +237,8 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                               type.clear();
                               currentPage = 1;
                               hasMoreData = true;
+                              _searchQuery = "";
+                              isVisible = false;
                               getDischargeReportData();
                             });
                           },
@@ -333,6 +347,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
+      "search_data":_searchQuery,
       "discharge_status": selectedDischargeStatus,
       "from_date": selectedFromDate,
       "to_date": selectedToDate

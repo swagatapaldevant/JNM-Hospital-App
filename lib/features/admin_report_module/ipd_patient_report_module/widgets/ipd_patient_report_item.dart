@@ -71,14 +71,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: patientName,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),
@@ -88,14 +88,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: department,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),
@@ -105,14 +105,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: admissionType,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),
@@ -122,14 +122,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: departmentName,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),
@@ -142,14 +142,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: gender,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -159,14 +159,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: dobYear,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -181,14 +181,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: mobile,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -198,14 +198,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: tpaName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -220,14 +220,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: wardName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -237,14 +237,14 @@ class IpdPatientItemData extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.colorBlack,
-                            fontSize: 14),
+                            fontSize: 13),
                         children: <TextSpan>[
                           TextSpan(
                               text: bedName,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.colorBlack,
-                                  fontSize: 14)),
+                                  fontSize: 12)),
                         ],
                       ),
                     ),
@@ -256,14 +256,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: appointmentDate,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),
@@ -273,14 +273,14 @@ class IpdPatientItemData extends StatelessWidget {
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.colorBlack,
-                        fontSize: 14),
+                        fontSize: 13),
                     children: <TextSpan>[
                       TextSpan(
                           text: doctor,
                           style: TextStyle(
                               fontWeight: FontWeight.w400,
                               color: AppColors.colorBlack,
-                              fontSize: 14)),
+                              fontSize: 12)),
                     ],
                   ),
                 ),

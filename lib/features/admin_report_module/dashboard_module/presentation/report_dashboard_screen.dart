@@ -1,9 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/customer_pie_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/statistical_graph.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/dashboard/dashboard_opd_data_model.dart';
 
 class ReportDashboardScreen extends StatefulWidget {
   const ReportDashboardScreen({super.key});
@@ -13,6 +20,54 @@ class ReportDashboardScreen extends StatefulWidget {
 }
 
 class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
+  final SharedPref _pref = getIt<SharedPref>();
+  final Dio _dio = DioClient().dio;
+  bool isLoading = false;
+
+  List<int> newData = [];
+  List<int> oldData = [];
+
+  //List<DashboardOpdDataModel> opdData = [];
+  String totalCollectionOpd = "";
+  String totalPatientOpd = "";
+  String newPatientOpd = "";
+  String oldPatientOpd = "";
+
+  //List<DashboardOpdDataModel> emgData = [];
+  String totalCollectionEmg = "";
+  String totalPatientEmg = "";
+  String newPatientEmg = "";
+  String oldPatientEmg = "";
+
+  //List<DashboardOpdDataModel> ipdData = [];
+  String totalCollectionIpd = "";
+  String totalPatientIpd = "";
+  String newPatientIpd = "";
+  String oldPatientIpd = "";
+
+  // List<DashboardOpdDataModel> ipdData = [];
+  String totalCollectionDayCare = "";
+  String totalPatientDayCare = "";
+  String newPatientDayCare = "";
+  String oldPatientDayCare = "";
+
+  String totalCollectionInvestigation = "";
+  String totalPatientInvestigation = "";
+  String newPatientInvestigation = "";
+  String oldPatientInvestigation = "";
+
+  String totalCollectionDialysis = "";
+  String totalPatientDialysis = "";
+  String newPatientDialysis = "";
+  String oldPatientDialysis = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDashboardData();
+  }
+
   @override
   Widget build(BuildContext context) {
     AppDimensions.init(context);
@@ -25,132 +80,142 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
             color: AppColors.overviewCardBgColor,
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  header(),
-                  SizedBox(
-                    height: AppDimensions.contentGap1,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: AppDimensions.screenPadding,
-                        left: AppDimensions.screenPadding,
-                        right: AppDimensions.screenPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        StatisticalGraph(
-                          weekDays: [
-                            "2018",
-                            "2019",
-                            "2020",
-                            "2021",
-                            "2022",
-                            "2023",
-                            "2024",
-                            "2025"
-                          ],
-                          blueData: [100, 300, 700, 200, 400, 900, 1200, 500],
-                          text: "Performance graph year wise",
-                        ),
-                        SizedBox(
-                          height: AppDimensions.contentGap2,
-                        ),
-                        Text(
-                          "Patient & Billing Reports",
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.colorBlack),
-                        ),
-                        SizedBox(
-                          height: AppDimensions.contentGap3,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            dashboardItem(
-                              "assets/images/admin_report/opd.png",
-                              "OPD Patient Report",
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, "/OpdPatientReportScreen");
-                              },
-                            ),
-                            dashboardItem("assets/images/admin_report/emg.png",
-                                "EMG Patient Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/EmgPatientReportScreen");
-                            }),
-                            dashboardItem("assets/images/admin_report/ipd.png",
-                                "IPD/DAYCARE Patient Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/IpdPatientReportScreen");
-                            }),
-                          ],
-                        ),
-                        SizedBox(
-                          height: AppDimensions.contentGap3,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            dashboardItem(
-                                "assets/images/admin_report/dialysis.png",
-                                "Dialysis Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/DialysisPatientsReportScreen");
-                            }),
-                            dashboardItem(
-                                "assets/images/admin_report/billing.png",
-                                "Billing Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/BillingReportScreen");
-                            }),
-                            dashboardItem(
-                                "assets/images/admin_report/birth_report.png",
-                                "Birth Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/BirthReportScreen");
-                            }),
-                          ],
-                        ),
-                        SizedBox(
-                          height: AppDimensions.contentGap3,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            dashboardItem(
-                                "assets/images/admin_report/death_report.png",
-                                "Death Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/DeathReportScreen");
-                            }),
-                            dashboardItem(
-                                "assets/images/admin_report/discharge.png",
-                                "Discharge Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/DischargeReportScreen");
-                            }),
-                            dashboardItem(
-                                "assets/images/admin_report/edited_bill.png",
-                                "Edited Bill Report", onTap: () {
-                              Navigator.pushNamed(
-                                  context, "/EditBillReportScreen");
-                            }),
-                          ],
-                        ),
-                        SizedBox(
-                          height: AppDimensions.contentGap2,
-                        ),
-                      ],
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.arrowBackground,
                     ),
                   )
-                ],
-              ),
-            ),
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        header(),
+                        SizedBox(
+                          height: AppDimensions.contentGap1,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: AppDimensions.screenPadding,
+                              left: AppDimensions.screenPadding,
+                              right: AppDimensions.screenPadding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              StatisticalGraph(
+                                text: "Old New Patient Type per Department",
+                                categories: [
+                                  "OPD",
+                                  "Emergency",
+                                  "IPD",
+                                  "Daycare",
+                                  "Investigation",
+                                  "Dialysis"
+                                ],
+                                newData: newData,
+                                oldData: oldData,
+                              ),
+                              SizedBox(
+                                height: AppDimensions.contentGap3,
+                              ),
+                              Text(
+                                "Patient & Billing Reports",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.colorBlack),
+                              ),
+                              SizedBox(
+                                height: AppDimensions.contentGap3,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  dashboardItem(
+                                    "assets/images/admin_report/opd.png",
+                                    "OPD Patient Report",
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, "/OpdPatientReportScreen");
+                                    },
+                                  ),
+                                  dashboardItem(
+                                      "assets/images/admin_report/emg.png",
+                                      "EMG Patient Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/EmgPatientReportScreen");
+                                  }),
+                                  dashboardItem(
+                                      "assets/images/admin_report/ipd.png",
+                                      "IPD/DAYCARE Patient Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/IpdPatientReportScreen");
+                                  }),
+                                ],
+                              ),
+                              SizedBox(
+                                height: AppDimensions.contentGap3,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  dashboardItem(
+                                      "assets/images/admin_report/dialysis.png",
+                                      "Dialysis Report", onTap: () {
+                                    Navigator.pushNamed(context,
+                                        "/DialysisPatientsReportScreen");
+                                  }),
+                                  dashboardItem(
+                                      "assets/images/admin_report/billing.png",
+                                      "Billing Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/BillingReportScreen");
+                                  }),
+                                  dashboardItem(
+                                      "assets/images/admin_report/birth_report.png",
+                                      "Birth Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/BirthReportScreen");
+                                  }),
+                                ],
+                              ),
+                              SizedBox(
+                                height: AppDimensions.contentGap3,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  dashboardItem(
+                                      "assets/images/admin_report/death_report.png",
+                                      "Death Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/DeathReportScreen");
+                                  }),
+                                  dashboardItem(
+                                      "assets/images/admin_report/discharge.png",
+                                      "Discharge Report", onTap: () {
+                                    Navigator.pushNamed(
+                                        context, "/DischargeReportScreen");
+                                  }),
+                                  // dashboardItem(
+                                  //     "assets/images/admin_report/edited_bill.png",
+                                  //     "Edited Bill Report", onTap: () {
+                                  //   Navigator.pushNamed(
+                                  //       context, "/EditBillReportScreen");
+                                  // }),
+                                ],
+                              ),
+                              SizedBox(
+                                height: AppDimensions.contentGap2,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
@@ -163,7 +228,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: ScreenUtils().screenHeight(context) * 0.26,
+          height: ScreenUtils().screenHeight(context) * 0.52,
           width: ScreenUtils().screenWidth(context),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
@@ -234,7 +299,8 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
         Positioned(
           left: AppDimensions.screenWidth * 0.05,
           right: AppDimensions.screenWidth * 0.05,
-          bottom: -AppDimensions.screenHeight * 0.06,
+          //bottom: -AppDimensions.screenHeight * 0.06,
+          top: AppDimensions.screenHeight * 0.13,
           child: Container(
             width: AppDimensions.screenWidth * 0.9,
             decoration: BoxDecoration(
@@ -253,8 +319,8 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: AppDimensions.screenWidth * 0.05,
-                  vertical: AppDimensions.screenPadding),
+                  horizontal: AppDimensions.screenWidth * 0.03,
+                  vertical: AppDimensions.screenWidth * 0.03),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -266,16 +332,33 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                         color: AppColors.colorBlack),
                   ),
                   SizedBox(
-                    height: AppDimensions.contentGap2,
+                    height: AppDimensions.screenHeight * 0.01,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    spacing: 10,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      overviewCard("6", "REPORTS \nTODAY"),
-                      overviewCard("240", "TOTAL \nPATIENTS"),
-                      overviewCard("3.40L", "TOTAL \nREVENUE"),
+                      overviewCard(
+                          text: 'Total Patients Statistics',
+                          opdPatients: totalPatientOpd,
+                          emergencyPatients: totalPatientEmg,
+                          ipdPatients: totalPatientIpd,
+                          daycarePatients: totalPatientDayCare,
+                          investigationPatients: totalPatientInvestigation,
+                          dialysisPatients: totalPatientDialysis,
+                          isSuffeled: true),
+                      overviewCard(
+                        isSuffeled: false,
+                        text: 'Total Collections Statistics',
+                        opdPatients: totalCollectionOpd,
+                        emergencyPatients: totalCollectionEmg,
+                        ipdPatients: totalCollectionIpd,
+                        daycarePatients: totalCollectionDayCare,
+                        investigationPatients: totalCollectionInvestigation,
+                        dialysisPatients: totalCollectionDialysis,
+                      )
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -411,9 +494,18 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
     );
   }
 
-  Widget overviewCard(String value, String text) {
+  Widget overviewCard({
+    required String text,
+    required String opdPatients,
+    required String emergencyPatients,
+    required String ipdPatients,
+    required String daycarePatients,
+    required String investigationPatients,
+    required String dialysisPatients,
+    required bool isSuffeled,
+  }) {
     return Container(
-      width: ScreenUtils().screenWidth(context) * 0.24,
+      width: ScreenUtils().screenWidth(context) * 0.83,
       decoration: BoxDecoration(
         color: AppColors.overviewCardBgColor,
         borderRadius: BorderRadius.circular(10),
@@ -459,24 +551,193 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
       child: Padding(
         padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.02),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              value,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: AppColors.white),
+            Center(
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: AppColors.white),
+              ),
             ),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                  color: AppColors.white),
+            SizedBox(
+              height: 5,
+            ),
+            CustomPatientPieChart(
+              isSuffeled: isSuffeled,
+              opdPatients: double.parse(opdPatients),
+              emergencyPatients: double.parse(emergencyPatients),
+              ipdPatients: double.parse(ipdPatients),
+              daycarePatients: double.parse(daycarePatients),
+              investigationPatients: double.parse(investigationPatients),
+              dialysisPatients: double.parse(dialysisPatients),
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> getDashboardData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      String token = await _pref.getUserAuthToken();
+      final response = await _dio.get(
+        ApiEndPoint.dashboard,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        if (response.data["status"] == true) {
+          totalCollectionOpd =
+              response.data["data"]["opd"]["income"].toString();
+          totalPatientOpd =
+              response.data["data"]["opd"]["total_patient"].toString();
+          newPatientOpd =
+              response.data["data"]["opd"]["new_patient"].toString();
+          oldPatientOpd =
+              response.data["data"]["opd"]["old_patient"].toString();
+
+          totalCollectionIpd =
+              response.data["data"]["ipd"]["income"].toString();
+          totalPatientIpd =
+              response.data["data"]["ipd"]["total_patient"].toString();
+          newPatientIpd =
+              response.data["data"]["ipd"]["new_patient"].toString();
+          oldPatientIpd =
+              response.data["data"]["ipd"]["old_patient"].toString();
+
+          totalCollectionEmg =
+              response.data["data"]["emergency"]["income"].toString();
+          totalPatientEmg =
+              response.data["data"]["emergency"]["total_patient"].toString();
+          newPatientEmg =
+              response.data["data"]["emergency"]["new_patient"].toString();
+          oldPatientEmg =
+              response.data["data"]["emergency"]["old_patient"].toString();
+
+          totalCollectionDayCare =
+              response.data["data"]["daycare"]["income"].toString();
+          totalPatientDayCare =
+              response.data["data"]["daycare"]["total_patient"].toString();
+          newPatientDayCare =
+              response.data["data"]["daycare"]["new_patient"].toString();
+          oldPatientDayCare =
+              response.data["data"]["daycare"]["old_patient"].toString();
+
+          totalCollectionInvestigation =
+              response.data["data"]["investigation"]["income"].toString();
+          totalPatientInvestigation = response.data["data"]["investigation"]
+                  ["total_patient"]
+              .toString();
+          newPatientInvestigation =
+              response.data["data"]["investigation"]["new_patient"].toString();
+          oldPatientInvestigation =
+              response.data["data"]["investigation"]["old_patient"].toString();
+
+          totalCollectionDialysis =
+              response.data["data"]["dialysis"]["income"].toString();
+          totalPatientDialysis =
+              response.data["data"]["dialysis"]["total_patient"].toString();
+          newPatientDialysis =
+              response.data["data"]["dialysis"]["new_patient"].toString();
+          oldPatientDialysis =
+              response.data["data"]["dialysis"]["old_patient"].toString();
+
+          newData.add(int.parse(newPatientOpd));
+          newData.add(int.parse(newPatientIpd));
+          newData.add(int.parse(newPatientEmg));
+          newData.add(int.parse(newPatientDayCare));
+          newData.add(int.parse(newPatientInvestigation));
+          newData.add(int.parse(newPatientDialysis));
+
+          oldData.add(int.parse(oldPatientOpd));
+          oldData.add(int.parse(oldPatientIpd));
+          oldData.add(int.parse(oldPatientEmg));
+          oldData.add(int.parse(oldPatientDayCare));
+          oldData.add(int.parse(oldPatientInvestigation));
+          oldData.add(int.parse(oldPatientDialysis));
+
+          setState(() {
+            isLoading = false;
+          });
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+          CommonUtils().flutterSnackBar(
+              context: context, mes: "Api Error", messageType: 4);
+        });
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        CommonUtils().flutterSnackBar(
+            context: context, mes: "Api Error", messageType: 4);
+      } else {
+        CommonUtils().flutterSnackBar(
+            context: context, mes: "Api Error", messageType: 4);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+}
+
+class DioClient {
+  static final DioClient _instance = DioClient._internal();
+  late final Dio _dio;
+
+  factory DioClient() {
+    return _instance;
+  }
+
+  DioClient._internal() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: ApiEndPoint.baseurl,
+        // Change to your base URL
+        connectTimeout: Duration(seconds: 10),
+        receiveTimeout: Duration(seconds: 10),
+        sendTimeout: Duration(seconds: 10),
+        responseType: ResponseType.json,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    _initializeInterceptors();
+  }
+
+  Dio get dio => _dio;
+
+  void _initializeInterceptors() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Optional: add auth token here
+          // options.headers['Authorization'] = 'Bearer YOUR_TOKEN';
+          print('➡️ REQUEST[${options.method}] => PATH: ${options.path}');
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          print('✅ RESPONSE[${response.statusCode}] => DATA: ${response.data}');
+          return handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          print('❌ ERROR[${e.response?.statusCode}] => MESSAGE: ${e.message}');
+          return handler.next(e);
+        },
       ),
     );
   }

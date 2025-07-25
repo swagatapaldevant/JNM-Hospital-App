@@ -162,6 +162,24 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
+                              searchIconOnClick: (){
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                patientList.clear();
+                                graphData.clear();
+                                newCount.clear();
+                                oldCount.clear();
+                                departmentName.clear();
+                                selectedVisitType = "";
+                                selectedDepartment = "";
+                                selectedDoctor = "";
+                                selectedReferral = "";
+                                selectedMarketByData = "";
+                                selectedProviderData = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getOpdPatientData(currentPage);
+                              },
                               controller: _searchController,
                               hintText: "Search something...",
                               onChanged: (value) {
@@ -273,6 +291,8 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     selectedProviderData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
+                                    _searchQuery="";
+                                    isVisible = false;
                                     getOpdPatientData(currentPage);
                                   });
                                 },
@@ -398,6 +418,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     Map<String, dynamic> requestData = {
       "page": currentPage,
       "visit_type": selectedVisitType,
+      "search_data":_searchQuery,
       "department": selectedDepartment,
       "doctor": selectedDoctor,
       "referral": selectedReferral,

@@ -162,7 +162,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
-                              searchIconOnClick: (){
+                              searchIconOnClick: () {
                                 selectedFromDate = "";
                                 selectedToDate = "";
                                 patientList.clear();
@@ -309,96 +309,111 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.01),
-                          DepartmentWiseOpdReport(
-                            onTapFullScreen: () {
-                              Navigator.pushNamed(context,
-                                  "/DepartmentWiseOpdReportLandscapeScreen",
-                                  arguments: {
-                                    "newCount": newCount,
-                                    "oldCount": oldCount,
-                                    "departmentName": departmentName
-                                  });
-                            },
-                            yearLabels: departmentName.length > 10
-                                ? departmentName.take(10).toList()
-                                : departmentName,
-                            spotsType1: newCount.length > 10
-                                ? newCount.take(10).toList()
-                                : newCount,
-                            spotsType2: oldCount.length > 10
-                                ? oldCount.take(10).toList()
-                                : oldCount,
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: patientList.length +
-                                (isLoading && hasMoreData ? 1 : 0),
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < patientList.length) {
-                                return AnimationConfiguration.staggeredList(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 500),
-                                  child: SlideAnimation(
-                                    verticalOffset: 50.0,
-                                    curve: Curves.easeOut,
-                                    child: FadeInAnimation(
-                                      curve: Curves.easeIn,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: ScreenUtils()
-                                                  .screenHeight(context) *
-                                              0.02,
-                                        ),
-                                        child: OpdPatientItemData(
-                                          index: index,
-                                          patientName: patientList[index]
-                                              .patientName
-                                              .toString(),
-                                          department: patientList[index]
-                                              .departmentName
-                                              .toString(),
-                                          uhid: patientList[index]
-                                              .patientId
-                                              .toString(),
-                                          opdId:
-                                              patientList[index].id.toString(),
-                                          gender: patientList[index]
-                                              .gender
-                                              .toString(),
-                                          age: patientList[index]
-                                              .dobYear
-                                              .toString(),
-                                          mobile: patientList[index]
-                                              .phone
-                                              .toString(),
-                                          visitType: patientList[index]
-                                              .type
-                                              .toString(),
-                                          appointmentDate: patientList[index]
-                                              .creDate
-                                              .toString(),
-                                          appointmentTime: patientList[index]
-                                              .appointmentDate
-                                              .toString(),
-                                          doctor: patientList[index]
-                                              .doctorName
-                                              .toString(),
+                          patientList.isEmpty
+                              ? Center(
+                            child: Text(
+                              "No opd patient is there in this time frame",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.colorBlack),
+                            ),
+                          )
+                              :
+                          Column(
+                            children: [
+                              DepartmentWiseOpdReport(
+                                onTapFullScreen: () {
+                                  Navigator.pushNamed(context,
+                                      "/DepartmentWiseOpdReportLandscapeScreen",
+                                      arguments: {
+                                        "newCount": newCount,
+                                        "oldCount": oldCount,
+                                        "departmentName": departmentName
+                                      });
+                                },
+                                yearLabels: departmentName.length > 10
+                                    ? departmentName.take(10).toList()
+                                    : departmentName,
+                                spotsType1: newCount.length > 10
+                                    ? newCount.take(10).toList()
+                                    : newCount,
+                                spotsType2: oldCount.length > 10
+                                    ? oldCount.take(10).toList()
+                                    : oldCount,
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: patientList.length +
+                                    (isLoading && hasMoreData ? 1 : 0),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index < patientList.length) {
+                                    return AnimationConfiguration.staggeredList(
+                                      position: index,
+                                      duration: const Duration(milliseconds: 500),
+                                      child: SlideAnimation(
+                                        verticalOffset: 50.0,
+                                        curve: Curves.easeOut,
+                                        child: FadeInAnimation(
+                                          curve: Curves.easeIn,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: ScreenUtils()
+                                                      .screenHeight(context) *
+                                                  0.02,
+                                            ),
+                                            child: OpdPatientItemData(
+                                              index: index,
+                                              patientName: patientList[index]
+                                                  .patientName
+                                                  .toString(),
+                                              department: patientList[index]
+                                                  .departmentName
+                                                  .toString(),
+                                              uhid: patientList[index]
+                                                  .patientId
+                                                  .toString(),
+                                              opdId:
+                                                  patientList[index].id.toString(),
+                                              gender: patientList[index]
+                                                  .gender
+                                                  .toString(),
+                                              age: patientList[index]
+                                                  .dobYear
+                                                  .toString(),
+                                              mobile: patientList[index]
+                                                  .phone
+                                                  .toString(),
+                                              visitType: patientList[index]
+                                                  .type
+                                                  .toString(),
+                                              appointmentDate: patientList[index]
+                                                  .creDate
+                                                  .toString(),
+                                              appointmentTime: patientList[index]
+                                                  .appointmentDate
+                                                  .toString(),
+                                              doctor: patientList[index]
+                                                  .doctorName
+                                                  .toString(),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: AppColors.arrowBackground),
-                                  ),
-                                );
-                              }
-                            },
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 16),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                            color: AppColors.arrowBackground),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),

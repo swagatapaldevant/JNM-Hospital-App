@@ -345,104 +345,119 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.01),
-                          DepartmentWiseOpdReport(
-                            graphTitle: "Department-wise IPD Patient Report",
-                            onTapFullScreen: () {
-                              Navigator.pushNamed(context,
-                                  "/DepartmentWiseOpdReportLandscapeScreen",
-                                  arguments: {
-                                    "newCount": newCount,
-                                    "oldCount": oldCount,
-                                    "departmentName": departmentName
-                                  });
-                            },
-                            yearLabels: departmentName.length > 10
-                                ? departmentName.take(10).toList()
-                                : departmentName,
-                            spotsType1: newCount.length > 10
-                                ? newCount.take(10).toList()
-                                : newCount,
-                            spotsType2: oldCount.length > 10
-                                ? oldCount.take(10).toList()
-                                : oldCount,
-                            onTapPieChart: () {
-                              showCommonModalForDeathGenderDistribution(
-                                  context,
-                                  double.parse(maleCount.toString()),
-                                  double.parse(femaleCount.toString()));
-                            },
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: ipdReportList.length +
-                                (isLoading && hasMoreData ? 1 : 0),
-                            itemBuilder: (BuildContext context, int index) {
-                              if (index < ipdReportList.length) {
-                                return AnimationConfiguration.staggeredList(
-                                  position: index,
-                                  duration: const Duration(milliseconds: 500),
-                                  child: SlideAnimation(
-                                    verticalOffset: 50.0,
-                                    curve: Curves.easeOut,
-                                    child: FadeInAnimation(
-                                      curve: Curves.easeIn,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: ScreenUtils()
-                                                  .screenHeight(context) *
-                                              0.02,
-                                        ),
-                                        child: IpdPatientItemData(
-                                          index: index,
-                                          patientName: ipdReportList[index]
-                                              .patientName
-                                              .toString(),
-                                          department: ipdReportList[index]
-                                              .departmentName
-                                              .toString(),
-                                          admissionType: ipdReportList[index]
-                                              .admissionType
-                                              .toString(),
-                                          gender: ipdReportList[index]
-                                              .gender
-                                              .toString(),
-                                          dobYear: ipdReportList[index]
-                                              .dobYear
-                                              .toString(),
-                                          mobile: ipdReportList[index]
-                                              .phone
-                                              .toString(),
-                                          appointmentDate: ipdReportList[index]
-                                              .admissionDate
-                                              .toString(),
-                                          departmentName: ipdReportList[index]
-                                              .departmentName
-                                              .toString(),
-                                          wardName: ipdReportList[index]
-                                              .wardName
-                                              .toString(),
-                                          bedName: ipdReportList[index]
-                                              .bedName
-                                              .toString(),
-                                          tpaName: ipdReportList[index].tpaName,
-                                          doctor:
-                                              ipdReportList[index].doctorName,
+                          ipdReportList.isEmpty
+                              ? Center(
+                            child: Text(
+                              "No IPD patient is there in this time frame",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.colorBlack),
+                            ),
+                          )
+                              :
+                          Column(
+                            children: [
+                              DepartmentWiseOpdReport(
+                                graphTitle: "Department-wise IPD Patient Report",
+                                onTapFullScreen: () {
+                                  Navigator.pushNamed(context,
+                                      "/DepartmentWiseOpdReportLandscapeScreen",
+                                      arguments: {
+                                        "newCount": newCount,
+                                        "oldCount": oldCount,
+                                        "departmentName": departmentName
+                                      });
+                                },
+                                yearLabels: departmentName.length > 10
+                                    ? departmentName.take(10).toList()
+                                    : departmentName,
+                                spotsType1: newCount.length > 10
+                                    ? newCount.take(10).toList()
+                                    : newCount,
+                                spotsType2: oldCount.length > 10
+                                    ? oldCount.take(10).toList()
+                                    : oldCount,
+                                onTapPieChart: () {
+                                  showCommonModalForDeathGenderDistribution(
+                                      context,
+                                      double.parse(maleCount.toString()),
+                                      double.parse(femaleCount.toString()));
+                                },
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: ipdReportList.length +
+                                    (isLoading && hasMoreData ? 1 : 0),
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index < ipdReportList.length) {
+                                    return AnimationConfiguration.staggeredList(
+                                      position: index,
+                                      duration: const Duration(milliseconds: 500),
+                                      child: SlideAnimation(
+                                        verticalOffset: 50.0,
+                                        curve: Curves.easeOut,
+                                        child: FadeInAnimation(
+                                          curve: Curves.easeIn,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: ScreenUtils()
+                                                      .screenHeight(context) *
+                                                  0.02,
+                                            ),
+                                            child: IpdPatientItemData(
+                                              index: index,
+                                              patientName: ipdReportList[index]
+                                                  .patientName
+                                                  .toString(),
+                                              department: ipdReportList[index]
+                                                  .departmentName
+                                                  .toString(),
+                                              admissionType: ipdReportList[index]
+                                                  .admissionType
+                                                  .toString(),
+                                              gender: ipdReportList[index]
+                                                  .gender
+                                                  .toString(),
+                                              dobYear: ipdReportList[index]
+                                                  .dobYear
+                                                  .toString(),
+                                              mobile: ipdReportList[index]
+                                                  .phone
+                                                  .toString(),
+                                              appointmentDate: ipdReportList[index]
+                                                  .admissionDate
+                                                  .toString(),
+                                              departmentName: ipdReportList[index]
+                                                  .departmentName
+                                                  .toString(),
+                                              wardName: ipdReportList[index]
+                                                  .wardName
+                                                  .toString(),
+                                              bedName: ipdReportList[index]
+                                                  .bedName
+                                                  .toString(),
+                                              tpaName: ipdReportList[index].tpaName,
+                                              doctor:
+                                                  ipdReportList[index].doctorName,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: AppColors.arrowBackground),
-                                  ),
-                                );
-                              }
-                            },
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 16),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                            color: AppColors.arrowBackground),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),

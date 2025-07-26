@@ -171,7 +171,7 @@ class _CustomPatientPieChartState extends State<CustomPatientPieChart> {
         ),
         SizedBox(width: ScreenUtils().screenWidth(context) * 0.01),
         Text(
-          "$label($count): ${percentage.toStringAsFixed(2)}%",
+          "$label(${percentage.toStringAsFixed(2)}%): $count",
           style: TextStyle(
             fontSize: 9,
             fontWeight: FontWeight.w500,

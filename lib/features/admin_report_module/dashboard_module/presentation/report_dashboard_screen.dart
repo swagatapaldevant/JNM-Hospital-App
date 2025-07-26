@@ -102,7 +102,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               StatisticalGraph(
-                                text: "Old New Patient Type per Department",
+                                text: "Old New Patient Count per Department",
                                 categories: [
                                   "OPD",
                                   "Emergency",

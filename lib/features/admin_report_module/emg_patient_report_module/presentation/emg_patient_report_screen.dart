@@ -317,6 +317,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                     Column(
                       children: [
                         DepartmentWiseOpdReport(
+                          isVisible: false,
                           graphTitle: "Department-wise EMG Report",
                           onTapFullScreen: () {
                             Navigator.pushNamed(context,

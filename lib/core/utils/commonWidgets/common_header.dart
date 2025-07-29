@@ -6,18 +6,22 @@ class CommonHeader extends StatelessWidget {
   final String screenName;
   final Color? textColor;
   final Color? iconColor;
-  const CommonHeader({super.key, required this.screenName, this.textColor, this.iconColor});
+  final bool? isVisible;
+  const CommonHeader({super.key, required this.screenName,this.isVisible, this.textColor, this.iconColor});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Bounceable(
-            onTap: (){
-              Navigator.pop(context);
-            },
-            child: Icon(Icons.arrow_back_ios_new, size: 25,color: iconColor??AppColors.colorBlack,)),
+        Visibility(
+          visible:isVisible??true ,
+          child: Bounceable(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios_new, size: 25,color: iconColor??AppColors.colorBlack,)),
+        ),
         Text(screenName, style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,

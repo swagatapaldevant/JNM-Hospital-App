@@ -323,6 +323,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           Column(
                             children: [
                               DepartmentWiseOpdReport(
+                                isVisible: false,
                                 onTapFullScreen: () {
                                   Navigator.pushNamed(context,
                                       "/DepartmentWiseOpdReportLandscapeScreen",

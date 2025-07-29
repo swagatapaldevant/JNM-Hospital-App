@@ -4,6 +4,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/utils/commonWidgets/common_dialog.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
@@ -11,6 +12,7 @@ import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/customer_pie_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/statistical_graph.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/dashboard/dashboard_opd_data_model.dart';
+import 'package:jnm_hospital_app/features/auth_module/model/patient_statistics_model.dart';
 
 class ReportDashboardScreen extends StatefulWidget {
   const ReportDashboardScreen({super.key});
@@ -23,6 +25,9 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   final SharedPref _pref = getIt<SharedPref>();
   final Dio _dio = DioClient().dio;
   bool isLoading = false;
+
+  String userName = "";
+  String profilePhoto = "";
 
   List<int> newData = [];
   List<int> oldData = [];
@@ -65,7 +70,13 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    userData();
     getDashboardData();
+  }
+
+  void userData() async {
+    userName = await _pref.getUserName() ?? "";
+    profilePhoto = await _pref.getProfileImage() ?? "";
   }
 
   @override
@@ -89,7 +100,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                 : SingleChildScrollView(
                     child: Column(
                       children: [
-                        header(),
+                        header(userName, profilePhoto),
                         SizedBox(
                           height: AppDimensions.contentGap1,
                         ),
@@ -223,7 +234,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   }
 
   // dashboard header section
-  Widget header() {
+  Widget header(String userName, String profilePhoto) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -265,14 +276,14 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           fontSize: 14),
                     ),
                     Text(
-                      "DHIRAJ KHADKA",
+                      userName,
                       style: TextStyle(
                           fontWeight: FontWeight.w800,
                           color: AppColors.white,
                           fontSize: 18),
                     ),
                     Text(
-                      "ADMIN",
+                      "Admin",
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: AppColors.white,
@@ -280,17 +291,51 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                     ),
                   ],
                 ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg",
-                      height: AppDimensions.screenHeight * 0.06,
-                      width: AppDimensions.screenWidth * 0.15,
-                      fit: BoxFit.fill,
+                Row(
+                  spacing: 15,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          profilePhoto == "null"
+                              ? "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg"
+                              : profilePhoto,
+                          height: AppDimensions.screenHeight * 0.07,
+                          width: AppDimensions.screenWidth * 0.15,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
-                  ),
+                    Align(
+                        alignment: Alignment.topRight,
+                        child: Bounceable(
+                          onTap: (){
+                            CommonDialog(
+                              icon: Icons.logout,
+                              title: "Log Out",
+                              msg:
+                              "You are about to logout of your account. Please confirm.",
+                              activeButtonLabel: "Log Out",
+                              context: context,
+                              activeButtonOnClicked: () {
+                                _pref.clearOnLogout();
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  "/LoginScreen",
+                                      (route) => false,
+                                );
+                              },
+                            );
+                          },
+                          child: Icon(
+                            Icons.logout,
+                            size: 30,
+                            color: AppColors.white,
+                          ),
+                        )),
+                  ],
                 )
               ],
             ),
@@ -366,7 +411,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
         ),
         Positioned(
           top: 0,
-          right: AppDimensions.screenWidth * 0.25,
+          right: AppDimensions.screenWidth * 0.35,
           child: Image.asset(
             "assets/images/admin_report/stethoscope.png",
             height: ScreenUtils().screenHeight(context) * 0.1,
@@ -597,7 +642,9 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
       );
 
       if (response.statusCode == 200) {
-        if (response.data["status"] == true) {
+        if (response.data["success"] == true) {
+          //PatientStatisticsModel opdPatients = PatientStatisticsModel.fromJson(response.data);
+
           totalCollectionOpd =
               response.data["data"]["opd"]["income"].toString();
           totalPatientOpd =

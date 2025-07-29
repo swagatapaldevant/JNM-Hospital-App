@@ -73,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen>
             child: Column(
               children: [
                 CommonHeader(
+                  isVisible: false,
                   screenName: 'Login',
                 ),
                 SizedBox(
@@ -107,23 +108,23 @@ class _LoginScreenState extends State<LoginScreen>
                 SizedBox(
                   height: AppDimensions.contentGap3,
                 ),
-                StaggeredAnimatedWidget(
-                  index: 2,
-                  controller: _controller,
-                  child: Align(
-                    alignment: Alignment.topRight,
-                    child: Bounceable(
-                      onTap: () {},
-                      child: Text(
-                        "Forgot Password ?",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.arrowBackground),
-                      ),
-                    ),
-                  ),
-                ),
+                // StaggeredAnimatedWidget(
+                //   index: 2,
+                //   controller: _controller,
+                //   child: Align(
+                //     alignment: Alignment.topRight,
+                //     child: Bounceable(
+                //       onTap: () {},
+                //       child: Text(
+                //         "Forgot Password ?",
+                //         style: TextStyle(
+                //             fontSize: 14,
+                //             fontWeight: FontWeight.w500,
+                //             color: AppColors.arrowBackground),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: AppDimensions.contentGap1,
                 ),
@@ -138,17 +139,17 @@ class _LoginScreenState extends State<LoginScreen>
                   controller: _controller,
                   child: CommonButton(
                     onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
+                      //Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
 
-                      // if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty)
-                      // {
-                      //   loginAdmin();
-                      // }
-                      // else{
-                      //   CommonUtils().flutterSnackBar(
-                      //       context: context, mes:"Please enter email and password", messageType: 4);
-                      //
-                      // }
+                      if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty)
+                      {
+                        loginAdmin();
+                      }
+                      else{
+                        CommonUtils().flutterSnackBar(
+                            context: context, mes:"Please enter email and password", messageType: 4);
+
+                      }
                       //Navigator.pushNamedAndRemoveUntil(context, "/PatientButtonNavigation", (Route<dynamic> route) => false,);
                       //Navigator.pushNamedAndRemoveUntil(context, "/ReportDashboardScreen", (Route<dynamic> route) => false,);
                     },
@@ -159,63 +160,63 @@ class _LoginScreenState extends State<LoginScreen>
                 SizedBox(
                   height: AppDimensions.contentGap1,
                 ),
-                StaggeredAnimatedWidget(
-                  index: 4,
-                  controller: _controller,
-                  child: Bounceable(
-                    onTap: () {},
-                    child: RichText(
-                      text: TextSpan(
-                        text: 'Don’t have an account? ',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.onboardingContainerText),
-                        children: const <TextSpan>[
-                          TextSpan(
-                              text: 'Sign Up ',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.arrowBackground)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: AppDimensions.contentGap1,
-                ),
-                SizedBox(
-                  height: AppDimensions.contentGap3,
-                ),
-                StaggeredAnimatedWidget(
-                  index: 5,
-                  controller: _controller,
-                  child: Text(
-                    "----------OR----------",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.gray7),
-                  ),
-                ),
-                SizedBox(
-                  height: AppDimensions.contentGap1,
-                ),
-                SizedBox(
-                  height: AppDimensions.contentGap3,
-                ),
-                StaggeredAnimatedWidget(
-                  index: 6,
-                  controller: _controller,
-                  child: CommonButton(
-                      onTap: () {},
-                      bgColor: AppColors.white,
-                      labelTextColor: AppColors.colorBlack,
-                      width: AppDimensions.screenWidth * 0.7,
-                      buttonName: "Sign in with Google"),
-                )
+                // StaggeredAnimatedWidget(
+                //   index: 4,
+                //   controller: _controller,
+                //   child: Bounceable(
+                //     onTap: () {},
+                //     child: RichText(
+                //       text: TextSpan(
+                //         text: 'Don’t have an account? ',
+                //         style: TextStyle(
+                //             fontSize: 15,
+                //             fontWeight: FontWeight.w500,
+                //             color: AppColors.onboardingContainerText),
+                //         children: const <TextSpan>[
+                //           TextSpan(
+                //               text: 'Sign Up ',
+                //               style: TextStyle(
+                //                   fontSize: 15,
+                //                   fontWeight: FontWeight.w500,
+                //                   color: AppColors.arrowBackground)),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: AppDimensions.contentGap1,
+                // ),
+                // SizedBox(
+                //   height: AppDimensions.contentGap3,
+                // ),
+                // StaggeredAnimatedWidget(
+                //   index: 5,
+                //   controller: _controller,
+                //   child: Text(
+                //     "----------OR----------",
+                //     style: TextStyle(
+                //         fontSize: 15,
+                //         fontWeight: FontWeight.w500,
+                //         color: AppColors.gray7),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: AppDimensions.contentGap1,
+                // ),
+                // SizedBox(
+                //   height: AppDimensions.contentGap3,
+                // ),
+                // StaggeredAnimatedWidget(
+                //   index: 6,
+                //   controller: _controller,
+                //   child: CommonButton(
+                //       onTap: () {},
+                //       bgColor: AppColors.white,
+                //       labelTextColor: AppColors.colorBlack,
+                //       width: AppDimensions.screenWidth * 0.7,
+                //       buttonName: "Sign in with Google"),
+                // )
               ],
             ),
           ),
@@ -240,9 +241,8 @@ class _LoginScreenState extends State<LoginScreen>
     if (resource.status == STATUS.SUCCESS) {
       _pref.setLoginStatus(true);
       _pref.setUserAuthToken(resource.data["access_token"]);
-      // _pref.setProfileImage(resource.data['image']);
-      // _pref.setUserName(
-      //     resource.data['first_name'] +" "+ resource.data['last_name']);
+       _pref.setProfileImage(resource.data["user"]["profile_img"]);
+      _pref.setUserName(resource.data["user"]["name"]);
       // if (resource.data['user_type_id'] == 1) {
       //   Navigator.pushNamed(context, "/BottomNavbar");
       // }

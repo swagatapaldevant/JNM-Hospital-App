@@ -12,6 +12,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
   Function()? onTapFullScreen;
   Function()? onTapPieChart;
   final String? graphTitle;
+  final bool? isVisible;
 
    DepartmentWiseOpdReport({
     super.key,
@@ -19,6 +20,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
     required this.spotsType2,
     required this.yearLabels,
      this.onTapPieChart,
+     this.isVisible,
     this.onTapFullScreen, this.graphTitle
   });
 
@@ -62,9 +64,12 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 Row(
                   spacing: 10,
                   children: [
-                    Bounceable(
-                        onTap: onTapPieChart,
-                        child: Icon(Icons.bar_chart, size: 25, color: AppColors.reportDashboardHeaderGrad2,)),
+                    Visibility(
+                      visible: isVisible??true,
+                      child: Bounceable(
+                          onTap: onTapPieChart,
+                          child: Icon(Icons.bar_chart, size: 25, color: AppColors.reportDashboardHeaderGrad2,)),
+                    ),
                     Bounceable(
                         onTap:onTapFullScreen,
                         child: Icon(Icons.fullscreen, color: AppColors.colorBlack, size: 25)),
@@ -145,7 +150,7 @@ class DepartmentWiseOpdReport extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: Transform.rotate(
-                    angle: 45 * 3.1415926535 / 180,
+                    angle: 20 * 3.1415926535 / 180,
                     child: Text(
                       yearLabels[index].length>14? yearLabels[index].substring(0, 10)
                           : yearLabels[index],

@@ -323,7 +323,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                                 _pref.clearOnLogout();
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
-                                  "/LoginScreen",
+                                    "/PatientLoginScreen",
                                       (route) => false,
                                 );
                               },

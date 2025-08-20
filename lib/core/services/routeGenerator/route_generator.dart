@@ -15,14 +15,8 @@ import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_selection_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/booking_history_module/presentation/booking_history_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/booking_module/presentation/booking_payment_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/dashboard_module/presentation/patient_buttom_navigation.dart';
-import 'package:jnm_hospital_app/features/patient_module/doctor_details_module/presentation/doctor_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/find_doctor_module/presentation/find_doctor_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/top_doctor/presentation/top_doctor_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_auth_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/splash_screen.dart';
@@ -109,18 +103,18 @@ class RouteGenerator{
 
 
 
-      case kPatientButtonNavigation:
-        return _animatedPageRoute(PatientButtonNavigation());
-      case kTopDoctorScreen:
-        return _animatedPageRoute(TopDoctorScreen());
-      case kFindDoctorScreen:
-        return _animatedPageRoute(FindDoctorScreen());
-        case kBookingHistoryScreen:
-        return _animatedPageRoute(BookingHistoryScreen());
-        case kDoctorDetailsScreen:
-        return _animatedPageRoute(DoctorDetailsScreen());
-        case kBookingPaymentScreen:
-        return _animatedPageRoute(BookingPaymentScreen());
+      // case kPatientButtonNavigation:
+      //   return _animatedPageRoute(PatientButtonNavigation());
+      // case kTopDoctorScreen:
+      //   return _animatedPageRoute(TopDoctorScreen());
+      // case kFindDoctorScreen:
+      //   return _animatedPageRoute(FindDoctorScreen());
+      //   case kBookingHistoryScreen:
+      //   return _animatedPageRoute(BookingHistoryScreen());
+      //   case kDoctorDetailsScreen:
+      //   return _animatedPageRoute(DoctorDetailsScreen());
+      //   case kBookingPaymentScreen:
+      //   return _animatedPageRoute(BookingPaymentScreen());
 
 
 

@@ -148,7 +148,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   void setTimerNavigation() async {
     //Navigator.pushReplacementNamed(context, "/OnboardingScreen");
-    Navigator.pushNamed(context, "/LoginScreen");
+    Navigator.pushNamed(context, "/PatientLoginScreen");
+    //Navigator.pushNamed(context, "/LoginScreen");
     // String token = await _pref.getUserAuthToken();
     // bool loginStatus = await _pref.getLoginStatus();
     // String userType = await _pref.getUserType();

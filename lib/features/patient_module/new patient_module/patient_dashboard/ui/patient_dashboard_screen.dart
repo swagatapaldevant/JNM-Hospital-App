@@ -194,6 +194,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> with Ti
                                   icon: Icons.receipt_long_outlined, label: 'Prescriptions', color: const Color(0xFF20C997),
                                   onTap: () => HapticFeedback.selectionClick(),
                                 ),
+                                _QuickActionChip(
+                                  icon: Icons.receipt_long_outlined, label: 'Details', color: opticalAccent,
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    Navigator.pushNamed(context, "/PatientDetailsScreen");
+                                  },
+                                ),
                               ],
                             ),
                           ],

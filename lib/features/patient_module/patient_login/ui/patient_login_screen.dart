@@ -1,6 +1,17 @@
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase.dart';
 
 class PatientLoginScreen extends StatefulWidget {
   const PatientLoginScreen({super.key});
@@ -22,6 +33,12 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   final _phoneCtrl = TextEditingController();
   final _phoneFocus = FocusNode();
 
+  bool isLoading = false;
+  final PatientLoginUsecase _patientLoginUsecase = getIt<PatientLoginUsecase>();
+  final SharedPref _pref = getIt<SharedPref>();
+    final Dio _dio = DioClient().dio;
+
+
   bool get _isValidPhone {
     final digits = _phoneCtrl.text.replaceAll(RegExp(r'\D'), '');
     return digits.length == 10;
@@ -34,23 +51,108 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    HapticFeedback.lightImpact();
-    if (!_isValidPhone) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid 10-digit phone number')),
+  // void loginPatient() async {
+  //   HapticFeedback.lightImpact();
+  //   if (!_isValidPhone) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //           content: Text('Please enter a valid 10-digit phone number')),
+  //     );
+  //     return;
+  //   }
+  //   try {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   Map<String, dynamic> requestData = {
+  //     "phone": _phoneCtrl.text.trim(),
+  //   };
+  //   print("logging in..");
+  //   Resource resource = await _patientLoginUsecase.login(requestData: requestData);
+   
+  //     if (resource.status == STATUS.SUCCESS) {
+  //       print("logging in..");
+  //       // _pref.setLoginStatus(true);
+  //       // _pref.setUserAuthToken(resource.data["access_token"]);
+  //       // _pref.setProfileImage(resource.data["user"]["profile_img"]);
+  //       // _pref.setUserName(resource.data["user"]["name"]);
+  //       // Navigator.pushNamedAndRemoveUntil(
+  //       //     context,
+  //       //     "/PatientDashboardScreen",
+  //       //     (Route<dynamic> route) => false,
+  //       //   );
+  //     } else {
+        
+  //       CommonUtils().flutterSnackBar(
+  //           context: context, mes: resource.message ?? "", messageType: 4);
+  //     }
+  //   } catch (err, stacktrace) {
+  //     print(err);
+  //     print(stacktrace);
+  //     CommonUtils().flutterSnackBar(
+  //         context: context, mes: "Something went wrong", messageType: 4);
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
+
+  
+  Future<void> loginUser() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response = await _dio.post(
+        ApiEndPoint.patientLogin,
+        data: {
+            "phone": _phoneCtrl.text.trim(),
+          },
       );
-      return;
+
+      if (response.statusCode == 200) {
+        print("logging in..");
+        if (response.data["data"].toString().isNotEmpty) {
+          _pref.setUserAuthToken(response.data["access_token"].toString());
+          _pref.setUserName(
+              "${response.data["data"]["name"].toString()} ");
+          _pref.setUserId(
+              int.parse(response.data["data"]["id"].toString())); // set suer id
+          _pref.setUserGender(response.data["data"]["gender"].toString());
+          _pref.setLoginStatus(true);
+          _pref.setUserPhone(response.data["data"]["phone"].toString());
+          _pref.setUserAddress(response.data["data"]["address"].toString());
+          Navigator.pushNamedAndRemoveUntil(context, "/PatientDashboardScreen",
+            (Route<dynamic> route) => false,
+          );
+          print(await _pref.getUserAuthToken());
+        }
+      } else {
+        CommonUtils().flutterSnackBar(
+            context: context, mes: "Invalid credentials", messageType: 4);
+        setState(() {
+        isLoading = false;
+      });
+      }
+      
+    } on DioException catch (e) {
+      if (e.response != null) {
+        
+        CommonUtils().flutterSnackBar(
+            context: context, mes: "Invalid credentials", messageType: 4);
+      } else {
+        CommonUtils().flutterSnackBar(
+            context: context, mes: "Invalid credentials", messageType: 4);
+        
+      }
+      setState(() {
+        isLoading = false;
+      });
     }
-
-    // Navigator.pushNamed(context, '/PatientOtpScreen');
-    Navigator.pushNamed(context, "/PatientDashboardScreen");
   }
 
-  void _goAdmin() {
-    HapticFeedback.selectionClick();
-    Navigator.pushNamed(context, "/LoginScreen");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +186,11 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
 
           // Content
           SafeArea(
-            child: LayoutBuilder(
+            child: isLoading?  Center(
+              child: CircularProgressIndicator(
+                    color: AppColors.arrowBackground,
+                  ),
+            ): LayoutBuilder(
               builder: (context, constraints) {
                 final bottomInset = MediaQuery.of(context).viewInsets.bottom;
                 return SingleChildScrollView(
@@ -160,7 +266,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                                   label: 'Sign in',
                                   enabled: _isValidPhone,
                                   accent: patientAccent,
-                                  onTap: _submit,
+                                  onTap: loginUser,
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
@@ -194,7 +300,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                           // Login as Admin section
                           _AdminAccessCard(
                             accent: adminAccent,
-                            onTap: _goAdmin,
+                            onTap: () {},
                           ),
 
                           const SizedBox(height: 24),

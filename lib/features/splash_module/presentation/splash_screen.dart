@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/animation.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -39,9 +41,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     ));
 
     _controller.forward();
+
     Future.delayed(const Duration(seconds: 3), () {
       setTimerNavigation();
     });
+
+    
+    // Navigator.pushNamed(context, "/PatientDashboardScreen");
   }
 
   @override

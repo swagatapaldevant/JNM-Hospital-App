@@ -27,6 +27,9 @@ class SharedPrefImpl extends SharedPref {
   final String _emailId = "emailId";
   final String _profileImage = "profileImg";
   final String _premimumStatus = "PremimumStatus";
+  final String _userGender = "userGender";
+  final String _userPhone = "userPhone";
+  final String _userAddress = "userAddress";
 
 
   @override
@@ -219,6 +222,24 @@ class SharedPrefImpl extends SharedPref {
     return prefs.getString(_userName) ?? "";
   }
 
+   @override
+  Future<String> getUserAddress() async {
+    final SharedPreferences prefs = await super.prefs;
+    return prefs.getString(_userAddress) ?? "";
+  }
+  
+  @override
+  Future<String> getUserGender() async {
+    final SharedPreferences prefs = await super.prefs;
+    return prefs.getString(_userGender) ?? "";
+  }
+
+  @override
+  Future<String> getUserPhone() async {
+    final SharedPreferences prefs = await super.prefs;
+    return prefs.getString(_userPhone) ?? "";
+  }
+
   /////////////////////////////////
 
 
@@ -304,9 +325,24 @@ class SharedPrefImpl extends SharedPref {
     prefs.setString(_profileImage, data);
   }
 
+    @override
+  void setUserGender(String data) async{
+    final SharedPreferences prefs = await super.prefs;
+    prefs.setString(_userGender, data);
+  }
 
+    @override
+  void setUserPhone(String data) async{
+    final SharedPreferences prefs = await super.prefs;
+    prefs.setString(_userPhone, data);
+  }
 
+ 
 
-
+  @override
+  void setUserAddress(String data) async {
+    final SharedPreferences prefs = await super.prefs;
+    prefs.setString(_userAddress, data);
+  }
 
 }

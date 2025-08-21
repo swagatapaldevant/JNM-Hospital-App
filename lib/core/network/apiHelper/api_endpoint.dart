@@ -35,6 +35,11 @@ class ApiEndPoint{
 
 
 
+  // patient api 
+    static const patientLogin =  "$baseurl/patientLogin";
+    static const patientDetails =  "$baseurl/patient_details";
+
+
 
 
 

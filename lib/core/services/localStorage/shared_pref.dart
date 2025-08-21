@@ -84,4 +84,13 @@ abstract class SharedPref {
   Future<String?> getProfileImage();
 
 
+  Future<String?> getUserAddress();
+  void setUserAddress(String data);
+
+  void setUserGender(String data);
+  Future<String?> getUserGender();
+
+  void setUserPhone(String data);
+  Future<String?> getUserPhone();
+
 }

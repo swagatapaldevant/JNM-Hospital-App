@@ -15,7 +15,11 @@ import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_selection_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_bill_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_receipt_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_auth_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_screen.dart';
@@ -64,9 +68,9 @@ class RouteGenerator{
   static const kDischargeReportScreen = "/DischargeReportScreen";
   static const kEditBillReportScreen = "/EditBillReportScreen";
 
-
-
-
+  static const kPatientDetailsScreen = "/PatientDetailsScreen";
+  static const kPatientBillDetailsScreen = "/PatientBillDetailsScreen";
+  static const kPatientReceiptDetailsScreen = "/PatientReceiptDetailsScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -99,9 +103,12 @@ class RouteGenerator{
       case kPatientDashboardScreen:
         return _animatedPageRoute(PatientDashboardScreen());
 
-
-
-
+      case kPatientBillDetailsScreen:
+        final args = settings.arguments as BillDetail;
+        return _animatedPageRoute(PatientBillDetailsScreen(bill: args));
+      case kPatientReceiptDetailsScreen:
+        final args = settings.arguments as ReceiptDetail;
+        return _animatedPageRoute(PatientReceiptDetailsScreen(receipt: args));
 
       // case kPatientButtonNavigation:
       //   return _animatedPageRoute(PatientButtonNavigation());
@@ -145,7 +152,8 @@ class RouteGenerator{
         return _animatedPageRoute(DischargeReportScreen());
        case kEditBillReportScreen:
         return _animatedPageRoute(EditBillReportScreen());
-
+       case kPatientDetailsScreen:
+        return _animatedPageRoute(PatientDetailsScreen());
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");

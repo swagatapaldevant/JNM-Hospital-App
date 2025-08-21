@@ -10,6 +10,10 @@ import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase_impl.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -20,5 +24,6 @@ void initializeDependency(){
   getIt.registerFactory<ApiClient>(()=> ApiClientImpl());
   getIt.registerFactory<AdminReportUsecase>(()=> AdminReportUsecaseImplementation());
   getIt.registerFactory<AuthUsecase>(()=> AuthUsecaseImplementation());
-
+  getIt.registerFactory<PatientLoginUsecase>(()=> PatientLoginUsecaseImpl());
+  getIt.registerFactory<PatientDetailsUsecase>(()=> PatientDetailsUsecaseImpl());
 }

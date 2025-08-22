@@ -23,6 +23,8 @@ import 'package:jnm_hospital_app/features/patient_module/patient_details_module/
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_opd_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_receipt_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/appointment_form_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/patient_opd_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_auth_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/splash_screen.dart';
@@ -75,6 +77,8 @@ class RouteGenerator{
   static const kPatientReceiptDetailsScreen = "/PatientReceiptDetailsScreen";
   static const kPatientOpdDetailsScreen = "/PatientOpdDetailsScreen";
   static const kPatientDaycareDetailsScreen = "/PatientDaycareDetailsScreen";
+  static const kPatientOPDScreen = "/PatientOPDScreen";
+  static const kOPDBookAppointmentScreen = "/OPDBookAppointmentScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -164,6 +168,10 @@ class RouteGenerator{
         return _animatedPageRoute(EditBillReportScreen());
        case kPatientDetailsScreen:
         return _animatedPageRoute(PatientDetailsScreen());
+      case kPatientOPDScreen:
+        return _animatedPageRoute(PatientOPDScreen());
+      case kOPDBookAppointmentScreen:
+        return _animatedPageRoute(AppointmentFormScreen());
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");

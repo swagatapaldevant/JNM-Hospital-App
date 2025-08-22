@@ -10,10 +10,11 @@ import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/pa
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
 
 class PatientDetailsScreenLayout extends StatefulWidget {
-  const PatientDetailsScreenLayout({super.key, required this.child, required this.heading});
+  PatientDetailsScreenLayout({super.key, required this.child, required this.heading });
 
   final Widget child;
   final String heading;
+  //bool isLoading = false;
 
   @override
   State<PatientDetailsScreenLayout> createState() =>
@@ -37,7 +38,7 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
   static const Color opticalAccent = Color(0xFF7F5AF0); // violet
   static const double _hPad = 20;
 
-  bool isLoading = false;
+  
   @override
   void initState() {
     super.initState();
@@ -56,21 +57,21 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future<void> getPatientDetails() async {
-    setState(() {
-      isLoading = true;
-    });
+  // Future<void> getPatientDetails() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
 
-    final Resource resource = await _patientDetailsUsecase.getPatientDetails();
+  //   final Resource resource = await _patientDetailsUsecase.getPatientDetails();
 
-    if (resource.status == STATUS.SUCCESS) {
-      // Handle successful response
-      print("Success");
-      final data = resource.data as Map<String, dynamic>;
-      patientDetailsData = PatientDetailsResponse.fromJson(data);
-      print(patientDetailsData);
-    }
-  }
+  //   if (resource.status == STATUS.SUCCESS) {
+  //     // Handle successful response
+  //     print("Success");
+  //     final data = resource.data as Map<String, dynamic>;
+  //     patientDetailsData = PatientDetailsResponse.fromJson(data);
+  //     print(patientDetailsData);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +82,18 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
       body: Stack(
         children: [
           // Soft background
+          // if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.4), // transparent dark background
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(

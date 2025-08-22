@@ -39,7 +39,8 @@ class ApiEndPoint{
     static const patientLogin =  "$baseurl/patientLogin";
     static const patientDetails =  "$baseurl/patient_details";
     static const getDoctor =  "$baseurl/get_doctor";
-
+    static const getOPDDoctors =  "$baseurl/get_doctors_by_dept";
+    static const getOPDDepartments =  "$baseurl/department_list";
 
 
 

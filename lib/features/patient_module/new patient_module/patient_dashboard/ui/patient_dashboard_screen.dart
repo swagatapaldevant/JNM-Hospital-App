@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/data/dashboard_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
@@ -244,7 +245,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   icon: Icons.event_available_rounded,
                                   label: 'Book OPD',
                                   color: opdAccent,
-                                  onTap: () => HapticFeedback.selectionClick(),
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    Navigator.pushNamed(
+                                        context, RouteGenerator.kPatientOPDScreen);
+                                  },
                                 ),
                                 _QuickActionChip(
                                   icon: Icons.visibility_outlined,

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 
 class PatientReceiptDetailsScreen extends StatelessWidget {
   final ReceiptDetail receipt;
@@ -12,42 +13,22 @@ class PatientReceiptDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Receipt Details"),
-        backgroundColor: Colors.blueGrey[900],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.2,
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: ListView(
-                children: [
-                  _buildInfoTile(Icons.receipt_long, "Receipt ID", receipt.id.toString(), Colors.blue),
-                  _buildInfoTile(Icons.confirmation_number, "Billing ID", receipt.billingId.toString(), Colors.teal),
-                  _buildInfoTile(Icons.person, "Patient ID", receipt.patientId.toString(), Colors.deepPurple),
-                  _buildInfoTile(Icons.local_hospital, "Section", receipt.section ?? "-", Colors.orange),
-                  _buildInfoTile(Icons.payment, "Payment Amount", "₹${receipt.paymentAmount}", Colors.green),
-                  _buildPaymentModeTile(receipt.paymentMode ?? "-"),
-                  _buildInfoTile(Icons.account_balance, "Received By", receipt.paymentRecivedByName ?? "-", Colors.indigo),
-                  _buildInfoTile(Icons.date_range, "Payment Date", receipt.paymentDate.toString(), Colors.blueGrey),
-                  _buildInfoTile(Icons.note, "Note", receipt.note ?? "N/A", Colors.brown),
-                ],
-              ),
-            ),
-          ),
+    return PatientDetailsScreenLayout(
+      heading: "Receipt Details",
+      child: SliverPadding(
+        padding: EdgeInsets.all(20.0),
+        sliver: SliverList(
+          delegate: SliverChildListDelegate([
+            _buildInfoTile(Icons.receipt_long, "Receipt ID", receipt.id.toString(), Colors.blue),
+            _buildInfoTile(Icons.confirmation_number, "Billing ID", receipt.billingId.toString(), Colors.teal),
+            _buildInfoTile(Icons.person, "Patient ID", receipt.patientId.toString(), Colors.deepPurple),
+            _buildInfoTile(Icons.local_hospital, "Section", receipt.section ?? "-", Colors.orange),
+            _buildInfoTile(Icons.payment, "Payment Amount", "₹${receipt.paymentAmount}", Colors.green),
+            _buildPaymentModeTile(receipt.paymentMode ?? "-"),
+            _buildInfoTile(Icons.account_balance, "Received By", receipt.paymentRecivedByName ?? "-", Colors.indigo),
+            _buildInfoTile(Icons.date_range, "Payment Date", receipt.paymentDate.toString(), Colors.blueGrey),
+            _buildInfoTile(Icons.note, "Note", receipt.note ?? "N/A", Colors.brown),
+          ]),
         ),
       ),
     );
@@ -136,3 +117,15 @@ class PatientReceiptDetailsScreen extends StatelessWidget {
     );
   }
 }
+/*
+[
+                  _buildInfoTile(Icons.receipt_long, "Receipt ID", receipt.id.toString(), Colors.blue),
+                  _buildInfoTile(Icons.confirmation_number, "Billing ID", receipt.billingId.toString(), Colors.teal),
+                  _buildInfoTile(Icons.person, "Patient ID", receipt.patientId.toString(), Colors.deepPurple),
+                  _buildInfoTile(Icons.local_hospital, "Section", receipt.section ?? "-", Colors.orange),
+                  _buildInfoTile(Icons.payment, "Payment Amount", "₹${receipt.paymentAmount}", Colors.green),
+                  _buildPaymentModeTile(receipt.paymentMode ?? "-"),
+                  _buildInfoTile(Icons.account_balance, "Received By", receipt.paymentRecivedByName ?? "-", Colors.indigo),
+                  _buildInfoTile(Icons.date_range, "Payment Date", receipt.paymentDate.toString(), Colors.blueGrey),
+                  _buildInfoTile(Icons.note, "Note", receipt.note ?? "N/A", Colors.brown),
+                ],*/

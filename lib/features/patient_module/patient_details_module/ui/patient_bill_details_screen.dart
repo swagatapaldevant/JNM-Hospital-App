@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 
 class PatientBillDetailsScreen extends StatelessWidget {
   final BillDetail bill;
@@ -9,53 +10,45 @@ class PatientBillDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Bill Details"),
-        backgroundColor: Colors.blueGrey[900],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.2,
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: ListView(
-                children: [
-                  _buildInfoTile(Icons.confirmation_number, "Bill ID", bill.id.toString(), Colors.blue),
-                  _buildInfoTile(Icons.local_hospital, "Section", bill.section ?? "unknown", Colors.teal),
-                  _buildInfoTile(Icons.date_range, "Bill Date", bill.billDate.toString(), Colors.deepPurple),
-                  _buildInfoTile(Icons.person, "Patient ID", bill.patientId.toString(), Colors.orange),
-                  _buildInfoTile(Icons.medical_services, "Doctor ID", bill.doctorId.toString(), Colors.indigo),
-                  const Divider(height: 24, thickness: 1.2),
-                  _buildInfoTile(Icons.payments, "Total", "₹${bill.total}", Colors.green),
-                  _buildInfoTile(Icons.calculate, "Sub Total", "₹${bill.subTotal}", Colors.blueGrey),
-                  _buildInfoTile(Icons.discount, "Discount", "₹${bill.discountAmount}", Colors.redAccent),
-                  _buildInfoTile(Icons.attach_money, "Total Payment", "₹${bill.totalPayment}", Colors.greenAccent),
-                  _buildInfoTile(Icons.account_balance_wallet, "Due Amount", "₹${bill.dueAmount}", Colors.red),
-                  _buildInfoTile(Icons.summarize, "Grand Total", "₹${bill.grandTotal}", Colors.blue),
-                  const Divider(height: 24, thickness: 1.2),
-                  _buildStatusTile(bill.status ?? "Unknown"),
-                ],
-              ),
-            ),
-          ),
+    return PatientDetailsScreenLayout(
+      heading: "Bill Details",
+      child: SliverPadding(
+        padding: const EdgeInsets.all(20.0),
+        sliver: SliverList(
+          delegate: SliverChildListDelegate([
+            _buildInfoTile(Icons.confirmation_number, "Bill ID",
+                bill.id?.toString() ?? "N/A", Colors.blue),
+            _buildInfoTile(Icons.local_hospital, "Section",
+                bill.section ?? "unknown", Colors.teal),
+            _buildInfoTile(Icons.date_range, "Bill Date",
+                bill.billDate?.toString() ?? "N/A", Colors.deepPurple),
+            _buildInfoTile(Icons.person, "Patient ID",
+                bill.patientId?.toString() ?? "N/A", Colors.orange),
+            _buildInfoTile(Icons.medical_services, "Doctor ID",
+                bill.doctorId?.toString() ?? "N/A", Colors.indigo),
+            const Divider(height: 24, thickness: 1.2),
+            _buildInfoTile(
+                Icons.payments, "Total", "₹${bill.total ?? 0}", Colors.green),
+            _buildInfoTile(Icons.calculate, "Sub Total", "₹${bill.subTotal ?? 0}",
+                Colors.blueGrey),
+            _buildInfoTile(Icons.discount, "Discount",
+                "₹${bill.discountAmount ?? 0}", Colors.redAccent),
+            _buildInfoTile(Icons.attach_money, "Total Payment",
+                "₹${bill.totalPayment ?? 0}", Colors.greenAccent),
+            _buildInfoTile(Icons.account_balance_wallet, "Due Amount",
+                "₹${bill.dueAmount ?? 0}", Colors.red),
+            _buildInfoTile(Icons.summarize, "Grand Total",
+                "₹${bill.grandTotal ?? 0}", Colors.blue),
+            const Divider(height: 24, thickness: 1.2),
+            _buildStatusTile(bill.status ?? "Unknown"),
+          ]),
         ),
       ),
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String label, String value, Color color) {
+  Widget _buildInfoTile(
+      IconData icon, String label, String value, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

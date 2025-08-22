@@ -18,7 +18,9 @@ import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_sel
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_bill_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_daycare_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_opd_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_receipt_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_auth_screen.dart';
@@ -71,6 +73,8 @@ class RouteGenerator{
   static const kPatientDetailsScreen = "/PatientDetailsScreen";
   static const kPatientBillDetailsScreen = "/PatientBillDetailsScreen";
   static const kPatientReceiptDetailsScreen = "/PatientReceiptDetailsScreen";
+  static const kPatientOpdDetailsScreen = "/PatientOpdDetailsScreen";
+  static const kPatientDaycareDetailsScreen = "/PatientDaycareDetailsScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -104,11 +108,17 @@ class RouteGenerator{
         return _animatedPageRoute(PatientDashboardScreen());
 
       case kPatientBillDetailsScreen:
-        final args = settings.arguments as BillDetail;
-        return _animatedPageRoute(PatientBillDetailsScreen(bill: args));
+        final args = settings.arguments as List<BillDetail>;
+        return _animatedPageRoute(PatientBillsListScreen( bills: args,));
       case kPatientReceiptDetailsScreen:
-        final args = settings.arguments as ReceiptDetail;
-        return _animatedPageRoute(PatientReceiptDetailsScreen(receipt: args));
+        final args = settings.arguments as List<ReceiptDetail>;
+        return _animatedPageRoute(PatientReceiptsListScreen(receipts: args,));
+      case kPatientOpdDetailsScreen:
+        final args = settings.arguments as List<OpdDetailsModel>;
+        return _animatedPageRoute(PatientOpdDetailsScreen(opdList: args,));
+      case kPatientDaycareDetailsScreen:
+        final args = settings.arguments as List<DaycareDetailsModel>;
+        return _animatedPageRoute(PatientDaycareDetailsScreen(dayCareList: args,));
 
       // case kPatientButtonNavigation:
       //   return _animatedPageRoute(PatientButtonNavigation());

@@ -17,13 +17,13 @@ class PatientDetailsResponse {
 
     final List<BillDetail> billDetails;
     final PatientDetails? patientDetails;
-    final List<dynamic> opdDetails;
+    final List<OpdDetailsModel> opdDetails;
     final int? totalCredit;
     final int? totalDue;
     final List<dynamic> opdEnquiry;
     final List<dynamic> emgDetails;
     final List<dynamic> ipdDetails;
-    final List<dynamic> daycareDetails;
+    final List<DaycareDetailsModel> daycareDetails;
     final List<ReceiptDetail> receiptDetails;
     final List<dynamic> refundDetails;
     final List<dynamic> noteDetails;
@@ -33,13 +33,13 @@ class PatientDetailsResponse {
         return PatientDetailsResponse(
             billDetails: json["bill_details"] == null ? [] : List<BillDetail>.from(json["bill_details"]!.map((x) => BillDetail.fromJson(x))),
             patientDetails: json["patient_details"] == null ? null : PatientDetails.fromJson(json["patient_details"]),
-            opdDetails: json["opd_details"] == null ? [] : List<dynamic>.from(json["opd_details"]!.map((x) => x)),
+            opdDetails: json["opd_details"] == null ? [] : List<OpdDetailsModel>.from(json["opd_details"]!.map((x) => OpdDetailsModel.fromJson(x))),
             totalCredit: json["totalCredit"],
             totalDue: json["totalDue"],
             opdEnquiry: json["opd_enquiry"] == null ? [] : List<dynamic>.from(json["opd_enquiry"]!.map((x) => x)),
             emgDetails: json["emg_details"] == null ? [] : List<dynamic>.from(json["emg_details"]!.map((x) => x)),
             ipdDetails: json["ipd_details"] == null ? [] : List<dynamic>.from(json["ipd_details"]!.map((x) => x)),
-            daycareDetails: json["daycare_details"] == null ? [] : List<dynamic>.from(json["daycare_details"]!.map((x) => x)),
+            daycareDetails: json["daycare_details"] == null ? [] : List<DaycareDetailsModel>.from(json["daycare_details"]!.map((x) => DaycareDetailsModel.fromJson(x))),
             receiptDetails: json["receipt_details"] == null ? [] : List<ReceiptDetail>.from(json["receipt_details"]!.map((x) => ReceiptDetail.fromJson(x))),
             refundDetails: json["refund_details"] == null ? [] : List<dynamic>.from(json["refund_details"]!.map((x) => x)),
             noteDetails: json["note_details"] == null ? [] : List<dynamic>.from(json["note_details"]!.map((x) => x)),
@@ -436,4 +436,314 @@ class ReceiptDetail {
         "payment_recived_by_name": paymentRecivedByName,
     };
 
+}
+
+class OpdDetailsModel {
+    int? id;
+    int? departmentId;
+    int? doctorId;
+    int? patientId;
+    int? generateBy;
+    String? type;
+    String? appointmentDate;
+    Null? enquiryId;
+    int? ticketNo;
+    Null? referredBy;
+    Null? provider;
+    Null? marketBy;
+    bool? isIpdMoved;
+    Null? nextAppointmentDate;
+    Null? editBy;
+    Null? editAt;
+    bool? isActive;
+    bool? isDelete;
+    String? createdAt;
+    String? updatedAt;
+    String? doctorName;
+    String? departmentName;
+    int? billingId;
+    String? uid;
+    String? dueAmount;
+    String? craditAmount;
+    int? billStatus;
+
+    OpdDetailsModel(
+        {this.id,
+            this.departmentId,
+            this.doctorId,
+            this.patientId,
+            this.generateBy,
+            this.type,
+            this.appointmentDate,
+            this.enquiryId,
+            this.ticketNo,
+            this.referredBy,
+            this.provider,
+            this.marketBy,
+            this.isIpdMoved,
+            this.nextAppointmentDate,
+            this.editBy,
+            this.editAt,
+            this.isActive,
+            this.isDelete,
+            this.createdAt,
+            this.updatedAt,
+            this.doctorName,
+            this.departmentName,
+            this.billingId,
+            this.uid,
+            this.dueAmount,
+            this.craditAmount,
+            this.billStatus});
+
+    OpdDetailsModel.fromJson(Map<String, dynamic> json) {
+        id = json['id'];
+        departmentId = json['department_id'];
+        doctorId = json['doctor_id'];
+        patientId = json['patient_id'];
+        generateBy = json['generate_by'];
+        type = json['type'];
+        appointmentDate = json['appointment_date'];
+        enquiryId = json['enquiry_id'];
+        ticketNo = json['ticket_no'];
+        referredBy = json['referred_by'];
+        provider = json['provider'];
+        marketBy = json['market_by'];
+        isIpdMoved = json['is_ipd_moved'];
+        nextAppointmentDate = json['next_appointment_date'];
+        editBy = json['edit_by'];
+        editAt = json['edit_at'];
+        isActive = json['is_active'];
+        isDelete = json['is_delete'];
+        createdAt = json['created_at'];
+        updatedAt = json['updated_at'];
+        doctorName = json['doctor_name'];
+        departmentName = json['department_name'];
+        billingId = json['billing_id'];
+        uid = json['uid'];
+        dueAmount = json['due_amount'];
+        craditAmount = json['cradit_amount'];
+        billStatus = json['bill_status'];
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> data = new Map<String, dynamic>();
+        data['id'] = this.id;
+        data['department_id'] = this.departmentId;
+        data['doctor_id'] = this.doctorId;
+        data['patient_id'] = this.patientId;
+        data['generate_by'] = this.generateBy;
+        data['type'] = this.type;
+        data['appointment_date'] = this.appointmentDate;
+        data['enquiry_id'] = this.enquiryId;
+        data['ticket_no'] = this.ticketNo;
+        data['referred_by'] = this.referredBy;
+        data['provider'] = this.provider;
+        data['market_by'] = this.marketBy;
+        data['is_ipd_moved'] = this.isIpdMoved;
+        data['next_appointment_date'] = this.nextAppointmentDate;
+        data['edit_by'] = this.editBy;
+        data['edit_at'] = this.editAt;
+        data['is_active'] = this.isActive;
+        data['is_delete'] = this.isDelete;
+        data['created_at'] = this.createdAt;
+        data['updated_at'] = this.updatedAt;
+        data['doctor_name'] = this.doctorName;
+        data['department_name'] = this.departmentName;
+        data['billing_id'] = this.billingId;
+        data['uid'] = this.uid;
+        data['due_amount'] = this.dueAmount;
+        data['cradit_amount'] = this.craditAmount;
+        data['bill_status'] = this.billStatus;
+        return data;
+    }
+}
+
+class DaycareDetailsModel {
+    int? id;
+    String? admissionType;
+    String? admissionDate;
+    String? packageType;
+    int? patientId;
+    String? packageId;
+    String? packageName;
+    String? packageAmount;
+    int? insuranceId;
+    String? insuranceNo;
+    String? type;
+    String? symptoms;
+    int? diagnosisId;
+    int? departmentId;
+    int? doctorId;
+    String? otherDoctorId;
+    int? wardId;
+    int? bedId;
+    int? referredBy;
+    String? provider;
+    String? marketBy;
+    String? historyAlcoholism;
+    String? medicalSurgicalHistory;
+    String? familyHistoryDiagnosis;
+    String? responsiblePerson;
+    String? responsiblePersonRelation;
+    String? responsiblePersonPhNo;
+    String? responsiblePersonAge;
+    String? responsiblePersonAddress;
+    int? generateBy;
+    int? isDialysisMoved;
+    int? editBy;
+    String? editAt;
+    int? dischargeStatus;
+    String? dischargeBy;
+    String? dischargeAt;
+    int? isActive;
+    int? isDelete;
+    String? createdAt;
+    String? updatedAt;
+    String? doctorName;
+    String? departmentName;
+    String? bedName;
+    String? wardName;
+
+    DaycareDetailsModel(
+        {this.id,
+            this.admissionType,
+            this.admissionDate,
+            this.packageType,
+            this.patientId,
+            this.packageId,
+            this.packageName,
+            this.packageAmount,
+            this.insuranceId,
+            this.insuranceNo,
+            this.type,
+            this.symptoms,
+            this.diagnosisId,
+            this.departmentId,
+            this.doctorId,
+            this.otherDoctorId,
+            this.wardId,
+            this.bedId,
+            this.referredBy,
+            this.provider,
+            this.marketBy,
+            this.historyAlcoholism,
+            this.medicalSurgicalHistory,
+            this.familyHistoryDiagnosis,
+            this.responsiblePerson,
+            this.responsiblePersonRelation,
+            this.responsiblePersonPhNo,
+            this.responsiblePersonAge,
+            this.responsiblePersonAddress,
+            this.generateBy,
+            this.isDialysisMoved,
+            this.editBy,
+            this.editAt,
+            this.dischargeStatus,
+            this.dischargeBy,
+            this.dischargeAt,
+            this.isActive,
+            this.isDelete,
+            this.createdAt,
+            this.updatedAt,
+            this.doctorName,
+            this.departmentName,
+            this.bedName,
+            this.wardName});
+
+    DaycareDetailsModel.fromJson(Map<String, dynamic> json) {
+        id = json['id'];
+        admissionType = json['admission_type'];
+        admissionDate = json['admission_date'];
+        packageType = json['package_type'];
+        patientId = json['patient_id'];
+        packageId = json['package_id'];
+        packageName = json['package_name'];
+        packageAmount = json['package_amount'];
+        insuranceId = json['insurance_id'];
+        insuranceNo = json['insurance_no'];
+        type = json['type'];
+        symptoms = json['symptoms'];
+        diagnosisId = json['diagnosis_id'];
+        departmentId = json['department_id'];
+        doctorId = json['doctor_id'];
+        otherDoctorId = json['other_doctor_id'];
+        wardId = json['ward_id'];
+        bedId = json['bed_id'];
+        referredBy = json['referred_by'];
+        provider = json['provider'];
+        marketBy = json['market_by'];
+        historyAlcoholism = json['history_alcoholism'];
+        medicalSurgicalHistory = json['medical_surgical_history'];
+        familyHistoryDiagnosis = json['family_history_diagnosis'];
+        responsiblePerson = json['responsible_person'];
+        responsiblePersonRelation = json['responsible_person_relation'];
+        responsiblePersonPhNo = json['responsible_person_ph_no'];
+        responsiblePersonAge = json['responsible_person_age'];
+        responsiblePersonAddress = json['responsible_person_address'];
+        generateBy = json['generate_by'];
+        isDialysisMoved = json['is_dialysis_moved'];
+        editBy = json['edit_by'];
+        editAt = json['edit_at'];
+        dischargeStatus = json['discharge_status'];
+        dischargeBy = json['discharge_by'];
+        dischargeAt = json['discharge_at'];
+        isActive = json['is_active'];
+        isDelete = json['is_delete'];
+        createdAt = json['created_at'];
+        updatedAt = json['updated_at'];
+        doctorName = json['doctor_name'];
+        departmentName = json['department_name'];
+        bedName = json['bed_name'];
+        wardName = json['ward_name'];
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> data = new Map<String, dynamic>();
+        data['id'] = this.id;
+        data['admission_type'] = this.admissionType;
+        data['admission_date'] = this.admissionDate;
+        data['package_type'] = this.packageType;
+        data['patient_id'] = this.patientId;
+        data['package_id'] = this.packageId;
+        data['package_name'] = this.packageName;
+        data['package_amount'] = this.packageAmount;
+        data['insurance_id'] = this.insuranceId;
+        data['insurance_no'] = this.insuranceNo;
+        data['type'] = this.type;
+        data['symptoms'] = this.symptoms;
+        data['diagnosis_id'] = this.diagnosisId;
+        data['department_id'] = this.departmentId;
+        data['doctor_id'] = this.doctorId;
+        data['other_doctor_id'] = this.otherDoctorId;
+        data['ward_id'] = this.wardId;
+        data['bed_id'] = this.bedId;
+        data['referred_by'] = this.referredBy;
+        data['provider'] = this.provider;
+        data['market_by'] = this.marketBy;
+        data['history_alcoholism'] = this.historyAlcoholism;
+        data['medical_surgical_history'] = this.medicalSurgicalHistory;
+        data['family_history_diagnosis'] = this.familyHistoryDiagnosis;
+        data['responsible_person'] = this.responsiblePerson;
+        data['responsible_person_relation'] = this.responsiblePersonRelation;
+        data['responsible_person_ph_no'] = this.responsiblePersonPhNo;
+        data['responsible_person_age'] = this.responsiblePersonAge;
+        data['responsible_person_address'] = this.responsiblePersonAddress;
+        data['generate_by'] = this.generateBy;
+        data['is_dialysis_moved'] = this.isDialysisMoved;
+        data['edit_by'] = this.editBy;
+        data['edit_at'] = this.editAt;
+        data['discharge_status'] = this.dischargeStatus;
+        data['discharge_by'] = this.dischargeBy;
+        data['discharge_at'] = this.dischargeAt;
+        data['is_active'] = this.isActive;
+        data['is_delete'] = this.isDelete;
+        data['created_at'] = this.createdAt;
+        data['updated_at'] = this.updatedAt;
+        data['doctor_name'] = this.doctorName;
+        data['department_name'] = this.departmentName;
+        data['bed_name'] = this.bedName;
+        data['ward_name'] = this.wardName;
+        return data;
+    }
 }

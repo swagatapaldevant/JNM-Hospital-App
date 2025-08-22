@@ -21,13 +21,11 @@ class PatientLoginScreen extends StatefulWidget {
 }
 
 class _PatientLoginScreenState extends State<PatientLoginScreen> {
-
   static const Color splashBg1 = Color(0xFFF0F0F0);
   static const Color splashBg2 = Color(0xFFCDDBFF);
 
-
   static const Color patientAccent = Color(0xFF00C2FF); // sky blue
-  static const Color adminAccent = Color(0xFF7F5AF0);   // violet
+  static const Color adminAccent = Color(0xFF7F5AF0); // violet
   static const Color textColor = Colors.black87;
 
   final _phoneCtrl = TextEditingController();
@@ -36,8 +34,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   bool isLoading = false;
   final PatientLoginUsecase _patientLoginUsecase = getIt<PatientLoginUsecase>();
   final SharedPref _pref = getIt<SharedPref>();
-    final Dio _dio = DioClient().dio;
-
+  final Dio _dio = DioClient().dio;
 
   bool get _isValidPhone {
     final digits = _phoneCtrl.text.replaceAll(RegExp(r'\D'), '');
@@ -69,7 +66,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   //   };
   //   print("logging in..");
   //   Resource resource = await _patientLoginUsecase.login(requestData: requestData);
-   
+
   //     if (resource.status == STATUS.SUCCESS) {
   //       print("logging in..");
   //       // _pref.setLoginStatus(true);
@@ -82,7 +79,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   //       //     (Route<dynamic> route) => false,
   //       //   );
   //     } else {
-        
+
   //       CommonUtils().flutterSnackBar(
   //           context: context, mes: resource.message ?? "", messageType: 4);
   //     }
@@ -98,8 +95,6 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   //   }
   // }
 
-
-  
   Future<void> loginUser() async {
     setState(() {
       isLoading = true;
@@ -108,23 +103,24 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
       final response = await _dio.post(
         ApiEndPoint.patientLogin,
         data: {
-            "phone": _phoneCtrl.text.trim(),
-          },
+          "phone": _phoneCtrl.text.trim(),
+        },
       );
 
       if (response.statusCode == 200) {
         print("logging in..");
         if (response.data["data"].toString().isNotEmpty) {
           _pref.setUserAuthToken(response.data["access_token"].toString());
-          _pref.setUserName(
-              "${response.data["data"]["name"].toString()} ");
+          _pref.setUserName("${response.data["data"]["name"].toString()} ");
           _pref.setUserId(
               int.parse(response.data["data"]["id"].toString())); // set suer id
           _pref.setUserGender(response.data["data"]["gender"].toString());
           _pref.setLoginStatus(true);
           _pref.setUserPhone(response.data["data"]["phone"].toString());
           _pref.setUserAddress(response.data["data"]["address"].toString());
-          Navigator.pushNamedAndRemoveUntil(context, "/PatientDashboardScreen",
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/PatientDashboardScreen",
             (Route<dynamic> route) => false,
           );
           print(await _pref.getUserAuthToken());
@@ -133,26 +129,22 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
         CommonUtils().flutterSnackBar(
             context: context, mes: "Invalid credentials", messageType: 4);
         setState(() {
-        isLoading = false;
-      });
+          isLoading = false;
+        });
       }
-      
     } on DioException catch (e) {
       if (e.response != null) {
-        
         CommonUtils().flutterSnackBar(
             context: context, mes: "Invalid credentials", messageType: 4);
       } else {
         CommonUtils().flutterSnackBar(
             context: context, mes: "Invalid credentials", messageType: 4);
-        
       }
       setState(() {
         isLoading = false;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +164,6 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
             ),
           ),
 
-
           Positioned(
             top: -120,
             left: -80,
@@ -186,135 +177,154 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
 
           // Content
           SafeArea(
-            child: isLoading?  Center(
-              child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ),
-            ): LayoutBuilder(
-              builder: (context, constraints) {
-                final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-                return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Top bar
-                          Center(
-                            child: const Text(
-                              'Patient  Login',
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-
-                           SizedBox(height:MediaQuery.of(context).size.height*0.1 ),
-
-                          // Headline
-                          const Text(
-                            'Welcome 👋',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w800,
-                              height: 1.1,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Enter your phone number to continue.',
-                            style: TextStyle(
-                              color: Colors.black87.withOpacity(0.75),
-                              fontSize: 15.5,
-                            ),
-                          ),
-
-
-                          SizedBox(height: MediaQuery.of(context).size.height*0.05,),
-
-                          // Glass card with phone field + button
-                          _GlassCard(
-                            accent: patientAccent,
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.arrowBackground,
+                    ),
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      final bottomInset =
+                          MediaQuery.of(context).viewInsets.bottom;
+                      return SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding:
+                            EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
+                        child: ConstrainedBox(
+                          constraints:
+                              BoxConstraints(minHeight: constraints.maxHeight),
+                          child: IntrinsicHeight(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Phone number',
-                                  style: TextStyle(
-                                    color: Colors.black87.withOpacity(0.8),
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w600,
+                                // Top bar
+                                Center(
+                                  child: const Text(
+                                    'Patient  Login',
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.2,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                _PhoneField(
-                                  controller: _phoneCtrl,
-                                  focusNode: _phoneFocus,
-                                  accent: patientAccent,
-                                  onChanged: (_) => setState(() {}),
+
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1),
+
+                                // Headline
+                                const Text(
+                                  'Welcome 👋',
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w800,
+                                    height: 1.1,
+                                  ),
                                 ),
-                                const SizedBox(height: 16),
-                                _PrimaryButton(
-                                  //label: 'Send OTP',
-                                  label: 'Sign in',
-                                  enabled: _isValidPhone,
-                                  accent: patientAccent,
-                                  onTap: loginUser,
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Enter your phone number to continue.',
+                                  style: TextStyle(
+                                    color: Colors.black87.withOpacity(0.75),
+                                    fontSize: 15.5,
+                                  ),
                                 ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Icon(Icons.lock_outline,
-                                        size: 16, color: Colors.black.withOpacity(0.55)),
-                                    const SizedBox(width: 6),
-                                    Expanded(
-                                      child: Text(
-                                        'By continuing, you agree to our Terms & Privacy Policy.',
+
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.05,
+                                ),
+
+                                // Glass card with phone field + button
+                                _GlassCard(
+                                  accent: patientAccent,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Phone number',
                                         style: TextStyle(
-                                          color: Colors.black.withOpacity(0.55),
-                                          fontSize: 12.5,
-                                          height: 1.2,
+                                          color:
+                                              Colors.black87.withOpacity(0.8),
+                                          fontSize: 13.5,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 10),
+                                      _PhoneField(
+                                        controller: _phoneCtrl,
+                                        focusNode: _phoneFocus,
+                                        accent: patientAccent,
+                                        onChanged: (_) => setState(() {}),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _PrimaryButton(
+                                        //label: 'Send OTP',
+                                        label: 'Sign in',
+                                        enabled: _isValidPhone,
+                                        accent: patientAccent,
+                                        onTap: loginUser,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.lock_outline,
+                                              size: 16,
+                                              color: Colors.black
+                                                  .withOpacity(0.55)),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              'By continuing, you agree to our Terms & Privacy Policy.',
+                                              style: TextStyle(
+                                                color: Colors.black
+                                                    .withOpacity(0.55),
+                                                fontSize: 12.5,
+                                                height: 1.2,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
+
+                                const SizedBox(height: 12),
+
+                                // --- OR divider ---
+                                _OrDivider(),
+
+                                const SizedBox(height: 12),
+
+                                // Login as Admin section
+                                _AdminAccessCard(
+                                  accent: adminAccent,
+                                  onTap: _goAdmin,
+                                ),
+
+                                const SizedBox(height: 24),
                               ],
                             ),
                           ),
-
-                          const SizedBox(height: 12),
-
-                          // --- OR divider ---
-                          _OrDivider(),
-
-                          const SizedBox(height: 12),
-
-                          // Login as Admin section
-                          _AdminAccessCard(
-                            accent: adminAccent,
-                            onTap: () {},
-                          ),
-
-                          const SizedBox(height: 24),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
+  }
+
+  void _goAdmin() {
+    HapticFeedback.selectionClick();
+    Navigator.pushNamed(context, "/LoginScreen");
   }
 
   // Decorative blob
@@ -337,7 +347,8 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
   }
 
   // Circular icon button (top-left back)
-  Widget _roundIconButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _roundIconButton(
+      {required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -363,7 +374,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
             ),
           ],
         ),
-        child:  Icon(icon, color: textColor),
+        child: Icon(icon, color: textColor),
       ),
     );
   }
@@ -485,7 +496,8 @@ class _PhoneField extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Icon(Icons.flag_outlined, size: 16, color: Colors.black.withOpacity(0.6)),
+                Icon(Icons.flag_outlined,
+                    size: 16, color: Colors.black.withOpacity(0.6)),
               ],
             ),
           ),
@@ -512,12 +524,13 @@ class _PhoneField extends StatelessWidget {
                 contentPadding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
                 suffixIcon: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
-                  child: controller.text.replaceAll(RegExp(r'\D'), '').length == 10
-                      ? Icon(Icons.check_circle_rounded,
-                      key: const ValueKey('ok'),
-                      color: accent,
-                      size: 22)
-                      : const SizedBox(width: 22, key: ValueKey('empty')),
+                  child:
+                      controller.text.replaceAll(RegExp(r'\D'), '').length == 10
+                          ? Icon(Icons.check_circle_rounded,
+                              key: const ValueKey('ok'),
+                              color: accent,
+                              size: 22)
+                          : const SizedBox(width: 22, key: ValueKey('empty')),
                 ),
               ),
               style: const TextStyle(
@@ -558,9 +571,9 @@ class _PrimaryButton extends StatelessWidget {
       child: GestureDetector(
         onTap: enabled
             ? () {
-          HapticFeedback.selectionClick();
-          onTap();
-        }
+                HapticFeedback.selectionClick();
+                onTap();
+              }
             : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -697,5 +710,3 @@ class _AdminAccessCard extends StatelessWidget {
     );
   }
 }
-
-

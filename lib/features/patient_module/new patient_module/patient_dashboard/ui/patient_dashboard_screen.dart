@@ -119,13 +119,18 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> getDoctorData() async {
+    setState(() {
+      _loading = true;
+    });
     final resource = await DashboardUsecaseImpl().getDoctors();
     if (resource.status == STATUS.SUCCESS) {
       //print(resource.data);
       resource.data.forEach((doctor) {
         _doctorsToday.add(DoctorModel.fromJson(doctor));
       });
-      setState(() {});
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -301,7 +306,18 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
                       ),
                     )
-                  else 
+                  else if(_doctorsToday.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                        child: const _EmptyStateCard(
+                          icon: Icons.local_hospital_outlined,
+                          message: 'No doctors available today',
+                          hint: 'Check back later or book an appointment.',
+                        ),
+                      ),
+                    )
+                  else
                   SliverToBoxAdapter(
                     child: SizedBox(
                       height: 156,

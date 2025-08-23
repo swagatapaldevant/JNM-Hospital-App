@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/network/apiClientRepository/api_client.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
@@ -38,6 +39,45 @@ class PatientOPDUsecasesImpl implements PatientOPDUsecases {
       url: ApiEndPoint.getOPDDoctors,
       header: header,
       requestData: {"dept_id": selectDeptId},
+    );
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+  @override
+  Future<Resource> getOPDSchedule(int doctorId) async {
+    final ApiClient _apiClient = getIt<ApiClient>();
+    final SharedPref _pref = getIt<SharedPref>();
+
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {"Authorization": "Bearer $token"};
+    Resource resource = await _apiClient.postRequest(
+      url: ApiEndPoint.getOPDSchedule,
+      header: header,
+      requestData: {"doctorId": doctorId},
+    );
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+
+  @override
+  Future<Resource> getOPDTimeslot(int doctorId, DateTime date) async {
+    final ApiClient _apiClient = getIt<ApiClient>();
+    final SharedPref _pref = getIt<SharedPref>();
+
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {"Authorization": "Bearer $token"};
+    Resource resource = await _apiClient.postRequest(
+      url: ApiEndPoint.getOPDTimeslot,
+      header: header,
+      requestData: {"doctorId": doctorId, "date": DateFormat('yyyy-MM-dd').format(date)},
     );
     if (resource.status == STATUS.SUCCESS) {
       return resource;

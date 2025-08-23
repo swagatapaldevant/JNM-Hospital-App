@@ -111,7 +111,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
         print("logging in..");
         if (response.data["data"].toString().isNotEmpty) {
           _pref.setUserAuthToken(response.data["access_token"].toString());
-          _pref.setUserName("${response.data["data"]["name"].toString()} ");
+          _pref.setName("${response.data["data"]["name"].toString()} ");
           _pref.setUserId(
               int.parse(response.data["data"]["id"].toString())); // set suer id
           _pref.setUserGender(response.data["data"]["gender"].toString());

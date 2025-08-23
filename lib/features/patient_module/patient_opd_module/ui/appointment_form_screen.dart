@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
@@ -129,6 +130,20 @@ class _AppointmentFormState extends State<_AppointmentForm> {
     });
   }
 
+  bool _validateForm() {
+    return selectedDoctor != null &&
+        selectedDate != null &&
+        selectedTime != null &&
+        (nameController.text.isNotEmpty) &&
+        (uhidController.text.isNotEmpty) &&
+        (mobileController.text.isNotEmpty) &&
+        (genderController.text.isNotEmpty) &&
+        (yearController.text.isNotEmpty) &&
+        (monthController.text.isNotEmpty) &&
+        (dayController.text.isNotEmpty) &&
+        (addressController.text.isNotEmpty);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -140,6 +155,26 @@ class _AppointmentFormState extends State<_AppointmentForm> {
           key: _formKey,
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.withOpacity(0.8),
+                    ),
+                    onPressed: _resetForm,
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Reset",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               // Department dropdown
               CommonSearchableDropdown<Map<int, String>>(
                 items: (filter, props) async {
@@ -154,6 +189,9 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                 selectedItem: selectedDepartment,
                 onChanged: (val) {
                   setState(() {
+                    selectedDoctor = null;
+                    selectedDate = null;
+                    selectedTime = null;
                     selectedDepartment = val;
                   });
                   getDoctorsData(selectedDepartment!.keys.first);
@@ -169,7 +207,11 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                 hintText: "Doctor *",
                 selectedItem: selectedDoctor,
                 onChanged: (val) {
-                  setState(() => selectedDoctor = val);
+                  setState(() {
+                    selectedDate = null;
+                    selectedTime = null;
+                    selectedDoctor = val;
+                  });
                   showDialog(
                     context: context,
                     builder: (_) => DateTimePopup(
@@ -185,11 +227,13 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                 itemAsString: (item) => item.values.first,
                 validator: (val) => val == null ? "Required" : null,
                 compareFn: (a, b) => a.keys.first == b.keys.first,
+                enabled: selectedDepartment != null && doctors.isNotEmpty,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 readOnly: true,
+                enabled: false,
                 decoration: InputDecoration(
                   labelText: "Appointment Date *",
                   labelStyle: TextStyle(
@@ -283,6 +327,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
 
               TextFormField(
                 readOnly: true,
+                enabled: false,
                 decoration: buildInputDecoration(
                   label: "Slot Time *",
                   hint: "Select slot time",
@@ -444,6 +489,8 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                 },
               ),
 
+              const SizedBox(height: 16),
+
               // Address
               TextFormField(
                 controller: addressController,
@@ -451,32 +498,81 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                 decoration: buildInputDecoration(
                     label: "Address", hint: "Enter address"),
               ),
-              // Reset + Submit buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.withOpacity(0.8),
-                    ),
-                    onPressed: _resetForm,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text("Reset"),
-                  ),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Collect data
-                        debugPrint("Form valid, submit here...");
-                      }
-                    },
-                    icon: const Icon(Icons.check),
-                    label: const Text("Submit"),
-                  ),
-                ],
+              const SizedBox(height: 16),
+              _PrimaryButton(
+                label: 'Submit',
+                enabled: _validateForm(),
+                accent: Color(0xFF00C2FF),
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrimaryButton extends StatelessWidget {
+  final String label;
+  final bool enabled;
+  final VoidCallback onTap;
+  final Color accent;
+
+  const _PrimaryButton({
+    required this.label,
+    required this.enabled,
+    required this.onTap,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(16);
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.6,
+      child: GestureDetector(
+        onTap: enabled
+            ? () {
+                HapticFeedback.selectionClick();
+                onTap();
+              }
+            : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                accent,
+                const Color(0xFF7F5AF0),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7F5AF0).withOpacity(0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.sms_rounded, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.2,
+                ),
               ),
             ],
           ),

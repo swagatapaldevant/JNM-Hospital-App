@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 
 //convert AppDrawer to Stateful widget
 class AppDrawer extends StatefulWidget {
@@ -18,13 +19,14 @@ class _AppDrawerState extends State<AppDrawer> {
 
   static const Color _opdAccent = Color(0xFF00C2FF);
   static const Color _opticalAccent = Color(0xFF7F5AF0);
+  SharedPref _pref = getIt<SharedPref>();
 
   @override
   void initState() {
     super.initState();
     _loadPatientData();
   }
-  
+
   void _loadPatientData() async {
     final SharedPref _pref = getIt<SharedPref>();
     patientName = await _pref.getName();
@@ -40,7 +42,6 @@ class _AppDrawerState extends State<AppDrawer> {
     return initials;
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -175,9 +176,13 @@ class _AppDrawerState extends State<AppDrawer> {
                     icon: Icons.logout_rounded,
                     label: 'Logout',
                     danger: true,
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: logout flow
+                    onTap: () async {
+                      _pref.clearOnLogout();
+                      await Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        RouteGenerator.kPatientLoginScreen,
+                        (Route<dynamic> route) => false,
+                      );
                     },
                   ),
                 ],

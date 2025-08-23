@@ -37,7 +37,7 @@ class PatientOPDUsecasesImpl implements PatientOPDUsecases {
     Resource resource = await _apiClient.postRequest(
       url: ApiEndPoint.getOPDDoctors,
       header: header,
-      requestData: {"department_id": selectDeptId},
+      requestData: {"dept_id": selectDeptId},
     );
     if (resource.status == STATUS.SUCCESS) {
       return resource;

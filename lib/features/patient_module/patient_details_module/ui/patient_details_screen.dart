@@ -255,34 +255,48 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
 
     if (patientDetailsData.opdDetails.isNotEmpty) {
       tiles.add(GlassTile(
-          icon: Icons.local_hospital, label: "OPD",
-          onTap: (){
-            Navigator.pushNamed(
-              context,
-              RouteGenerator.kPatientOpdDetailsScreen,
-              arguments: patientDetailsData.opdDetails,);
-          },
+        icon: Icons.local_hospital,
+        label: "OPD",
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RouteGenerator.kPatientOpdDetailsScreen,
+            arguments: patientDetailsData.opdDetails,
+          );
+        },
       ));
     }
     if (patientDetailsData.ipdDetails.isNotEmpty) {
-      tiles.add( GlassTile(
-          icon: Icons.bed,
-          label: "IPD",
-
+      tiles.add(GlassTile(
+        icon: Icons.bed,
+        label: "IPD",
       ));
     }
     if (patientDetailsData.daycareDetails.isNotEmpty) {
-      tiles.add( GlassTile(icon: Icons.healing, label: "Daycare",
-        onTap: (){
+      tiles.add(GlassTile(
+        icon: Icons.healing,
+        label: "Daycare",
+        onTap: () {
           Navigator.pushNamed(
             context,
             RouteGenerator.kPatientDaycareDetailsScreen,
-            arguments: patientDetailsData.daycareDetails,);
+            arguments: patientDetailsData.daycareDetails,
+          );
         },
       ));
     }
     if (patientDetailsData.emgDetails.isNotEmpty) {
-      tiles.add(const GlassTile(icon: Icons.emergency, label: "Emergency"));
+      tiles.add(GlassTile(
+        icon: Icons.emergency,
+        label: "Emergency",
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RouteGenerator.kPatientEmgDetailsScreen,
+            arguments: patientDetailsData.emgDetails,
+          );
+        },
+      ));
     }
     if (patientDetailsData.receiptDetails.isNotEmpty) {
       tiles.add(GlassTile(
@@ -317,7 +331,18 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
       tiles.add(const GlassTile(icon: Icons.note, label: "Notes"));
     }
     if (patientDetailsData.emrDetails.isNotEmpty) {
-      tiles.add(const GlassTile(icon: Icons.history, label: "EMR"));
+      tiles.add( GlassTile(
+          icon: Icons.history,
+          label: "EMR",
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              RouteGenerator.kPatientEmrDetailsScreen,
+              arguments: patientDetailsData.emrDetails,
+            );
+          },
+
+      ));
     }
 
     if (tiles.isEmpty) return const SizedBox.shrink();
@@ -968,49 +993,3 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
   }
 }
 
-// (Unused but kept if you later add "Quick actions")
-class _QuickActionChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickActionChip(
-      {required this.icon,
-      required this.label,
-      required this.color,
-      required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: color.withOpacity(0.45))),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(width: 8),
-              const Text(''), // placeholder spacing
-              Text(
-                label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    fontSize: 14),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

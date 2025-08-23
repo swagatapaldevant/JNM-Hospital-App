@@ -3,32 +3,30 @@ import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'common_layout.dart';
 
-class PatientDaycareDetailsScreen extends StatefulWidget {
-  final List<DaycareDetailsModel> dayCareList;
-  const PatientDaycareDetailsScreen({super.key, required this.dayCareList});
+class PatientEmgDetailsScreen extends StatefulWidget {
+  final List<EmgDetailsModel> emgList;
+  const PatientEmgDetailsScreen({super.key, required this.emgList});
 
   @override
-  State<PatientDaycareDetailsScreen> createState() =>
-      _PatientDaycareDetailsScreenState();
+  State<PatientEmgDetailsScreen> createState() => _PatientEmgDetailsScreenState();
 }
 
-class _PatientDaycareDetailsScreenState
-    extends State<PatientDaycareDetailsScreen> {
+class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
   final TextEditingController _search = TextEditingController();
 
   // Filters
-  String _statusFilter = 'All'; // All | Admitted | Discharged
+  String _statusFilter = 'All'; // All | Paid | Pending
   String _typeFilter = 'All';   // All | New | Old
   String _dateFilter = 'All';   // All | Today | Upcoming | Past
 
-  late List<DaycareDetailsModel> _sorted;
+  late List<EmgDetailsModel> _sorted;
 
   @override
   void initState() {
     super.initState();
-    _sorted = [...widget.dayCareList]..sort((a, b) {
-      final ad = _safeDate(_getAdmissionIso(a));
-      final bd = _safeDate(_getAdmissionIso(b));
+    _sorted = [...widget.emgList]..sort((a, b) {
+      final ad = _safeDate(_getAppointmentIso(a));
+      final bd = _safeDate(_getAppointmentIso(b));
       return bd.compareTo(ad); // newest first
     });
   }
@@ -41,42 +39,40 @@ class _PatientDaycareDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final filtered =
-    _applyFilters(_sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
+    final filtered = _applyFilters(_sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
     final summary = _summaryStats(filtered);
 
     return Scaffold(
       body: PatientDetailsScreenLayout(
-        heading: 'Daycare Details',
+        heading: 'Emergency (EMG)',
         child: SliverList(
           delegate: SliverChildListDelegate.fixed([
             const SizedBox(height: 16),
 
             // ===== Summary =====
-            // _WhiteCard(
-            //   child: Row(
-            //     children: [
-            //       _summaryTile(
-            //         icon: Icons.medical_services_outlined,
-            //         label: 'Daycare',
-            //         value: '${filtered.length}',
-            //         color: Colors.indigo,
-            //       ),
-            //       const SizedBox(width: 12),
-            //       Expanded(
-            //         child: _summaryTile(
-            //           icon: Icons.local_hotel_outlined,
-            //           label: 'Currently Admitted',
-            //           value: '${summary.currentAdmitted}',
-            //           color: Colors.deepOrange,
-            //           alignEnd: true,
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            //
-            // const SizedBox(height: 12),
+            _WhiteCard(
+              child: Row(
+                children: [
+                  _summaryTile(
+                    icon: Icons.emergency_outlined,
+                    label: 'EMG Visits',
+                    value: '${filtered.length}',
+                    color: Colors.indigo,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _summaryTile(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: 'Total Due',
+                      value: _inr(summary.totalDue),
+                      color: Colors.deepOrange,
+                      alignEnd: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
 
             // ===== Search & Filters =====
             _WhiteCard(
@@ -84,7 +80,7 @@ class _PatientDaycareDetailsScreenState
                 children: [
                   _SearchField(
                     controller: _search,
-                    hint: 'Search doctor, department, ward, bed, type, ID…',
+                    hint: 'Search doctor, department, UID, billing id…',
                     onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: 12),
@@ -104,25 +100,22 @@ class _PatientDaycareDetailsScreenState
             // ===== Empty =====
             if (filtered.isEmpty)
               Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 child: const _EmptyState(
-                  title: 'No daycare records',
-                  subtitle:
-                  'Try clearing filters or searching with a different term.',
+                  title: 'No EMG records',
+                  subtitle: 'Try clearing filters or searching with a different term.',
                 ),
               ),
 
             // ===== List =====
-            ...filtered.map((dc) => Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: _DaycareTile(
-                dc: dc,
+            ...filtered.map((e) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: _EmgTile(
+                emg: e,
                 onTap: () {
                   HapticFeedback.selectionClick();
-                  // TODO: Navigate to a detail view if you have one
-                  // Navigator.pushNamed(context, RouteGenerator.kSomeScreen, arguments: dc);
+                  // Navigate to a detailed EMG view if you add one:
+                  // Navigator.pushNamed(context, RouteGenerator.kEmgDetail, arguments: e);
                 },
               ),
             )),
@@ -134,7 +127,7 @@ class _PatientDaycareDetailsScreenState
     );
   }
 
-  // ---------------- Helpers & Model accessors ----------------
+  // ---------------- Helpers & accessors ----------------
 
   DateTime _safeDate(dynamic iso) {
     if (iso == null) return DateTime.fromMillisecondsSinceEpoch(0);
@@ -142,104 +135,78 @@ class _PatientDaycareDetailsScreenState
     return d ?? DateTime.fromMillisecondsSinceEpoch(0);
   }
 
-  String? _getAdmissionIso(DaycareDetailsModel m) {
-    final v = (m as dynamic).admissionDate ?? (m as dynamic).admission_date;
+  String? _getAppointmentIso(EmgDetailsModel m) {
+    final v = (m as dynamic).appointmentDate ?? (m as dynamic).appointment_date;
     return v?.toString();
   }
 
-  String _doctorName(DaycareDetailsModel m) {
+  String _doctor(EmgDetailsModel m) {
     final v = (m as dynamic).doctorName ?? (m as dynamic).doctor_name;
     return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
   }
 
-  String _department(DaycareDetailsModel m) {
+  String _department(EmgDetailsModel m) {
     final v = (m as dynamic).departmentName ?? (m as dynamic).department_name;
     return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
   }
 
-  String _ward(DaycareDetailsModel m) {
-    final v = (m as dynamic).wardName ?? (m as dynamic).ward_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-  }
-
-  String _bed(DaycareDetailsModel m) {
-    final v = (m as dynamic).bedName ?? (m as dynamic).bed_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-  }
-
-  String _admissionType(DaycareDetailsModel m) {
-    final v = (m as dynamic).admissionType ?? (m as dynamic).admission_type;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-  }
-
-  String _type(DaycareDetailsModel m) {
+  String _type(EmgDetailsModel m) {
     final v = (m as dynamic).type;
     return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
   }
 
-  bool _isDischarged(DaycareDetailsModel m) {
-    final v = (m as dynamic).dischargeStatus ?? (m as dynamic).discharge_status;
-    if (v is int) return v != 0;
-    if (v is num) return v.toInt() != 0;
-    if (v is String) return v == '1' || v.toLowerCase() == 'true';
-    return false;
+  String _uid(EmgDetailsModel m) {
+    final v = (m as dynamic).uid;
+    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
   }
 
-  String _packageType(DaycareDetailsModel m) {
-    final v = (m as dynamic).packageType ?? (m as dynamic).package_type;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '';
+  double _due(EmgDetailsModel m) {
+    final v = (m as dynamic).dueAmount ?? (m as dynamic).due_amount;
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v) ?? 0.0;
+    return 0.0;
   }
 
-  String _packageName(DaycareDetailsModel m) {
-    final v = (m as dynamic).packageName ?? (m as dynamic).package_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '';
+  int _billStatus(EmgDetailsModel m) {
+    final v = (m as dynamic).billStatus ?? (m as dynamic).bill_status;
+    if (v is int) return v;
+    if (v is String) return int.tryParse(v) ?? 0;
+    if (v is num) return v.toInt();
+    return 0;
   }
 
-  String _insuranceIdText(DaycareDetailsModel m) {
-    final v = (m as dynamic).insuranceId ?? (m as dynamic).insurance_id;
-    if (v == null) return '';
-    return 'Insurance ID: $v';
-  }
-
-  String _symptoms(DaycareDetailsModel m) {
-    final v = (m as dynamic).symptoms;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '';
-  }
-
-  List<DaycareDetailsModel> _applyFilters(
-      List<DaycareDetailsModel> list,
+  List<EmgDetailsModel> _applyFilters(
+      List<EmgDetailsModel> list,
       String q,
       String status,
       String type,
       String dateFilter,
       ) {
     final now = DateTime.now();
-    Iterable<DaycareDetailsModel> res = list;
+    Iterable<EmgDetailsModel> res = list;
     final query = q.trim().toLowerCase();
 
     if (query.isNotEmpty) {
       res = res.where((m) {
-        final doctor = _doctorName(m).toLowerCase();
+        final doctor = _doctor(m).toLowerCase();
         final dept = _department(m).toLowerCase();
-        final ward = _ward(m).toLowerCase();
-        final bed = _bed(m).toLowerCase();
-        final t = _type(m).toLowerCase();
-        final adt = _admissionType(m).toLowerCase();
+        final uid = _uid(m).toLowerCase();
+        final billingId = ((m as dynamic).billingId ?? (m as dynamic).billing_id)?.toString().toLowerCase() ?? '';
         final id = ((m as dynamic).id)?.toString().toLowerCase() ?? '';
+        final t = _type(m).toLowerCase();
         return doctor.contains(query) ||
             dept.contains(query) ||
-            ward.contains(query) ||
-            bed.contains(query) ||
-            t.contains(query) ||
-            adt.contains(query) ||
-            id.contains(query);
+            uid.contains(query) ||
+            billingId.contains(query) ||
+            id.contains(query) ||
+            t.contains(query);
       });
     }
 
     if (status != 'All') {
       res = res.where((m) {
-        final admitted = !_isDischarged(m);
-        return status == 'Admitted' ? admitted : !admitted;
+        final paid = _billStatus(m) == 2; // 2 => Paid (per your sample)
+        return status == 'Paid' ? paid : !paid;
       });
     }
 
@@ -249,7 +216,7 @@ class _PatientDaycareDetailsScreenState
 
     if (dateFilter != 'All') {
       res = res.where((m) {
-        final d = _safeDate(_getAdmissionIso(m));
+        final d = _safeDate(_getAppointmentIso(m));
         if (dateFilter == 'Today') {
           final n = DateTime.now();
           final t = DateTime(n.year, n.month, n.day);
@@ -266,70 +233,66 @@ class _PatientDaycareDetailsScreenState
     return res.toList();
   }
 
-  _DaycareSummary _summaryStats(List<DaycareDetailsModel> list) {
-    int currentAdmitted = 0;
+  _EmgSummary _summaryStats(List<EmgDetailsModel> list) {
+    double totalDue = 0;
     for (final m in list) {
-      if (!_isDischarged(m)) currentAdmitted++;
+      totalDue += _due(m);
     }
-    return _DaycareSummary(currentAdmitted: currentAdmitted);
+    return _EmgSummary(totalDue: totalDue);
   }
 }
 
-class _DaycareSummary {
-  final int currentAdmitted;
-  _DaycareSummary({required this.currentAdmitted});
+class _EmgSummary {
+  final double totalDue;
+  _EmgSummary({required this.totalDue});
 }
 
 // ===================== UI Widgets =====================
 
-class _DaycareTile extends StatelessWidget {
-  final DaycareDetailsModel dc;
+class _EmgTile extends StatelessWidget {
+  final EmgDetailsModel emg;
   final VoidCallback onTap;
-  const _DaycareTile({required this.dc, required this.onTap});
+  const _EmgTile({required this.emg, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    // Local accessors (same logic as screen helpers but scoped)
-    String _doctorName() {
-      final v = (dc as dynamic).doctorName ?? (dc as dynamic).doctor_name;
+    String _doctor() {
+      final v = (emg as dynamic).doctorName ?? (emg as dynamic).doctor_name;
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
     }
 
     String _department() {
-      final v = (dc as dynamic).departmentName ?? (dc as dynamic).department_name;
+      final v = (emg as dynamic).departmentName ?? (emg as dynamic).department_name;
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
     }
 
-    String _ward() {
-      final v = (dc as dynamic).wardName ?? (dc as dynamic).ward_name;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
-
-    String _bed() {
-      final v = (dc as dynamic).bedName ?? (dc as dynamic).bed_name;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
-
-    String _admissionType() {
-      final v = (dc as dynamic).admissionType ?? (dc as dynamic).admission_type;
+    String _uid() {
+      final v = (emg as dynamic).uid;
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
     }
 
     String _type() {
-      final v = (dc as dynamic).type;
+      final v = (emg as dynamic).type;
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
     }
 
-    bool _isDischarged() {
-      final v = (dc as dynamic).dischargeStatus ?? (dc as dynamic).discharge_status;
-      if (v is int) return v != 0;
-      if (v is num) return v.toInt() != 0;
-      if (v is String) return v == '1' || v.toLowerCase() == 'true';
-      return false;
+    int _billStatus() {
+      final v = (emg as dynamic).billStatus ?? (emg as dynamic).bill_status;
+      if (v is int) return v;
+      if (v is String) return int.tryParse(v) ?? 0;
+      if (v is num) return v.toInt();
+      return 0;
     }
 
-    String _admitIso() {
-      final v = (dc as dynamic).admissionDate ?? (dc as dynamic).admission_date;
+    double _due() {
+      final v = (emg as dynamic).dueAmount ?? (emg as dynamic).due_amount;
+      if (v is num) return v.toDouble();
+      if (v is String) return double.tryParse(v) ?? 0.0;
+      return 0.0;
+    }
+
+    String _appointmentIso() {
+      final v = (emg as dynamic).appointmentDate ?? (emg as dynamic).appointment_date;
       return v?.toString() ?? '';
     }
 
@@ -346,25 +309,10 @@ class _DaycareTile extends StatelessWidget {
       return '$dd $mm $yyyy • $hh:$min';
     }
 
-    String _insuranceIdText() {
-      final v = (dc as dynamic).insuranceId ?? (dc as dynamic).insurance_id;
-      return v == null ? '' : 'Insurance ID: $v';
-    }
-
-    String _packageType() {
-      final v = (dc as dynamic).packageType ?? (dc as dynamic).package_type;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '';
-    }
-
-    String _packageName() {
-      final v = (dc as dynamic).packageName ?? (dc as dynamic).packageName;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '';
-    }
-
-    final admitted = !_isDischarged();
-    final statusColor = admitted ? Colors.orange : Colors.green;
-    final apptText = _formatDateTime(_admitIso());
-    final idText = ((dc as dynamic).id)?.toString() ?? '—';
+    final paid = _billStatus() == 2;
+    final statusColor = paid ? Colors.green : Colors.orange;
+    final apptText = _formatDateTime(_appointmentIso());
+    final due = _due();
 
     return InkWell(
       onTap: onTap,
@@ -385,7 +333,7 @@ class _DaycareTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Leading circular gradient with tiny ID or 'DC'
+            // Gradient circle with UID tail
             Container(
               width: 52,
               height: 52,
@@ -402,7 +350,7 @@ class _DaycareTile extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  _circleText(idText),
+                  _circleText(_uid()),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -418,7 +366,7 @@ class _DaycareTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Department + Status
+                  // Department + Paid/Pending
                   Row(
                     children: [
                       Expanded(
@@ -441,7 +389,7 @@ class _DaycareTile extends StatelessWidget {
                           border: Border.all(color: statusColor.withOpacity(0.4)),
                         ),
                         child: Text(
-                          admitted ? 'Admitted' : 'Discharged',
+                          paid ? 'Paid' : 'Pending',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w800,
@@ -458,7 +406,7 @@ class _DaycareTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                         "Dr. ${_doctorName()}",
+                         "Dr  ${_doctor()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -472,7 +420,7 @@ class _DaycareTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
 
-                  // Date & Type & Admission Type
+                  // Date & Type & UID
                   Wrap(
                     spacing: 10,
                     runSpacing: 6,
@@ -486,36 +434,20 @@ class _DaycareTile extends StatelessWidget {
                           Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
-                      _chip(icon: Icons.category_outlined, label: _type().toUpperCase()),
-                      if (_admissionType().isNotEmpty && _admissionType() != '—')
-                        _chip(icon: Icons.local_hospital_outlined, label: _admissionType()),
+                      if (_type().trim().isNotEmpty && _type() != '—')
+                        _chip(icon: Icons.category_outlined, label: _type().toUpperCase()),
+                      if (_uid() != '—')
+                        _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // Ward/Bed row
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      _tag(icon: Icons.apartment_outlined, label: _ward()),
-                      _tag(icon: Icons.bed_outlined, label: _bed()),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Package & Insurance chips (if any)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (_packageType().isNotEmpty)
-                        _chip(icon: Icons.medical_services_outlined, label: _packageType()),
-                      if (_packageName().isNotEmpty)
-                        _chip(icon: Icons.label_important_outline, label: _packageName()),
-                      finalInsurance(_insuranceIdText()),
-                    ].whereType<Widget>().toList(),
+                  // Due pill
+                  _moneyPill(
+                    icon: Icons.account_balance_wallet,
+                    label: 'Due',
+                    value: _inr(due),
+                    emphasize: due > 0,
                   ),
                 ],
               ),
@@ -526,14 +458,9 @@ class _DaycareTile extends StatelessWidget {
     );
   }
 
-  Widget? finalInsurance(String txt) {
-    if (txt.isEmpty) return null;
-    return _chip(icon: Icons.shield_outlined, label: txt);
-  }
-
-  static String _circleText(String id) {
-    final digits = RegExp(r'\d+').allMatches(id).map((m) => m.group(0)!).join();
-    if (digits.isEmpty) return 'DC';
+  static String _circleText(String uid) {
+    final digits = RegExp(r'\d+').allMatches(uid).map((m) => m.group(0)!).join();
+    if (digits.isEmpty) return 'EMG';
     return digits.length <= 3 ? digits : digits.substring(digits.length - 3);
   }
 
@@ -563,32 +490,55 @@ class _DaycareTile extends StatelessWidget {
     );
   }
 
-  static Widget _tag({required IconData icon, required String label}) {
+  static Widget _moneyPill({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool emphasize = false,
+  }) {
+    final color = emphasize ? Colors.red : Colors.blueGrey;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.blueGrey.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.blueGrey.withOpacity(0.25)),
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.blueGrey),
+          Icon(icon, size: 15, color: color),
           const SizedBox(width: 6),
           Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11.5,
+            '$label: $value',
+            style: TextStyle(
+              fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: Colors.blueGrey,
+              color: color.shade700,
             ),
           ),
         ],
       ),
     );
   }
+
+  static String _inr(num? v) {
+    final n = (v ?? 0).toDouble();
+    final s = n.toStringAsFixed(2);
+    final parts = s.split('.');
+    final whole = parts[0];
+    final dec = parts[1];
+    final buf = StringBuffer();
+    for (int i = 0; i < whole.length; i++) {
+      final left = whole.length - i - 1;
+      buf.write(whole[i]);
+      if (left > 0 && left % 3 == 0) buf.write(',');
+    }
+    return '₹${buf.toString()}.$dec';
+  }
 }
+
+// ===== Filters/Search/Containers/Empty =====
 
 class _FilterBar extends StatelessWidget {
   final String status;
@@ -613,7 +563,7 @@ class _FilterBar extends StatelessWidget {
       children: [
         _segmentedRow(
           label: 'Status',
-          items: const ['All', 'Admitted', 'Discharged'],
+          items: const ['All', 'Paid', 'Pending'],
           value: status,
           onChanged: onStatusChanged,
         ),
@@ -681,7 +631,7 @@ class _FilterBar extends StatelessWidget {
     required bool selected,
     required VoidCallback onTap,
   }) {
-    final color = selected ? Colors.indigo : Colors.grey;
+    final color = selected ? Colors.indigo : Colors.blueGrey;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
@@ -696,7 +646,7 @@ class _FilterBar extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight:selected? FontWeight.w700 : FontWeight.w600,
+            fontWeight:selected?FontWeight.w700:FontWeight.w600,
             color: color,
           ),
         ),
@@ -735,8 +685,7 @@ class _SearchField extends StatelessWidget {
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
@@ -789,8 +738,7 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(Icons.event_busy_outlined,
-            size: 64, color: Colors.blueGrey.withOpacity(0.4)),
+        Icon(Icons.emergency_outlined, size: 64, color: Colors.blueGrey.withOpacity(0.4)),
         const SizedBox(height: 16),
         Text(title,
             style: const TextStyle(
@@ -809,4 +757,81 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+// ---------- Shared summary INR ----------
+String _inr(num? v) {
+  final n = (v ?? 0).toDouble();
+  final s = n.toStringAsFixed(2);
+  final parts = s.split('.');
+  final whole = parts[0];
+  final dec = parts[1];
+  final buf = StringBuffer();
+  for (int i = 0; i < whole.length; i++) {
+    final left = whole.length - i - 1;
+    buf.write(whole[i]);
+    if (left > 0 && left % 3 == 0) buf.write(',');
+  }
+  return '₹${buf.toString()}.$dec';
+}
+// ---------- Shared summary tile ----------
+Widget _summaryTile({
+  required IconData icon,
+  required String label,
+  required String value,
+  required Color color,
+  bool alignEnd = false,
+}) =>
+    _SummaryTile(
+      icon: icon,
+      label: label,
+      value: value,
+      color: color,
+      alignEnd: alignEnd,
+    );
 
+class _SummaryTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final bool alignEnd;
+  const _SummaryTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+    this.alignEnd = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: color.withOpacity(0.12),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black54,
+                )),
+            const SizedBox(height: 2),
+            Text(value,
+                style: const TextStyle(
+                  fontSize: 16.5,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black87,
+                )),
+          ],
+        ),
+      ],
+    );
+  }
+}

@@ -418,11 +418,9 @@ class _OpdTile extends StatelessWidget {
                   // Doctor
                   Row(
                     children: [
-                      const Icon(Icons.person_outline, size: 16, color: Colors.blueGrey),
-                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          _doctorName(),
+                         "Dr  ${_doctorName()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -645,7 +643,7 @@ class _FilterBar extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
-      child: Ink(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: selected ? color.withOpacity(0.12) : Colors.white,
@@ -656,7 +654,7 @@ class _FilterBar extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: FontWeight.w800,
+            fontWeight:selected? FontWeight.w700: FontWeight.w600,
             color: color,
           ),
         ),

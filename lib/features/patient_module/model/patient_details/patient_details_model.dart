@@ -21,13 +21,13 @@ class PatientDetailsResponse {
     final int? totalCredit;
     final int? totalDue;
     final List<dynamic> opdEnquiry;
-    final List<dynamic> emgDetails;
+    final List<EmgDetailsModel> emgDetails;
     final List<dynamic> ipdDetails;
     final List<DaycareDetailsModel> daycareDetails;
     final List<ReceiptDetail> receiptDetails;
     final List<dynamic> refundDetails;
     final List<dynamic> noteDetails;
-    final List<dynamic> emrDetails;
+    final List<EmrDetailsModel> emrDetails;
 
     factory PatientDetailsResponse.fromJson(Map<String, dynamic> json){ 
         return PatientDetailsResponse(
@@ -37,13 +37,13 @@ class PatientDetailsResponse {
             totalCredit: json["totalCredit"],
             totalDue: json["totalDue"],
             opdEnquiry: json["opd_enquiry"] == null ? [] : List<dynamic>.from(json["opd_enquiry"]!.map((x) => x)),
-            emgDetails: json["emg_details"] == null ? [] : List<dynamic>.from(json["emg_details"]!.map((x) => x)),
+            emgDetails: json["emg_details"] == null ? [] : List<EmgDetailsModel>.from(json["emg_details"]!.map((x) => EmgDetailsModel.fromJson(x))),
             ipdDetails: json["ipd_details"] == null ? [] : List<dynamic>.from(json["ipd_details"]!.map((x) => x)),
             daycareDetails: json["daycare_details"] == null ? [] : List<DaycareDetailsModel>.from(json["daycare_details"]!.map((x) => DaycareDetailsModel.fromJson(x))),
             receiptDetails: json["receipt_details"] == null ? [] : List<ReceiptDetail>.from(json["receipt_details"]!.map((x) => ReceiptDetail.fromJson(x))),
             refundDetails: json["refund_details"] == null ? [] : List<dynamic>.from(json["refund_details"]!.map((x) => x)),
             noteDetails: json["note_details"] == null ? [] : List<dynamic>.from(json["note_details"]!.map((x) => x)),
-            emrDetails: json["emr_details"] == null ? [] : List<dynamic>.from(json["emr_details"]!.map((x) => x)),
+            emrDetails: json["emr_details"] == null ? [] : List<EmrDetailsModel>.from(json["emr_details"]!.map((x) => EmrDetailsModel.fromJson(x))),
         );
     }
 
@@ -744,6 +744,204 @@ class DaycareDetailsModel {
         data['department_name'] = this.departmentName;
         data['bed_name'] = this.bedName;
         data['ward_name'] = this.wardName;
+        return data;
+    }
+}
+
+class EmgDetailsModel {
+    int? id;
+    int? departmentId;
+    int? doctorId;
+    int? patientId;
+    int? generateBy;
+    String? type;
+    String? appointmentDate;
+    String? referredBy;
+    String? provider;
+    String? marketBy;
+    bool? isIpdMoved;
+    String? nextAppointmentDate;
+    String? editBy;
+    String? editAt;
+    bool? isActive;
+    bool? isDelete;
+    String? createdAt;
+    String? updatedAt;
+    String? doctorName;
+    String? departmentName;
+    int? billingId;
+    String? uid;
+    String? dueAmount;
+    String? craditAmount;
+    int? billStatus;
+
+    EmgDetailsModel(
+        {this.id,
+            this.departmentId,
+            this.doctorId,
+            this.patientId,
+            this.generateBy,
+            this.type,
+            this.appointmentDate,
+            this.referredBy,
+            this.provider,
+            this.marketBy,
+            this.isIpdMoved,
+            this.nextAppointmentDate,
+            this.editBy,
+            this.editAt,
+            this.isActive,
+            this.isDelete,
+            this.createdAt,
+            this.updatedAt,
+            this.doctorName,
+            this.departmentName,
+            this.billingId,
+            this.uid,
+            this.dueAmount,
+            this.craditAmount,
+            this.billStatus});
+
+    EmgDetailsModel.fromJson(Map<String, dynamic> json) {
+        id = json['id'];
+        departmentId = json['department_id'];
+        doctorId = json['doctor_id'];
+        patientId = json['patient_id'];
+        generateBy = json['generate_by'];
+        type = json['type'];
+        appointmentDate = json['appointment_date'];
+        referredBy = json['referred_by'];
+        provider = json['provider'];
+        marketBy = json['market_by'];
+        isIpdMoved = json['is_ipd_moved'];
+        nextAppointmentDate = json['next_appointment_date'];
+        editBy = json['edit_by'];
+        editAt = json['edit_at'];
+        isActive = json['is_active'];
+        isDelete = json['is_delete'];
+        createdAt = json['created_at'];
+        updatedAt = json['updated_at'];
+        doctorName = json['doctor_name'];
+        departmentName = json['department_name'];
+        billingId = json['billing_id'];
+        uid = json['uid'];
+        dueAmount = json['due_amount'];
+        craditAmount = json['cradit_amount'];
+        billStatus = json['bill_status'];
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> data = new Map<String, dynamic>();
+        data['id'] = this.id;
+        data['department_id'] = this.departmentId;
+        data['doctor_id'] = this.doctorId;
+        data['patient_id'] = this.patientId;
+        data['generate_by'] = this.generateBy;
+        data['type'] = this.type;
+        data['appointment_date'] = this.appointmentDate;
+        data['referred_by'] = this.referredBy;
+        data['provider'] = this.provider;
+        data['market_by'] = this.marketBy;
+        data['is_ipd_moved'] = this.isIpdMoved;
+        data['next_appointment_date'] = this.nextAppointmentDate;
+        data['edit_by'] = this.editBy;
+        data['edit_at'] = this.editAt;
+        data['is_active'] = this.isActive;
+        data['is_delete'] = this.isDelete;
+        data['created_at'] = this.createdAt;
+        data['updated_at'] = this.updatedAt;
+        data['doctor_name'] = this.doctorName;
+        data['department_name'] = this.departmentName;
+        data['billing_id'] = this.billingId;
+        data['uid'] = this.uid;
+        data['due_amount'] = this.dueAmount;
+        data['cradit_amount'] = this.craditAmount;
+        data['bill_status'] = this.billStatus;
+        return data;
+    }
+}
+
+class EmrDetailsModel {
+    int? id;
+    int? patientId;
+    String? date;
+    String? section;
+    int? sectionId;
+    String? vitals;
+    String? complaints;
+    String? diagnosis;
+    String? progressNote;
+    String? medicines;
+    String? advice;
+    String? nursingInstructions;
+    String? testName;
+    int? doctorId;
+    int? createdBy;
+    String? createdAt;
+    String? updatedAt;
+    String? doctorName;
+
+    EmrDetailsModel(
+        {this.id,
+            this.patientId,
+            this.date,
+            this.section,
+            this.sectionId,
+            this.vitals,
+            this.complaints,
+            this.diagnosis,
+            this.progressNote,
+            this.medicines,
+            this.advice,
+            this.nursingInstructions,
+            this.testName,
+            this.doctorId,
+            this.createdBy,
+            this.createdAt,
+            this.updatedAt,
+            this.doctorName});
+
+    EmrDetailsModel.fromJson(Map<String, dynamic> json) {
+        id = json['id'];
+        patientId = json['patient_id'];
+        date = json['date'];
+        section = json['section'];
+        sectionId = json['section_id'];
+        vitals = json['vitals'];
+        complaints = json['complaints'];
+        diagnosis = json['diagnosis'];
+        progressNote = json['progress_note'];
+        medicines = json['medicines'];
+        advice = json['advice'];
+        nursingInstructions = json['nursing_instructions'];
+        testName = json['test_name'];
+        doctorId = json['doctor_id'];
+        createdBy = json['created_by'];
+        createdAt = json['created_at'];
+        updatedAt = json['updated_at'];
+        doctorName = json['doctor_name'];
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> data = new Map<String, dynamic>();
+        data['id'] = this.id;
+        data['patient_id'] = this.patientId;
+        data['date'] = this.date;
+        data['section'] = this.section;
+        data['section_id'] = this.sectionId;
+        data['vitals'] = this.vitals;
+        data['complaints'] = this.complaints;
+        data['diagnosis'] = this.diagnosis;
+        data['progress_note'] = this.progressNote;
+        data['medicines'] = this.medicines;
+        data['advice'] = this.advice;
+        data['nursing_instructions'] = this.nursingInstructions;
+        data['test_name'] = this.testName;
+        data['doctor_id'] = this.doctorId;
+        data['created_by'] = this.createdBy;
+        data['created_at'] = this.createdAt;
+        data['updated_at'] = this.updatedAt;
+        data['doctor_name'] = this.doctorName;
         return data;
     }
 }

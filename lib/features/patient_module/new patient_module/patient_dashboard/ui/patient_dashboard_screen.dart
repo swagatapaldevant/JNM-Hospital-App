@@ -330,9 +330,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         itemBuilder: (context, i) => _DoctorCard(
                           doctor: _doctorsToday[i],
                           accent: _getCardColor(_doctorsToday[i].color ?? ""),
-                          onTap: () => HapticFeedback.selectionClick(
-
-                          ),
+                          onTap: () {
+                            //Navigator.pushNamed(context, "/DoctorDetailsScreen", arguments:_doctorsToday[i]);
+                          }
                         ),
                       ),
                     ),

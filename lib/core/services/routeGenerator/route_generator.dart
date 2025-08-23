@@ -15,6 +15,8 @@ import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_selection_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/doctor_details_module/ui/doctor_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_bill_details_screen.dart';
@@ -57,7 +59,7 @@ class RouteGenerator{
   static const kTopDoctorScreen = "/TopDoctorScreen";
   static const kFindDoctorScreen = "/FindDoctorScreen";
   static const kBookingHistoryScreen = "/BookingHistoryScreen";
-  static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
+  //static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
   static const kBookingPaymentScreen = "/BookingPaymentScreen";
 
 
@@ -83,6 +85,7 @@ class RouteGenerator{
   static const kOPDBookAppointmentScreen = "/OPDBookAppointmentScreen";
   static const kPatientEmgDetailsScreen = "/PatientEmgDetailsScreen";
   static const kPatientEmrDetailsScreen = "/PatientEmrDetailsScreen";
+  static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -133,6 +136,8 @@ class RouteGenerator{
       case kPatientEmrDetailsScreen:
         final args = settings.arguments as List<EmrDetailsModel>;
         return _animatedPageRoute(PatientEmrDetailsScreen(emrList: args,));
+      // case kDoctorDetailsScreen:
+      //   return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
 
       // case kPatientButtonNavigation:
       //   return _animatedPageRoute(PatientButtonNavigation());

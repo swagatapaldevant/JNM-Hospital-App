@@ -77,7 +77,7 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [

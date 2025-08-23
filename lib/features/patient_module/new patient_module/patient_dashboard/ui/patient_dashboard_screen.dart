@@ -138,7 +138,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -253,7 +253,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   onTap: () {
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
-                                        context, RouteGenerator.kPatientOPDScreen);
+                                        context, RouteGenerator.kOPDBookAppointmentScreen);
                                   },
                                 ),
                                 _QuickActionChip(

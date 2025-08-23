@@ -1,12 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 
-class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+//convert AppDrawer to Stateful widget
+class AppDrawer extends StatefulWidget {
+  AppDrawer({super.key});
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  String patientName = "NA";
+  String patientId = "NA";
+  String patientInitials = "NA";
 
   static const Color _opdAccent = Color(0xFF00C2FF);
   static const Color _opticalAccent = Color(0xFF7F5AF0);
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPatientData();
+  }
+  
+  void _loadPatientData() async {
+    final SharedPref _pref = getIt<SharedPref>();
+    patientName = await _pref.getName();
+    patientId = (await _pref.getUserId()).toString();
+    patientInitials = _getInitials(patientName);
+    setState(() {});
+  }
+
+  String _getInitials(String patientName) {
+    List<String> names = patientName.trim().split(" ");
+    String initials = names.first[0] + names.last[0];
+    //print(initials);
+    return initials;
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -35,9 +69,9 @@ class AppDrawer extends StatelessWidget {
                       color: Colors.white.withOpacity(0.2),
                       border: Border.all(color: Colors.white.withOpacity(0.7)),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        'JD', // TODO: user initials
+                        patientInitials,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -47,11 +81,11 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('John Doe',  // TODO: user name
+                        Text(patientName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -60,7 +94,7 @@ class AppDrawer extends StatelessWidget {
                               fontSize: 16.5,
                             )),
                         SizedBox(height: 2),
-                        Text('Patient ID: JMN-2048', // TODO: real ID
+                        Text('Patient ID: JMN-$patientId',
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12.5,

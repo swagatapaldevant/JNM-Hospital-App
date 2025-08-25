@@ -248,35 +248,6 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
-    return InkResponse(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
-      radius: 28,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
-          ],
-        ),
-        child: Icon(icon, color: textPrimary),
-      ),
-    );
-  }
 }
 
 class GlassTile extends StatelessWidget {

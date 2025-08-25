@@ -57,8 +57,8 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
                     "Receipts",
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -206,7 +206,7 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
     return _ReceiptSummary(totalReceived: totalReceived);
   }
 
-  
+
   Widget _roundIconButton(
       {required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
@@ -216,21 +216,12 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
       },
       radius: 28,
       child: Container(
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
-          ],
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.cyan, width: 2)
         ),
         child: Icon(icon, color: Colors.black87),
       ),

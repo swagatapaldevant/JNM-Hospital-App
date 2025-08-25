@@ -155,34 +155,75 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
                   slivers: [
                     // ===== Header (centered) =====
                     _sectionWrap(
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
+                      Container(
+                        margin: const EdgeInsets.only(top: 16, bottom: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withOpacity(0.9),
+                              Colors.white.withOpacity(0.7),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
                         child: Row(
                           children: [
-                            _roundIconButton(
-                              icon: Icons.arrow_back_ios_new_rounded,
+                            // Gradient circle back button
+                            InkWell(
                               onTap: () => Navigator.pop(context),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                (name ?? '').isNotEmpty
-                                    ? name!
-                                    : 'Patient Details',
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: textPrimary,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.2,
+                              borderRadius: BorderRadius.circular(999),
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      _PatientDetailsScreenState.opdAccent,
+                                      _PatientDetailsScreenState.opticalAccent,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
                                 ),
+                                child: const Icon(Icons.arrow_back_ios_new_rounded,
+                                    color: Colors.white, size: 18),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+
+                            // Name + subtitle
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Patient Profile",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: _PatientDetailsScreenState.textPrimary,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-
                     // === Patient Identity Card (modern & glassy, centered) ===
                     _sectionWrap(
                       Padding(

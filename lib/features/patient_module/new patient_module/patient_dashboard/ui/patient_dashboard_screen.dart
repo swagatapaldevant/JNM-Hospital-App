@@ -465,16 +465,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
-          ],
+          border: Border.all(color: Colors.cyan, width: 2)
         ),
         child: Icon(icon, color: textPrimary),
       ),

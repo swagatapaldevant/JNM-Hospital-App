@@ -279,13 +279,23 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   },
                                 ),
                                 _QuickActionChip(
-                                  icon: Icons.receipt_long_outlined,
+                                  icon: Icons.currency_exchange,
                                   label: 'Rate Enquiry',
                                   color: const Color(0xFF20C997),
                                   onTap: () {
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
                                         context, RouteGenerator.kRateEnquiryScreen);
+                                  },
+                                ),
+                                _QuickActionChip(
+                                  icon: Icons.search,
+                                  label: 'Investigation',
+                                  color: opdAccent,
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    Navigator.pushNamed(
+                                        context, RouteGenerator.kInvestigationScreen);
                                   },
                                 )
                               ],

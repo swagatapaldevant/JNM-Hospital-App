@@ -16,6 +16,7 @@ import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_selection_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/doctor_details_module/ui/doctor_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/investigation/ui/investigation_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
@@ -88,6 +89,7 @@ class RouteGenerator{
   static const kPatientEmrDetailsScreen = "/PatientEmrDetailsScreen";
   static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
   static const kRateEnquiryScreen = "/RateEnquiryScreen";
+  static const kInvestigationScreen = "/InvestigationScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -191,6 +193,8 @@ class RouteGenerator{
         return _animatedPageRoute(AppointmentFormScreen());
       case kRateEnquiryScreen:
         return _animatedPageRoute(RateEnquiryScreen());
+      case kInvestigationScreen:
+        return _animatedPageRoute(InvestigationScreen());
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");

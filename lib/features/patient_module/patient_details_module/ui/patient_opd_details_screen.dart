@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-
 import 'common_layout.dart';
-// import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart'; // if you want to navigate to a details screen
 
 class PatientOpdDetailsScreen extends StatefulWidget {
   final List<OpdDetailsModel> opdList;
@@ -22,6 +20,9 @@ class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
   String _dateFilter = 'All';   // All | Today | Upcoming | Past
 
   late List<OpdDetailsModel> _sorted;
+
+  bool _filtersExpanded = false;
+
 
   @override
   void initState() {
@@ -79,26 +80,25 @@ class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
             const SizedBox(height: 12),
 
             // ---- Search & Filters (solid white card) ----
-            _WhiteCard(
-              child: Column(
-                children: [
-                  _SearchField(
-                    controller: _search,
-                    hint: 'Search doctor, department, ticket, UID…',
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  _FilterBar(
-                    status: _statusFilter,
-                    onStatusChanged: (v) => setState(() => _statusFilter = v),
-                    type: _typeFilter,
-                    onTypeChanged: (v) => setState(() => _typeFilter = v),
-                    date: _dateFilter,
-                    onDateChanged: (v) => setState(() => _dateFilter = v),
-                  ),
-                ],
+            // ---- Search & Filters (expandable) ----
+            _ExpandableFilterCard(
+              expanded: _filtersExpanded,
+              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
+              searchField: _SearchField(
+                controller: _search,
+                hint: 'Search doctor, department, ticket, UID…',
+                onChanged: (_) => setState(() {}),
+              ),
+              filters: _FilterBar(
+                status: _statusFilter,
+                onStatusChanged: (v) => setState(() => _statusFilter = v),
+                type: _typeFilter,
+                onTypeChanged: (v) => setState(() => _typeFilter = v),
+                date: _dateFilter,
+                onDateChanged: (v) => setState(() => _dateFilter = v),
               ),
             ),
+
 
             const SizedBox(height: 12),
 
@@ -828,4 +828,93 @@ String _inr(num? v) {
     if (left > 0 && left % 3 == 0) buf.write(',');
   }
   return '₹${buf.toString()}.$dec';
+}
+
+
+class _ExpandableFilterCard extends StatelessWidget {
+  final bool expanded;
+  final VoidCallback onToggle;
+  final Widget searchField;
+  final Widget filters;
+
+  const _ExpandableFilterCard({
+    required this.expanded,
+    required this.onToggle,
+    required this.searchField,
+    required this.filters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhiteCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header row (tap anywhere to toggle)
+          InkWell(
+            onTap: onToggle,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Search & Filters',
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  // chevron animates
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: expanded ? 0.5 : 0.0, // 0 -> down, 0.5 -> up
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 22, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Search always visible
+          searchField,
+
+          // Animated expand area
+          AnimatedCrossFade(
+            firstCurve: Curves.easeOut,
+            secondCurve: Curves.easeOut,
+            sizeCurve: Curves.easeOut,
+            duration: const Duration(milliseconds: 220),
+            crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            firstChild: const SizedBox(height: 0),
+            secondChild: Column(
+              children: [
+                const SizedBox(height: 12),
+                _softDivider(),
+                const SizedBox(height: 12),
+                filters,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _softDivider() => Container(
+    height: 1,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+  );
 }

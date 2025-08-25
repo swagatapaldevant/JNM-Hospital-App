@@ -21,7 +21,9 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
   String _doctorFilter = 'All';   // All | <Doctor Names>
 
   late List<EmrDetailsModel> _sorted;
-  late List<String> _doctors;     // populated from list
+  late List<String> _doctors;
+
+  bool _filtersExpanded = false;
 
   @override
   void initState() {
@@ -90,27 +92,28 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
             const SizedBox(height: 12),
 
             // ===== Search & Filters =====
-            _WhiteCard(
-              child: Column(
-                children: [
-                  _SearchField(
-                    controller: _search,
-                    hint: 'Search diagnosis, medicine, doctor, section…',
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  _FilterBar(
-                    section: _sectionFilter,
-                    onSectionChanged: (v) => setState(() => _sectionFilter = v),
-                    date: _dateFilter,
-                    onDateChanged: (v) => setState(() => _dateFilter = v),
-                    doctor: _doctorFilter,
-                    doctorItems: _doctors,
-                    onDoctorChanged: (v) => setState(() => _doctorFilter = v),
-                  ),
-                ],
+            // ===== Search & Filters (expandable) =====
+            _ExpandableFilterCard(
+              expanded: _filtersExpanded,
+              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
+              title: 'Search & Filters',
+              searchField: _SearchField(
+                controller: _search,
+                hint: 'Search diagnosis, medicine, doctor, section…',
+                onChanged: (_) => setState(() {}),
+              ),
+              filters: _FilterBar(
+                section: _sectionFilter,
+                onSectionChanged: (v) => setState(() => _sectionFilter = v),
+                date: _dateFilter,
+                onDateChanged: (v) => setState(() => _dateFilter = v),
+                doctor: _doctorFilter,
+                doctorItems: _doctors,
+                onDoctorChanged: (v) => setState(() => _doctorFilter = v),
               ),
             ),
+
+
             const SizedBox(height: 12),
 
             // ===== Empty =====
@@ -1120,4 +1123,95 @@ class _SummaryTile extends StatelessWidget {
       ],
     );
   }
+}
+
+
+class _ExpandableFilterCard extends StatelessWidget {
+  final bool expanded;
+  final VoidCallback onToggle;
+  final String title;
+  final Widget searchField;
+  final Widget filters;
+
+  const _ExpandableFilterCard({
+    required this.expanded,
+    required this.onToggle,
+    required this.title,
+    required this.searchField,
+    required this.filters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhiteCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header row (tap to toggle)
+          InkWell(
+            onTap: onToggle,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: expanded ? 0.5 : 0.0, // arrow rotates up when expanded
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 22, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Search always visible
+          searchField,
+
+          // Smooth expand/collapse body
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 220),
+            firstCurve: Curves.easeOut,
+            secondCurve: Curves.easeOut,
+            sizeCurve: Curves.easeOut,
+            crossFadeState:
+            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            firstChild: const SizedBox(height: 0),
+            secondChild: Column(
+              children: [
+                const SizedBox(height: 12),
+                _softDivider(),
+                const SizedBox(height: 12),
+                filters,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _softDivider() => Container(
+    height: 1,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+  );
 }

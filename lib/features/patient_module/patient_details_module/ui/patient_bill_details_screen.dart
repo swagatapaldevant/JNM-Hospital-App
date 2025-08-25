@@ -467,7 +467,7 @@ class _FilterRow extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: FontWeight.w800,
+            fontWeight: selected?FontWeight.w800:FontWeight.w600,
             color: color,
           ),
         ),

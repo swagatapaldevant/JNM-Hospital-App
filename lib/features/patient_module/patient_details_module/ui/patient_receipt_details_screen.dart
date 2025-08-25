@@ -109,11 +109,11 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
               receipt: r,
               onTap: () {
                 HapticFeedback.selectionClick();
-                Navigator.pushNamed(
-                  context,
-                  RouteGenerator.kPatientReceiptDetailsScreen,
-                  arguments: r,
-                );
+                // Navigator.pushNamed(
+                //   context,
+                //   RouteGenerator.kPatientReceiptDetailsScreen,
+                //   arguments: r,
+                // );
               },
             ),
           )),
@@ -485,7 +485,7 @@ class _ModeFilterRow extends StatelessWidget {
     required bool selected,
     required VoidCallback onTap,
   }) {
-    final color = selected ? Colors.indigo : Colors.blueGrey;
+    final color = selected ? Colors.indigo : Colors.grey;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
@@ -500,7 +500,7 @@ class _ModeFilterRow extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: FontWeight.w800,
+            fontWeight: selected?FontWeight.w800:FontWeight.w600,
             color: color,
           ),
         ),

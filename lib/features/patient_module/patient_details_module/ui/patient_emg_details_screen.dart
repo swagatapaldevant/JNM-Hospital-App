@@ -21,6 +21,9 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
 
   late List<EmgDetailsModel> _sorted;
 
+  bool _filtersExpanded = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -75,26 +78,26 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
             const SizedBox(height: 12),
 
             // ===== Search & Filters =====
-            _WhiteCard(
-              child: Column(
-                children: [
-                  _SearchField(
-                    controller: _search,
-                    hint: 'Search doctor, department, UID, billing id…',
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 12),
-                  _FilterBar(
-                    status: _statusFilter,
-                    onStatusChanged: (v) => setState(() => _statusFilter = v),
-                    type: _typeFilter,
-                    onTypeChanged: (v) => setState(() => _typeFilter = v),
-                    date: _dateFilter,
-                    onDateChanged: (v) => setState(() => _dateFilter = v),
-                  ),
-                ],
+            // ===== Search & Filters (expandable) =====
+            _ExpandableFilterCard(
+              expanded: _filtersExpanded,
+              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
+              title: 'Search & Filters',
+              searchField: _SearchField(
+                controller: _search,
+                hint: 'Search doctor, department, UID, billing id…',
+                onChanged: (_) => setState(() {}),
+              ),
+              filters: _FilterBar(
+                status: _statusFilter,
+                onStatusChanged: (v) => setState(() => _statusFilter = v),
+                type: _typeFilter,
+                onTypeChanged: (v) => setState(() => _typeFilter = v),
+                date: _dateFilter,
+                onDateChanged: (v) => setState(() => _dateFilter = v),
               ),
             ),
+
             const SizedBox(height: 12),
 
             // ===== Empty =====
@@ -834,4 +837,95 @@ class _SummaryTile extends StatelessWidget {
       ],
     );
   }
+}
+
+
+class _ExpandableFilterCard extends StatelessWidget {
+  final bool expanded;
+  final VoidCallback onToggle;
+  final String title;
+  final Widget searchField;
+  final Widget filters;
+
+  const _ExpandableFilterCard({
+    required this.expanded,
+    required this.onToggle,
+    required this.title,
+    required this.searchField,
+    required this.filters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _WhiteCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header row (tap to toggle)
+          InkWell(
+            onTap: onToggle,
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    duration: const Duration(milliseconds: 200),
+                    turns: expanded ? 0.5 : 0.0, // 0 = down, 0.5 = up
+                    child: const Icon(Icons.keyboard_arrow_down_rounded,
+                        size: 22, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Search always visible
+          searchField,
+
+          // Smooth expand/collapse
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 220),
+            firstCurve: Curves.easeOut,
+            secondCurve: Curves.easeOut,
+            sizeCurve: Curves.easeOut,
+            crossFadeState:
+            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            firstChild: const SizedBox(height: 0),
+            secondChild: Column(
+              children: [
+                const SizedBox(height: 12),
+                _softDivider(),
+                const SizedBox(height: 12),
+                filters,
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _softDivider() => Container(
+    height: 1,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+  );
 }

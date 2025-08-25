@@ -19,19 +19,22 @@ class PatientDetailsScreen extends StatefulWidget {
 
 class _PatientDetailsScreenState extends State<PatientDetailsScreen>
     with TickerProviderStateMixin {
-  // Background palette (kept exactly the same)
+  // Background palette (kept the same)
   static const Color bg1 = Color(0xFFF0F0F0);
   static const Color bg2 = Color(0xFFCDDBFF);
   static const Color textPrimary = Colors.black87;
 
-  // Accents (kept exactly the same)
+  // Accents (kept the same)
   static const Color opdAccent = Color(0xFF00C2FF); // sky blue
   static const Color opticalAccent = Color(0xFF7F5AF0); // violet
   static const double _hPad = 20;
 
+  // Center column width cap
+  static const double _maxContentWidth = 720.0;
+
   final SharedPref _pref = getIt<SharedPref>();
   final PatientDetailsUsecase _patientDetailsUsecase =
-      getIt<PatientDetailsUsecase>();
+  getIt<PatientDetailsUsecase>();
 
   PatientDetailsResponse? patientDetailsData;
 
@@ -44,6 +47,19 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
   bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // ---- Center + constrain any sliver section to a nice content width
+  SliverToBoxAdapter _sectionWrap(Widget child) => SliverToBoxAdapter(
+    child: Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: child,
+        ),
+      ),
+    ),
+  );
 
   @override
   void initState() {
@@ -67,7 +83,6 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
   Future<void> _onRefresh() async {
     HapticFeedback.lightImpact();
     setState(() => _loading = true);
-    // TODO: call your API refresh here
     await getPatientDetails();
     await Future.delayed(const Duration(milliseconds: 350));
     if (!mounted) return;
@@ -84,11 +99,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
     if (resource.status == STATUS.SUCCESS) {
       final data = resource.data as Map<String, dynamic>;
       patientDetailsData = PatientDetailsResponse.fromJson(data);
-      // debug
-      // print(patientDetailsData);
     } else {
       // Optionally show a toast/snack if failed
-      // debugPrint('Failed to fetch patient details: ${resource.message}');
     }
 
     if (mounted) {
@@ -101,9 +113,9 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
   @override
   Widget build(BuildContext context) {
     final name =
-        (patientDetailsData?.patientDetails?.name?.trim().isNotEmpty ?? false)
-            ? patientDetailsData!.patientDetails?.name!
-            : _patientName;
+    (patientDetailsData?.patientDetails?.name?.trim().isNotEmpty ?? false)
+        ? patientDetailsData!.patientDetails?.name!
+        : _patientName;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -111,7 +123,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Soft background (unchanged)
+          // Soft background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -121,7 +133,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
               ),
             ),
           ),
-          // Decorative blobs (unchanged)
+          // Decorative blobs
           Positioned(
               top: -120,
               left: -80,
@@ -132,114 +144,120 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
               child: _blob(260, opticalAccent.withOpacity(0.10))),
 
           SafeArea(
-            child: RefreshIndicator(
-              color: opdAccent,
-              onRefresh: _onRefresh,
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                slivers: [
-                  // Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
-                      child: Row(
-                        children: [
-                          _roundIconButton(
+            child: ScrollConfiguration(
+              behavior: const _NoGlowBehavior(),
+              child: RefreshIndicator(
+                color: opdAccent,
+                onRefresh: _onRefresh,
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
+                  slivers: [
+                    // ===== Header (centered) =====
+                    _sectionWrap(
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 20, 0, 10),
+                        child: Row(
+                          children: [
+                            _roundIconButton(
                               icon: Icons.arrow_back_ios_new_rounded,
-                              onTap: () => Navigator.pop(context)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              name!.isNotEmpty ? name : 'Patient Details',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: textPrimary,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.2,
+                              onTap: () => Navigator.pop(context),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                (name ?? '').isNotEmpty
+                                    ? name!
+                                    : 'Patient Details',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: textPrimary,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.2,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  // === Patient Identity Card (modern & glassy) ===
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: _hPad, vertical: 12),
-                      child: (patientDetailsData == null && _loading)
-                          ? _identitySkeleton()
-                          : _PatientIdentityCard(
-                              name: name,
-                              gender:
-                                  (patientDetailsData?.patientDetails?.gender ??
-                                          _patientGender)
-                                      .toString(),
-                              phone:
-                                  (patientDetailsData?.patientDetails?.phone ??
-                                          _patientPhone)
-                                      .toString(),
-                              bloodGroup: (patientDetailsData
-                                          ?.patientDetails?.bloodGroup ??
-                                      '')
-                                  .toString(),
-                              identificationName: (patientDetailsData
-                                          ?.patientDetails
-                                          ?.identificationNumber ??
-                                      '')
-                                  .toString(),
-                              identificationNumber: (patientDetailsData
-                                          ?.patientDetails
-                                          ?.identificationNumber ??
-                                      '')
-                                  .toString(),
-                              guardianName: (patientDetailsData
-                                          ?.patientDetails?.guardianName ??
-                                      '')
-                                  .toString(),
-                              relation: (patientDetailsData
-                                          ?.patientDetails?.guardianName ??
-                                      '')
-                                  .toString(),
-                              address: (patientDetailsData
-                                          ?.patientDetails?.address ??
-                                      '')
-                                  .toString(),
-                              dobYears:
-                                  patientDetailsData?.patientDetails?.dobYear,
-                              dobMonths:
-                                  patientDetailsData?.patientDetails?.dobMonth,
-                              dobDays:
-                                  patientDetailsData?.patientDetails?.dobDay,
-                              dateOfBirthIso: patientDetailsData
-                                  ?.patientDetails?.dateOfBirth
-                                  ?.toString(),
-                            ),
+                    // === Patient Identity Card (modern & glassy, centered) ===
+                    _sectionWrap(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: (patientDetailsData == null && _loading)
+                            ? _identitySkeleton()
+                            : _PatientIdentityCard(
+                          name: name ?? '',
+                          gender: (patientDetailsData
+                              ?.patientDetails?.gender ??
+                              _patientGender)
+                              .toString(),
+                          phone: (patientDetailsData
+                              ?.patientDetails?.phone ??
+                              _patientPhone)
+                              .toString(),
+                          bloodGroup: (patientDetailsData
+                              ?.patientDetails?.bloodGroup ??
+                              '')
+                              .toString(),
+                          identificationName: (patientDetailsData
+                              ?.patientDetails
+                              ?.identificationNumber ??
+                              '')
+                              .toString(),
+                          identificationNumber: (patientDetailsData
+                              ?.patientDetails
+                              ?.identificationNumber ??
+                              '')
+                              .toString(),
+                          guardianName: (patientDetailsData
+                              ?.patientDetails?.guardianName ??
+                              '')
+                              .toString(),
+                          relation: (patientDetailsData
+                              ?.patientDetails?.guardianName ??
+                              '')
+                              .toString(),
+                          address: (patientDetailsData
+                              ?.patientDetails?.address ??
+                              '')
+                              .toString(),
+                          dobYears:
+                          patientDetailsData?.patientDetails?.dobYear,
+                          dobMonths: patientDetailsData
+                              ?.patientDetails?.dobMonth,
+                          dobDays:
+                          patientDetailsData?.patientDetails?.dobDay,
+                          dateOfBirthIso: patientDetailsData
+                              ?.patientDetails?.dateOfBirth
+                              ?.toString(),
+                        ),
+                      ),
                     ),
-                  ),
 
-                  // Patient Records Grid (unchanged logic, with minor polish)
-                  if (patientDetailsData != null)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: buildPatientDetailsGrid(patientDetailsData!),
+                    // === Patient Records Grid (centered + responsive) ===
+                    if (patientDetailsData != null)
+                      _sectionWrap(
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: buildPatientDetailsGrid(
+                              context, patientDetailsData!),
+                        ),
+                      )
+                    else if (!isLoading)
+                      const SliverToBoxAdapter(child: SizedBox.shrink())
+                    else
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 40),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
                       ),
-                    )
-                  else if (!isLoading)
-                    const SliverToBoxAdapter(child: SizedBox.shrink())
-                  else
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 40),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -250,7 +268,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
 
   // ================== Sections ==================
 
-  Widget buildPatientDetailsGrid(PatientDetailsResponse patientDetailsData) {
+  Widget buildPatientDetailsGrid(
+      BuildContext context, PatientDetailsResponse patientDetailsData) {
     final tiles = <Widget>[];
 
     if (patientDetailsData.opdDetails.isNotEmpty) {
@@ -267,7 +286,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
       ));
     }
     if (patientDetailsData.ipdDetails.isNotEmpty) {
-      tiles.add(GlassTile(
+      tiles.add(const GlassTile(
         icon: Icons.bed,
         label: "IPD",
       ));
@@ -331,24 +350,37 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
       tiles.add(const GlassTile(icon: Icons.note, label: "Notes"));
     }
     if (patientDetailsData.emrDetails.isNotEmpty) {
-      tiles.add( GlassTile(
-          icon: Icons.history,
-          label: "EMR",
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              RouteGenerator.kPatientEmrDetailsScreen,
-              arguments: patientDetailsData.emrDetails,
-            );
-          },
-
+      tiles.add(GlassTile(
+        icon: Icons.history,
+        label: "EMR",
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RouteGenerator.kPatientEmrDetailsScreen,
+            arguments: patientDetailsData.emrDetails,
+          );
+        },
       ));
     }
 
     if (tiles.isEmpty) return const SizedBox.shrink();
 
+    final screenW = MediaQuery.of(context).size.width;
+    final contentW = screenW < _maxContentWidth ? screenW : _maxContentWidth;
+
+    int crossAxisCount;
+    if (contentW < 380) {
+      crossAxisCount = 2;
+    } else if (contentW < 640) {
+      crossAxisCount = 3;
+    } else {
+      crossAxisCount = 4;
+    }
+
+    final aspect = contentW < 380 ? 0.95 : 1.05;
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.7),
@@ -372,17 +404,14 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
               ),
             ),
           ),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 180),
-            child: GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 14,
-              crossAxisSpacing: 14,
-              childAspectRatio: 1,
-              children: tiles,
-            ),
+          GridView.count(
+            crossAxisCount: crossAxisCount,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: aspect,
+            children: tiles,
           ),
         ],
       ),
@@ -408,14 +437,13 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  Widget _roundIconButton({required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
       onTap: () {
         HapticFeedback.selectionClick();
         onTap();
       },
-      radius: 28,
+      radius: 25,
       child: Container(
         width: 44,
         height: 44,
@@ -424,13 +452,10 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         child: Icon(icon, color: textPrimary),
@@ -456,16 +481,13 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
               const SizedBox(width: 14),
               Expanded(
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(height: 18, width: 180, color: Colors.white70),
-                  const SizedBox(height: 10),
-                  Container(
-                      height: 30,
-                      width: double.infinity,
-                      color: Colors.white70),
-                ],
-              )),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(height: 18, width: 180, color: Colors.white70),
+                      const SizedBox(height: 10),
+                      Container(height: 30, width: double.infinity, color: Colors.white70),
+                    ],
+                  )),
             ]),
             const SizedBox(height: 18),
             Container(height: 14, width: 220, color: Colors.white70),
@@ -520,202 +542,201 @@ class _PatientIdentityCard extends StatelessWidget {
     );
 
     return _GlassCard(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top row: Avatar + Name + Chips
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _GradientAvatar(initials: initials),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Name
-                    Text(
-                      name.isNotEmpty ? name : 'Unknown Patient',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: _PatientDetailsScreenState.textPrimary,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Chips row
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        if (gender.trim().isNotEmpty)
-                          _chip(icon: Icons.person_outline, label: gender),
-                        if (ageText.isNotEmpty)
-                          _chip(icon: Icons.cake_outlined, label: ageText),
-                        if (bloodGroup.trim().isNotEmpty &&
-                            bloodGroup.toUpperCase() != "NULL")
-                          _chip(
-                              icon: Icons.bloodtype_outlined,
-                              label: bloodGroup.toUpperCase()),
-                        if (identificationName.trim().isNotEmpty)
-                          _chip(
-                            icon: Icons.badge_outlined,
-                            label: identificationNumber.trim().isNotEmpty
-                                ? "$identificationName • $identificationNumber"
-                                : identificationName,
-                          ),
-                      ],
-                    ),
+      padding: EdgeInsets.zero,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ===== Banner with gradient =====
+            Container(
+              height: 110,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    _PatientDetailsScreenState.opdAccent,
+                    _PatientDetailsScreenState.opticalAccent,
                   ],
                 ),
               ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-          const Divider(),
-
-          // Contact & Guardian section
-          const SizedBox(height: 8),
-          _iconLine(
-            icon: Icons.phone_rounded,
-            title: 'Phone',
-            value: phone.isNotEmpty ? phone : '—',
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _smallActionButton(
-                  tooltip: 'Copy',
-                  icon: Icons.copy_rounded,
-                  onTap: () {
-                    if (phone.trim().isEmpty) return;
-                    Clipboard.setData(ClipboardData(text: phone));
-                    _snack(context, 'Phone copied');
-                  },
-                ),
-                const SizedBox(width: 6),
-                _smallActionButton(
-                  tooltip: 'Call',
-                  icon: Icons.call_rounded,
-                  onTap: () {
-                    // Integrate url_launcher if desired
-                    _snack(context, 'Would call $phone');
-                  },
-                ),
-              ],
+              child: Stack(
+                children: [
+                  // subtle pattern blobs
+                  Positioned(
+                    top: -20,
+                    right: -20,
+                    child: Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.12),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -30,
+                    left: -10,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.10),
+                      ),
+                    ),
+                  ),
+                  // Title row
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 14, 16, 0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.badge_outlined, color: Colors.white, size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Patient Details',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: .2,
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          if (guardianName.trim().isNotEmpty || relation.trim().isNotEmpty) ...[
-            const SizedBox(height: 10),
-            _iconLine(
-              icon: Icons.family_restroom_rounded,
-              title: 'Guardian',
-              value: [
-                if (guardianName.trim().isNotEmpty) guardianName.trim(),
-                if (relation.trim().isNotEmpty) "($relation)"
-              ].join(' ').trim(),
+
+            // ===== Header Row (Avatar + Name + meta chips) =====
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // card body container with top spacing for avatar overlap
+                  Padding(
+                    padding: const EdgeInsets.only(top: 36),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Name + phone quick actions
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(width: 84), // avatar space
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name.isNotEmpty ? name : 'Unknown Patient',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: _PatientDetailsScreenState.textPrimary,
+                                      letterSpacing: 0.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      if (gender.trim().isNotEmpty)
+                                        _tinyChip(Icons.person_outline, gender),
+                                      if (ageText.isNotEmpty)
+                                        _tinyChip(Icons.cake_outlined, ageText),
+                                      if (bloodGroup.trim().isNotEmpty &&
+                                          bloodGroup.toUpperCase() != 'NULL')
+                                        _tinyChip(Icons.bloodtype_outlined, bloodGroup.toUpperCase()),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Quick actions
+                            Column(
+                              children: [
+                                _circleAction(
+                                  icon: Icons.call_rounded,
+                                  tooltip: 'Call',
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    _snack(context,
+                                        phone.trim().isEmpty ? 'No phone available' : 'Would call $phone');
+                                  },
+                                ),
+                                const SizedBox(height: 8),
+                                _circleAction(
+                                  icon: Icons.copy_rounded,
+                                  tooltip: 'Copy phone',
+                                  onTap: () {
+                                    if (phone.trim().isEmpty) return;
+                                    HapticFeedback.selectionClick();
+                                    Clipboard.setData(ClipboardData(text: phone));
+                                    _snack(context, 'Phone copied');
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Info grid — compact & clean
+                        _infoGrid(
+                          rows: [
+                            if (identificationName.trim().isNotEmpty)
+                              _infoRow(
+                                'ID',
+                                identificationNumber.trim().isNotEmpty
+                                    ? '$identificationName • $identificationNumber'
+                                    : identificationName,
+                              ),
+                            if (guardianName.trim().isNotEmpty || relation.trim().isNotEmpty)
+                              _infoRow(
+                                'Guardian',
+                                [
+                                  if (guardianName.trim().isNotEmpty) guardianName.trim(),
+                                  if (relation.trim().isNotEmpty) '($relation)'
+                                ].join(' ').trim(),
+                              ),
+                            if (phone.trim().isNotEmpty) _infoRow('Phone', phone),
+                            if (address.trim().isNotEmpty) _infoRow('Address', address),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Overlapping avatar
+                  Positioned(
+                    top: -36,
+                    left: 0,
+                    child: _avatar(initials),
+                  ),
+                ],
+              ),
             ),
           ],
-          if (address.trim().isNotEmpty) ...[
-            const SizedBox(height: 10),
-            _iconLine(
-              icon: Icons.location_on_outlined,
-              title: 'Address',
-              value: address.trim(),
-            ),
-          ],
-
-          const SizedBox(height: 6),
-        ],
-      ),
-    );
-  }
-
-  // Simple floating snackbar helper
-  void _snack(BuildContext context, String message) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) return;
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(milliseconds: 1400),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-    );
-  }
-
-  // --- Small building blocks ---
-
-  static Widget _chip({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: Colors.blueGrey[800]),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-              letterSpacing: 0.1,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget _iconLine({
-    required IconData icon,
-    required String title,
-    required String value,
-    Widget? trailing,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: Colors.blueGrey[700]),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: Colors.black87)),
-              const SizedBox(height: 3),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 13, color: Colors.black54, height: 1.25)),
-            ],
-          ),
         ),
-        if (trailing != null) trailing,
-      ],
+      ),
     );
   }
 
-  static Widget _smallActionButton({
+  // ======= small bits (defined inside the widget to avoid missing references) =======
+
+  Widget _circleAction({
     required IconData icon,
-    required VoidCallback onTap,
     required String tooltip,
+    required VoidCallback onTap,
   }) {
     return Tooltip(
       message: tooltip,
@@ -724,17 +745,17 @@ class _PatientIdentityCard extends StatelessWidget {
           HapticFeedback.selectionClick();
           onTap();
         },
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
-          width: 36,
-          height: 36,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
+            shape: BoxShape.circle,
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.black12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withOpacity(0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -745,33 +766,26 @@ class _PatientIdentityCard extends StatelessWidget {
       ),
     );
   }
-}
 
-class _GradientAvatar extends StatelessWidget {
-  final String initials;
-
-  const _GradientAvatar({required this.initials});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _avatar(String initials) {
     return Container(
-      width: 64,
-      height: 64,
+      width: 88,
+      height: 88,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _PatientDetailsScreenState.opdAccent, // keep your palette
+            _PatientDetailsScreenState.opdAccent,
             _PatientDetailsScreenState.opticalAccent,
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -780,20 +794,121 @@ class _GradientAvatar extends StatelessWidget {
           initials,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.5,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.4,
           ),
         ),
       ),
     );
   }
+
+  static Widget _tinyChip(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: Colors.blueGrey[800]),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          ),
+        ),
+      ]),
+    );
+  }
+
+  static Widget _infoGrid({required List<_InfoRow> rows}) {
+    if (rows.isEmpty) return const SizedBox.shrink();
+    return Column(
+      children: [
+        for (int i = 0; i < rows.length; i++) ...[
+          _infoLine(rows[i].label, rows[i].value),
+          if (i != rows.length - 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Container(
+                height: 1,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  static Widget _infoLine(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 86,
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            value.isEmpty ? '—' : value,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black54,
+              height: 1.3,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static _InfoRow _infoRow(String label, String value) => _InfoRow(label, value);
+
+  static void _snack(BuildContext context, String message) {
+    final m = ScaffoldMessenger.maybeOf(context);
+    if (m == null) return;
+    m.clearSnackBars();
+    m.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(milliseconds: 1400),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
+  }
+}
+
+class _InfoRow {
+  final String label;
+  final String value;
+  _InfoRow(this.label, this.value);
 }
 
 // --- Shared helpers ---
 String _initialsFromName(String name) {
   final parts =
-      name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+  name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
   if (parts.isEmpty) return 'P';
   if (parts.length == 1) return parts.first.characters.first.toUpperCase();
   return (parts.first.characters.first + parts.last.characters.first)
@@ -848,7 +963,7 @@ String _prettyAge({
   return '';
 }
 
-// ====== Your existing glass + tiles + skeleton from original code ======
+// ====== Glass tile + cards + skeleton ======
 
 class GlassTile extends StatelessWidget {
   final IconData icon;
@@ -910,8 +1025,7 @@ class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
 
-  const _GlassCard(
-      {required this.child, this.padding = const EdgeInsets.all(18)});
+  const _GlassCard({required this.child, this.padding = const EdgeInsets.all(18)});
 
   @override
   Widget build(BuildContext context) {
@@ -939,8 +1053,7 @@ class _GlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: radius,
               color: Colors.white.withOpacity(0.78),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -993,3 +1106,11 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
   }
 }
 
+// Remove glowing overscroll for a cleaner look
+class _NoGlowBehavior extends ScrollBehavior {
+  const _NoGlowBehavior();
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
+  }
+}

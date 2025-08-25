@@ -8,7 +8,8 @@ class PatientEmgDetailsScreen extends StatefulWidget {
   const PatientEmgDetailsScreen({super.key, required this.emgList});
 
   @override
-  State<PatientEmgDetailsScreen> createState() => _PatientEmgDetailsScreenState();
+  State<PatientEmgDetailsScreen> createState() =>
+      _PatientEmgDetailsScreenState();
 }
 
 class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
@@ -16,22 +17,21 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
 
   // Filters
   String _statusFilter = 'All'; // All | Paid | Pending
-  String _typeFilter = 'All';   // All | New | Old
-  String _dateFilter = 'All';   // All | Today | Upcoming | Past
+  String _typeFilter = 'All'; // All | New | Old
+  String _dateFilter = 'All'; // All | Today | Upcoming | Past
 
   late List<EmgDetailsModel> _sorted;
 
   bool _filtersExpanded = false;
 
-
   @override
   void initState() {
     super.initState();
     _sorted = [...widget.emgList]..sort((a, b) {
-      final ad = _safeDate(_getAppointmentIso(a));
-      final bd = _safeDate(_getAppointmentIso(b));
-      return bd.compareTo(ad); // newest first
-    });
+        final ad = _safeDate(_getAppointmentIso(a));
+        final bd = _safeDate(_getAppointmentIso(b));
+        return bd.compareTo(ad); // newest first
+      });
   }
 
   @override
@@ -42,90 +42,120 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _applyFilters(_sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
+    final filtered = _applyFilters(
+        _sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
     final summary = _summaryStats(filtered);
 
     return Scaffold(
       body: PatientDetailsScreenLayout(
-        heading: 'Emergency (EMG)',
-        child: SliverList(
-          delegate: SliverChildListDelegate.fixed([
-            const SizedBox(height: 16),
-
-            // ===== Summary =====
-            _WhiteCard(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               child: Row(
                 children: [
-                  _summaryTile(
-                    icon: Icons.emergency_outlined,
-                    label: 'EMG Visits',
-                    value: '${filtered.length}',
-                    color: Colors.indigo,
-                  ),
+                  _roundIconButton(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onTap: () => Navigator.pop(context)),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _summaryTile(
-                      icon: Icons.account_balance_wallet_outlined,
-                      label: 'Total Due',
-                      value: _inr(summary.totalDue),
-                      color: Colors.deepOrange,
-                      alignEnd: true,
+                    child: Text(
+                      "Emergency (EMG)",
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.2,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate.fixed([
+              const SizedBox(height: 16),
 
-            // ===== Search & Filters =====
-            // ===== Search & Filters (expandable) =====
-            _ExpandableFilterCard(
-              expanded: _filtersExpanded,
-              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
-              title: 'Search & Filters',
-              searchField: _SearchField(
-                controller: _search,
-                hint: 'Search doctor, department, UID, billing id…',
-                onChanged: (_) => setState(() {}),
+              // ===== Summary =====
+              _WhiteCard(
+                child: Row(
+                  children: [
+                    _summaryTile(
+                      icon: Icons.emergency_outlined,
+                      label: 'EMG Visits',
+                      value: '${filtered.length}',
+                      color: Colors.indigo,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _summaryTile(
+                        icon: Icons.account_balance_wallet_outlined,
+                        label: 'Total Due',
+                        value: _inr(summary.totalDue),
+                        color: Colors.deepOrange,
+                        alignEnd: true,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              filters: _FilterBar(
-                status: _statusFilter,
-                onStatusChanged: (v) => setState(() => _statusFilter = v),
-                type: _typeFilter,
-                onTypeChanged: (v) => setState(() => _typeFilter = v),
-                date: _dateFilter,
-                onDateChanged: (v) => setState(() => _dateFilter = v),
-              ),
-            ),
+              const SizedBox(height: 12),
 
-            const SizedBox(height: 12),
-
-            // ===== Empty =====
-            if (filtered.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                child: const _EmptyState(
-                  title: 'No EMG records',
-                  subtitle: 'Try clearing filters or searching with a different term.',
+              // ===== Search & Filters =====
+              // ===== Search & Filters (expandable) =====
+              _ExpandableFilterCard(
+                expanded: _filtersExpanded,
+                onToggle: () =>
+                    setState(() => _filtersExpanded = !_filtersExpanded),
+                title: 'Search & Filters',
+                searchField: _SearchField(
+                  controller: _search,
+                  hint: 'Search doctor, department, UID, billing id…',
+                  onChanged: (_) => setState(() {}),
+                ),
+                filters: _FilterBar(
+                  status: _statusFilter,
+                  onStatusChanged: (v) => setState(() => _statusFilter = v),
+                  type: _typeFilter,
+                  onTypeChanged: (v) => setState(() => _typeFilter = v),
+                  date: _dateFilter,
+                  onDateChanged: (v) => setState(() => _dateFilter = v),
                 ),
               ),
 
-            // ===== List =====
-            ...filtered.map((e) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: _EmgTile(
-                emg: e,
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  // Navigate to a detailed EMG view if you add one:
-                  // Navigator.pushNamed(context, RouteGenerator.kEmgDetail, arguments: e);
-                },
-              ),
-            )),
+              const SizedBox(height: 12),
 
-            const SizedBox(height: 28),
-          ]),
-        ),
+              // ===== Empty =====
+              if (filtered.isEmpty)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                  child: const _EmptyState(
+                    title: 'No EMG records',
+                    subtitle:
+                        'Try clearing filters or searching with a different term.',
+                  ),
+                ),
+
+              // ===== List =====
+              ...filtered.map((e) => Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    child: _EmgTile(
+                      emg: e,
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        // Navigate to a detailed EMG view if you add one:
+                        // Navigator.pushNamed(context, RouteGenerator.kEmgDetail, arguments: e);
+                      },
+                    ),
+                  )),
+
+              const SizedBox(height: 28),
+            ]),
+          )
+        ],
       ),
     );
   }
@@ -145,7 +175,9 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
 
   String _doctor(EmgDetailsModel m) {
     final v = (m as dynamic).doctorName ?? (m as dynamic).doctor_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
+    return (v?.toString().trim().isNotEmpty ?? false)
+        ? v.toString()
+        : 'Unknown Doctor';
   }
 
   String _department(EmgDetailsModel m) {
@@ -179,12 +211,12 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
   }
 
   List<EmgDetailsModel> _applyFilters(
-      List<EmgDetailsModel> list,
-      String q,
-      String status,
-      String type,
-      String dateFilter,
-      ) {
+    List<EmgDetailsModel> list,
+    String q,
+    String status,
+    String type,
+    String dateFilter,
+  ) {
     final now = DateTime.now();
     Iterable<EmgDetailsModel> res = list;
     final query = q.trim().toLowerCase();
@@ -194,7 +226,11 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
         final doctor = _doctor(m).toLowerCase();
         final dept = _department(m).toLowerCase();
         final uid = _uid(m).toLowerCase();
-        final billingId = ((m as dynamic).billingId ?? (m as dynamic).billing_id)?.toString().toLowerCase() ?? '';
+        final billingId =
+            ((m as dynamic).billingId ?? (m as dynamic).billing_id)
+                    ?.toString()
+                    .toLowerCase() ??
+                '';
         final id = ((m as dynamic).id)?.toString().toLowerCase() ?? '';
         final t = _type(m).toLowerCase();
         return doctor.contains(query) ||
@@ -243,6 +279,36 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
     }
     return _EmgSummary(totalDue: totalDue);
   }
+
+  Widget _roundIconButton(
+      {required IconData icon, required VoidCallback onTap}) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 28,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 6)),
+            BoxShadow(
+                color: Colors.white.withOpacity(0.85),
+                blurRadius: 4,
+                offset: const Offset(-2, -2)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black87),
+      ),
+    );
+  }
 }
 
 class _EmgSummary {
@@ -261,11 +327,14 @@ class _EmgTile extends StatelessWidget {
   Widget build(BuildContext context) {
     String _doctor() {
       final v = (emg as dynamic).doctorName ?? (emg as dynamic).doctor_name;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
+      return (v?.toString().trim().isNotEmpty ?? false)
+          ? v.toString()
+          : 'Unknown Doctor';
     }
 
     String _department() {
-      final v = (emg as dynamic).departmentName ?? (emg as dynamic).department_name;
+      final v =
+          (emg as dynamic).departmentName ?? (emg as dynamic).department_name;
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
     }
 
@@ -295,7 +364,8 @@ class _EmgTile extends StatelessWidget {
     }
 
     String _appointmentIso() {
-      final v = (emg as dynamic).appointmentDate ?? (emg as dynamic).appointment_date;
+      final v =
+          (emg as dynamic).appointmentDate ?? (emg as dynamic).appointment_date;
       return v?.toString() ?? '';
     }
 
@@ -303,7 +373,20 @@ class _EmgTile extends StatelessWidget {
       if (iso == null || iso.isEmpty) return '—';
       final d = DateTime.tryParse(iso);
       if (d == null) return iso;
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
       final dd = d.day.toString().padLeft(2, '0');
       final mm = months[d.month - 1];
       final yyyy = d.year.toString();
@@ -385,11 +468,13 @@ class _EmgTile extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: statusColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(999),
-                          border: Border.all(color: statusColor.withOpacity(0.4)),
+                          border:
+                              Border.all(color: statusColor.withOpacity(0.4)),
                         ),
                         child: Text(
                           paid ? 'Paid' : 'Pending',
@@ -409,7 +494,7 @@ class _EmgTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                         "Dr  ${_doctor()}",
+                          "Dr  ${_doctor()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -432,13 +517,18 @@ class _EmgTile extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.event, size: 16, color: Colors.blueGrey),
+                          const Icon(Icons.event,
+                              size: 16, color: Colors.blueGrey),
                           const SizedBox(width: 6),
-                          Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
+                          Text(apptText,
+                              style: const TextStyle(
+                                  fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
                       if (_type().trim().isNotEmpty && _type() != '—')
-                        _chip(icon: Icons.category_outlined, label: _type().toUpperCase()),
+                        _chip(
+                            icon: Icons.category_outlined,
+                            label: _type().toUpperCase()),
                       if (_uid() != '—')
                         _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
                     ],
@@ -462,7 +552,8 @@ class _EmgTile extends StatelessWidget {
   }
 
   static String _circleText(String uid) {
-    final digits = RegExp(r'\d+').allMatches(uid).map((m) => m.group(0)!).join();
+    final digits =
+        RegExp(r'\d+').allMatches(uid).map((m) => m.group(0)!).join();
     if (digits.isEmpty) return 'EMG';
     return digits.length <= 3 ? digits : digits.substring(digits.length - 3);
   }
@@ -614,13 +705,13 @@ class _FilterBar extends StatelessWidget {
             child: Row(
               children: items
                   .map((it) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _segChip(
-                  label: it,
-                  selected: value == it,
-                  onTap: () => onChanged(it),
-                ),
-              ))
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _segChip(
+                          label: it,
+                          selected: value == it,
+                          onTap: () => onChanged(it),
+                        ),
+                      ))
                   .toList(),
             ),
           ),
@@ -649,7 +740,7 @@ class _FilterBar extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight:selected?FontWeight.w700:FontWeight.w600,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             color: color,
           ),
         ),
@@ -680,15 +771,16 @@ class _SearchField extends StatelessWidget {
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () {
-            controller.clear();
-            onChanged?.call('');
-          },
-        ),
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call('');
+                },
+              ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
@@ -741,7 +833,8 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(Icons.emergency_outlined, size: 64, color: Colors.blueGrey.withOpacity(0.4)),
+        Icon(Icons.emergency_outlined,
+            size: 64, color: Colors.blueGrey.withOpacity(0.4)),
         const SizedBox(height: 16),
         Text(title,
             style: const TextStyle(
@@ -775,6 +868,7 @@ String _inr(num? v) {
   }
   return '₹${buf.toString()}.$dec';
 }
+
 // ---------- Shared summary tile ----------
 Widget _summaryTile({
   required IconData icon,
@@ -808,7 +902,8 @@ class _SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 16,
@@ -817,7 +912,8 @@ class _SummaryTile extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Column(
-          crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(label,
                 style: const TextStyle(
@@ -838,7 +934,6 @@ class _SummaryTile extends StatelessWidget {
     );
   }
 }
-
 
 class _ExpandableFilterCard extends StatelessWidget {
   final bool expanded;
@@ -869,7 +964,8 @@ class _ExpandableFilterCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
+                  const Icon(Icons.tune_rounded,
+                      size: 20, color: Colors.indigo),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -902,7 +998,7 @@ class _ExpandableFilterCard extends StatelessWidget {
             secondCurve: Curves.easeOut,
             sizeCurve: Curves.easeOut,
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Column(
               children: [
@@ -919,13 +1015,13 @@ class _ExpandableFilterCard extends StatelessWidget {
   }
 
   Widget _softDivider() => Container(
-    height: 1,
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      ),
-    ),
-  );
+        height: 1,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+      );
 }

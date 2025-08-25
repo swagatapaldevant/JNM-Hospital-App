@@ -18,11 +18,13 @@ class _PatientOPDScreenState extends State<PatientOPDScreen> {
   @override
   Widget build(BuildContext context) {
     return PatientDetailsScreenLayout(
-      heading: "OPD page",
-      child:  SliverToBoxAdapter(
-        child: CommonButton(
-            onTap: onPressed, buttonName: "Book New Appointment"),
-      ),
+      
+      slivers:  [
+        SliverToBoxAdapter(
+          child: CommonButton(
+              onTap: onPressed, buttonName: "Book New Appointment"),
+        ),
+      ],
     );
   }
 }

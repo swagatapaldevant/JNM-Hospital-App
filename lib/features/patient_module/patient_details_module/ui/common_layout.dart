@@ -10,11 +10,10 @@ import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/pa
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
 
 class PatientDetailsScreenLayout extends StatefulWidget {
-  PatientDetailsScreenLayout({super.key, required this.child, required this.heading });
+  PatientDetailsScreenLayout({super.key, required this.slivers });
 
-  final Widget child;
-  final String heading;
-  //bool isLoading = false;
+  final List<Widget> slivers;
+
 
   @override
   State<PatientDetailsScreenLayout> createState() =>
@@ -120,35 +119,9 @@ class _PatientDetailsScreenLayoutState extends State<PatientDetailsScreenLayout>
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
-                slivers: [
-                  // Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
-                      child: Row(
-                        children: [
-                          _roundIconButton(
-                              icon: Icons.arrow_back_ios_new_rounded,
-                              onTap: () => Navigator.pop(context)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              widget.heading,
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  widget.child
-                ],
+                slivers: 
+                  widget.slivers
+                ,
               ),
             ),
           ),

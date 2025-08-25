@@ -50,8 +50,33 @@ class _PatientDaycareDetailsScreenState
 
     return Scaffold(
       body: PatientDetailsScreenLayout(
-        heading: 'Daycare Details',
-        child: SliverList(
+        
+        slivers: [
+           SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              children: [
+                _roundIconButton(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    onTap: () => Navigator.pop(context)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Daycare Details",
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+          SliverList(
           delegate: SliverChildListDelegate.fixed([
             const SizedBox(height: 16),
 
@@ -132,10 +157,41 @@ class _PatientDaycareDetailsScreenState
 
             const SizedBox(height: 28),
           ]),
-        ),
+        )],
       ),
     );
   }
+  Widget _roundIconButton(
+      {required IconData icon, required VoidCallback onTap}) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 28,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.10),
+                blurRadius: 16,
+                offset: const Offset(0, 6)),
+            BoxShadow(
+                color: Colors.white.withOpacity(0.85),
+                blurRadius: 4,
+                offset: const Offset(-2, -2)),
+          ],
+        ),
+        child: Icon(icon, color: Colors.black87),
+      ),
+    );
+  }
+
+}
 
   // ---------------- Helpers & Model accessors ----------------
 
@@ -276,7 +332,7 @@ class _PatientDaycareDetailsScreenState
     }
     return _DaycareSummary(currentAdmitted: currentAdmitted);
   }
-}
+
 
 class _DaycareSummary {
   final int currentAdmitted;

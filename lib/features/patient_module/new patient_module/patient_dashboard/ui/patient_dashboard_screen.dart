@@ -278,6 +278,16 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                         context, "/PatientDetailsScreen");
                                   },
                                 ),
+                                _QuickActionChip(
+                                  icon: Icons.receipt_long_outlined,
+                                  label: 'Rate Enquiry',
+                                  color: const Color(0xFF20C997),
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    Navigator.pushNamed(
+                                        context, RouteGenerator.kRateEnquiryScreen);
+                                  },
+                                )
                               ],
                             ),
                           ],

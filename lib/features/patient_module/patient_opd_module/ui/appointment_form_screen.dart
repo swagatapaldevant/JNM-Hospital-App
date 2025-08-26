@@ -35,11 +35,11 @@ class AppointmentFormScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Appointment Form",
+                    "Bill List",
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.2,
                     ),
                   ),

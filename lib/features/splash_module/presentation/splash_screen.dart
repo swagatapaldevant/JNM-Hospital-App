@@ -226,7 +226,8 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: 16),
                     // Brand lockup
                     Text(
-                      "JNM",
+                      //"JNM",
+                      "Rainbow",
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
@@ -290,7 +291,8 @@ class _SplashScreenState extends State<SplashScreen>
                       border: Border.all(color: Colors.black12),
                     ),
                     child: const Text(
-                      "v1.0 • JNM Suite",
+                      //"v1.0 • JNM Suite",
+                      "v1.0.0 • Rainbow",
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,

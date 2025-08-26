@@ -140,8 +140,8 @@ class RouteGenerator{
       case kPatientEmrDetailsScreen:
         final args = settings.arguments as List<EmrDetailsModel>;
         return _animatedPageRoute(PatientEmrDetailsScreen(emrList: args,));
-      // case kDoctorDetailsScreen:
-      //   return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
+      case kDoctorDetailsScreen:
+        return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
 
       // case kPatientButtonNavigation:
       //   return _animatedPageRoute(PatientButtonNavigation());

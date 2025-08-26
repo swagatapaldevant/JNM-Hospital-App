@@ -351,7 +351,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                           doctor: _doctorsToday[i],
                           accent: _getCardColor(_doctorsToday[i].color ?? ""),
                           onTap: () {
-                            //Navigator.pushNamed(context, "/DoctorDetailsScreen", arguments:_doctorsToday[i]);
+                            Navigator.pushNamed(context, "/DoctorDetailsScreen", arguments:_doctorsToday[i]);
                           }
                         ),
                       ),

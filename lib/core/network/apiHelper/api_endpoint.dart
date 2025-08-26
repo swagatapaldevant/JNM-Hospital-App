@@ -44,6 +44,7 @@ class ApiEndPoint{
     static const getOPDSchedule =  "$baseurl/get_schedule";
     static const getOPDTimeslot =  "$baseurl/get_timeslot";
     static const getInvestigationReport =  "$baseurl/complete_investigation_report";
+    static const rateEnquiry =  "$baseurl/rate_query";
 
 
 }

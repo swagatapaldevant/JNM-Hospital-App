@@ -269,14 +269,17 @@ class FilterForm extends StatefulWidget {
 
 class _FilterFormState extends State<FilterForm> {
   late FilterData _data;
-
+  String? selectedValue;
+  final TextEditingController fieldValue = TextEditingController();
+  final List<String> options = ["Patient Name",
+    "UHID",
+    "Phone number",];
+  
   // Dummy tags for multi-select
-  final List<String> _dummyValues = const [
-    "Imaging",
-    "Bloodwork",
-    "Cardio",
-    "Urgent",
-    "Follow-up",
+    final List<String> _dummyValues = const [
+    "Option A",
+    "Option B",
+    "Option C",
   ];
 
   @override
@@ -323,7 +326,26 @@ class _FilterFormState extends State<FilterForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Status chips
-          const SizedBox(height: 4),
+                    // Dropdown
+          DropdownButtonFormField<String>(
+            value: selectedValue,
+            decoration: InputDecoration(
+              labelText: "Select an option",
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            items: options.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+            onChanged: (val) => setState(() => selectedValue = val),
+          ),
+          const SizedBox(height: 16),
+
+          // Text Field
+          TextFormField(
+            controller: fieldValue,
+            decoration: InputDecoration(
+              labelText: "Enter Field Value",
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
           const Text(
             "Status",
             style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87),

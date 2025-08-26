@@ -1,9 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/rate_enquiry/rate_enquiry_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/data/rate_enquiry_usecases_impl.dart';
 
 class RateEnquiryScreen extends StatefulWidget {
   const RateEnquiryScreen({super.key});
@@ -13,7 +14,7 @@ class RateEnquiryScreen extends StatefulWidget {
 }
 
 class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
-  // Mock data (replace with API)
+
   List<RateEnquiryModelResponse> _rateEnquiries = [];
 
   final List<RateEnquiryModel> _selectedItems = [];
@@ -38,15 +39,21 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
     super.dispose();
   }
 
-  void getRateEnquiries() {
-    // TODO: Replace with API
-    _rateEnquiries = [
-      RateEnquiryModelResponse(id: "1", name: "Service A", rate: 100.0),
-      RateEnquiryModelResponse(id: "2", name: "Service B", rate: 200.0),
-      RateEnquiryModelResponse(id: "3", name: "Service C", rate: 300.0),
-      RateEnquiryModelResponse(id: "4", name: "ECG", rate: 450.0),
-      RateEnquiryModelResponse(id: "5", name: "MRI Brain", rate: 5200.0),
-    ];
+  void getRateEnquiries() async {
+    final rateEnqueryRes = RateEnquiryUsecasesImpl();
+    final resource = await rateEnqueryRes.getRateEnquiries();
+    if (resource.status == STATUS.SUCCESS) {
+      print("Success");
+      final response = resource.data as List;
+      
+      for (final dept in response) {
+        _rateEnquiries.add(RateEnquiryModelResponse.fromJson(dept));
+      }
+      setState(() {});
+    } else {
+      print("Failed!!");
+    }
+    
   }
 
   // ---------- totals ----------
@@ -107,7 +114,7 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
 
     final qty = (item.quantity ?? 1).clamp(1, 999);
     final discountPct = (item.discountPercentage ?? 0).clamp(0, 100);
-    final base = (item.rateEnqModel!.rate * qty);
+    final base = (item.rateEnqModel!.chargeAmount * qty);
     final finalAmount = base - (base * (discountPct / 100.0));
 
     setState(() {
@@ -244,10 +251,9 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.cyan, width: 2)
-        ),
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.cyan, width: 2)),
         child: Icon(icon, color: textPrimary),
       ),
     );
@@ -497,7 +503,7 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
   }
 
   Widget _buildFormItem(int index, RateEnquiryModel item) {
-    final rate = item.rateEnqModel?.rate ?? 0.0;
+    final rate = item.rateEnqModel?.chargeAmount ?? 0.0;
     final qty = item.quantity ?? 1;
     final disc = item.discountPercentage ?? 0.0;
     final lineTotal = item.finalAmount ?? 0.0;
@@ -554,12 +560,13 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
               if (filter.isEmpty) return _rateEnquiries;
               return _rateEnquiries
                   .where((e) =>
-                      e.name.toLowerCase().contains(filter.toLowerCase()))
+                      e.chargeName.toLowerCase().contains(filter.toLowerCase()))
                   .toList();
             },
             hintText: "Charge Name",
             selectedItem: item.rateEnqModel,
-            itemAsString: (e) => "${e.name} (₹${e.rate.toStringAsFixed(2)})",
+            itemAsString: (e) =>
+                "${e.chargeName} (₹${e.chargeAmount.toStringAsFixed(2)})",
             compareFn: (a, b) => a.id == b.id,
             onChanged: (val) {
               HapticFeedback.selectionClick();

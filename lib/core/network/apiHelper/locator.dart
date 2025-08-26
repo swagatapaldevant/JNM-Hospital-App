@@ -16,6 +16,8 @@ import 'package:jnm_hospital_app/features/patient_module/patient_login/data/pati
 import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/data/patient_opd_usecases.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/data/patient_opd_usecases_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/data/rate_enquiry_usecases.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/data/rate_enquiry_usecases_impl.dart';
 
 final getIt = GetIt.instance;
 
@@ -29,4 +31,5 @@ void initializeDependency(){
   getIt.registerFactory<PatientLoginUsecase>(()=> PatientLoginUsecaseImpl());
   getIt.registerFactory<PatientDetailsUsecase>(()=> PatientDetailsUsecaseImpl());
   getIt.registerFactory<PatientOPDUsecases>(()=> PatientOPDUsecasesImpl());
+  getIt.registerFactory<RateEnquiryUsecases>(()=> RateEnquiryUsecasesImpl());
 }

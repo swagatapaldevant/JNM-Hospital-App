@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/features/patient_module/model/investigation_report/investigation_report_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 
@@ -15,46 +16,88 @@ class InvestigationScreen extends StatefulWidget {
 class _InvestigationScreenState extends State<InvestigationScreen> {
   bool _filterExpanded = false;
   final TextEditingController _search = TextEditingController();
+  List<InvstReportResModel> _reports = [];
+
+  List<InvstReportResModel> _filteredReports = [];
+
+  _fetchReports() async {
+    setState(() {
+      _reports = [
+        InvstReportResModel(
+          billNo: 101,
+          billDate: DateTime.now().subtract(const Duration(days: 1)),
+          patientName: "John Doe",
+          age: "30Y 5M 10D",
+          doctorName: "Dr. Xyz",
+          status: "Delivered",
+        ),
+      ];
+      _filteredReports = [..._reports];
+    });
+  }
+
+  
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchReports();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return PatientDetailsScreenLayout(slivers: [
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Row(
-            children: [
-              _roundIconButton(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  onTap: () => Navigator.pop(context)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Investigations",
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
+    return PatientDetailsScreenLayout(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              children: [
+                _roundIconButton(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    onTap: () => Navigator.pop(context)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Investigations",
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      SliverToBoxAdapter(
-          child: _ExpandableFilterCard(
-              expanded: _filterExpanded,
-              searchField: _SearchField(
-                controller: _search,
-                hint: 'Search Patient name, UID…',
-                onChanged: (_) => setState(() {}),
-              ),
-              onToggle: () =>
-                  setState(() => _filterExpanded = !_filterExpanded),
-              filters: FilterForm()))
-    ]);
+        SliverToBoxAdapter(
+            child: _ExpandableFilterCard(
+                expanded: _filterExpanded,
+                searchField: _SearchField(
+                  controller: _search,
+                  hint: 'Search Patient name, UID…',
+                  onChanged: (_) => setState(() {}),
+                ),
+                onToggle: () =>
+                    setState(() => _filterExpanded = !_filterExpanded),
+                filters: FilterForm(
+                  applyFilter: () {
+
+                  }
+                ))),
+        SliverList(
+            delegate: SliverChildListDelegate.fixed([
+          const SizedBox(height: 16),
+          ..._filteredReports
+              .map((report) => Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: InvestigationCard(onTap: () {}, report: report),
+              )),
+        ]))
+      ],
+    );
   }
 
   Widget _roundIconButton(
@@ -79,8 +122,8 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
 }
 
 class FilterForm extends StatefulWidget {
-  const FilterForm({super.key});
-
+  const FilterForm({super.key, required this.applyFilter});
+  final VoidCallback applyFilter;
   @override
   State<FilterForm> createState() => _FilterFormState();
 }
@@ -578,62 +621,61 @@ class _SearchField extends StatelessWidget {
 }
 
 class InvestigationCard extends StatelessWidget {
-  final OpdDetailsModel opd;
+  final InvstReportResModel report;
   final VoidCallback onTap;
-  const InvestigationCard({required this.opd, required this.onTap});
+  const InvestigationCard({required this.report, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     // Accessors to be robust for snake/camel case
+    String _patientName() {
+      final pn = report.patientName ?? (report as dynamic).patient_name;
+      return (pn?.toString().trim().isNotEmpty ?? false)
+          ? pn.toString()
+          : 'Unknown Patient';
+    }
+
     String _doctorName() {
-      final dn = opd.doctorName ?? (opd as dynamic).doctor_name;
-      return (dn?.toString().trim().isNotEmpty ?? false) ? dn.toString() : 'Unknown Doctor';
+      final dn = report.doctorName ?? "NA";
+      return (dn?.toString().trim().isNotEmpty ?? false)
+          ? dn.toString()
+          : 'Unknown Doctor';
     }
 
-    String _departmentName() {
-      final dd = opd.departmentName ?? (opd as dynamic).department_name;
-      return (dd?.toString().trim().isNotEmpty ?? false) ? dd.toString() : '—';
-    }
-
-    String _appointmentIso() {
-      final v = opd.appointmentDate ?? (opd as dynamic).appointment_date;
+    String _billDate() {
+      final v = report.billDate ?? (report as dynamic).bill_date;
       return v?.toString() ?? '';
     }
 
-    int _ticket() {
-      final t = opd.billingId ?? (opd as dynamic).ticket_no;
+    int _age() {
+      final t = report.age ?? (report as dynamic).age;
       if (t is int) return t;
       if (t is String) return int.tryParse(t) ?? 0;
       return 0;
     }
 
-    String _type() {
-      final t = opd.type ?? (opd as dynamic).type;
-      return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
-    }
-
-    double _due() {
-      final d = opd.dueAmount ?? (opd as dynamic).due_amount;
-      if (d is num) return d.toDouble();
-      if (d is String) return double.tryParse(d) ?? 0.0;
-      return 0.0;
-    }
-
+    // String _type() {
+    //   final t = report.type ?? (report as dynamic).type;
+    //   return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
+    // }
     int _billStatus() {
-      final bs = opd.billStatus ?? (opd as dynamic).bill_status;
-      if (bs is int) return bs;
-      if (bs is String) return int.tryParse(bs) ?? 0;
-      return 0;
+      final s = report.status == "Delivered" ? 1 : 0;
+      return s;
     }
 
     String _uid() {
-      final u = opd.uid ?? (opd as dynamic).uid;
+      final u = report.id ?? (report as dynamic).uid;
       return (u?.toString().trim().isNotEmpty ?? false) ? u.toString() : '—';
     }
 
-    final statusPaid = _billStatus() == 2;
+    String _billNo() {
+      final id = report.billNo ?? (report as dynamic).bill_id;
+      return (id?.toString().trim().isNotEmpty ?? false) ? id.toString() : '—';
+    }
+
+    final statusPaid = _billStatus() == 1;
     final statusColor = statusPaid ? Colors.green : Colors.orange;
-    final apptText = _formatDateTime(_appointmentIso());
+    final apptText = _formatDateTime(_billDate());
 
     return InkWell(
       onTap: onTap,
@@ -677,15 +719,15 @@ class InvestigationCard extends StatelessWidget {
                 ],
               ),
               child: Center(
-                child: Text(
-                  _ticket() == 0 ? 'OPD' : _ticket().toString(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
+                  child: Text(
+                    _billNo(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-              ),
+                  ),
             ),
             const SizedBox(width: 14),
 
@@ -699,7 +741,7 @@ class InvestigationCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          _departmentName(),
+                          _patientName(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -717,7 +759,7 @@ class InvestigationCard extends StatelessWidget {
                           border: Border.all(color: statusColor.withOpacity(0.4)),
                         ),
                         child: Text(
-                          statusPaid ? 'Paid' : 'Pending',
+                          statusPaid ? 'Delivered' : 'Not Delivered',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w800,
@@ -734,7 +776,7 @@ class InvestigationCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                         "Dr  ${_doctorName()}",
+                          "Dr  ${_doctorName()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -757,24 +799,27 @@ class InvestigationCard extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.event, size: 16, color: Colors.blueGrey),
+                          const Icon(Icons.event,
+                              size: 16, color: Colors.blueGrey),
                           const SizedBox(width: 6),
-                          Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
+                          Text(apptText,
+                              style: const TextStyle(
+                                  fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
-                      _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
-                      if (_uid() != '—') _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
+                      //   _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
+                      //   if (_uid() != '—') _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
                     ],
                   ),
                   const SizedBox(height: 8),
 
                   // Due pill
-                  _moneyPill(
-                    icon: Icons.account_balance_wallet,
-                    label: 'Due',
-                    value: _inr(_due()),
-                    emphasize: _due() > 0,
-                  ),
+                  // _moneyPill(
+                  //   icon: Icons.account_balance_wallet,
+                  //   label: 'Due',
+                  //   value: _inr(_due()),
+                  //   emphasize: _due() > 0,
+                  // ),
                 ],
               ),
             ),
@@ -799,7 +844,10 @@ class InvestigationCard extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.black87),
+            style: const TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87),
           ),
         ],
       ),
@@ -810,7 +858,20 @@ class InvestigationCard extends StatelessWidget {
     if (iso == null || iso.isEmpty) return '—';
     final d = DateTime.tryParse(iso);
     if (d == null) return iso;
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     final dd = d.day.toString().padLeft(2, '0');
     final mm = months[d.month - 1];
     final yyyy = d.year.toString();

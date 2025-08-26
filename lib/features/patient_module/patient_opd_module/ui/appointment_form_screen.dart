@@ -26,7 +26,7 @@ class AppointmentFormScreen extends StatelessWidget {
         // Header
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Row(
               children: [
                 _roundIconButton(
@@ -35,10 +35,10 @@ class AppointmentFormScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Bill List",
+                    "OPD Registration",
                     style: TextStyle(
                       color: Colors.black87,
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.2,
                     ),
@@ -62,21 +62,12 @@ class AppointmentFormScreen extends StatelessWidget {
       },
       radius: 28,
       child: Container(
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         decoration: BoxDecoration(
+          border: Border.all(color: Colors.cyan, width: 2),
           color: Colors.white,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
-          ],
         ),
         child: Icon(icon, color: Colors.black87),
       ),
@@ -336,34 +327,6 @@ class _AppointmentFormState extends State<_AppointmentForm> {
         children: [
           Column(
             children: [
-              const SizedBox(height: 12),
-
-              // ===== Top Actions & Summary =====
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _softButton(
-                      label: "Reset",
-                      icon: Icons.refresh_rounded,
-                      color: Colors.red,
-                      onTap: _resetForm,
-                    ),
-                    // const Spacer(),
-                    // Wrap(
-                    //   spacing: 8,
-                    //   runSpacing: 8,
-                    //   children: [
-                    //     _tag(Icons.apartment_rounded, _deptText()),
-                    //     _tag(Icons.person_rounded, _doctorText()),
-                    //     _tag(Icons.calendar_today_rounded, _dateToChip(selectedDate)),
-                    //     _tag(Icons.access_time_rounded, _timeToChip(selectedTime)),
-                    //   ],
-                    // )
-                  ],
-                ),
-              ),
 
               const SizedBox(height: 14),
 
@@ -376,7 +339,18 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _sectionHeader('Visit Details'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _sectionHeader('Visit Details'),
+                            _softButton(
+                              label: "Reset",
+                              icon: Icons.refresh_rounded,
+                              color: Colors.red,
+                              onTap: _resetForm,
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 12),
                         _grid(
                           isWide: isWide,

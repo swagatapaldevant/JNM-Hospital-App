@@ -1,4 +1,467 @@
-
+//
+//
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
+// import 'package:jnm_hospital_app/features/patient_module/model/rate_enquiry/rate_enquiry_model.dart';
+// import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+//
+// class RateEnquiryScreen extends StatefulWidget {
+//   const RateEnquiryScreen({super.key});
+//
+//   @override
+//   State<RateEnquiryScreen> createState() => _RateEnquiryScreenState();
+// }
+//
+// class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
+//   List<RateEnquiryModelResponse> _rateEnquiries = [];
+//   final List<RateEnquiryModel> _selectedItems = [];
+//
+//   final TextEditingController _discountController = TextEditingController();
+//
+//   double get totalAmount =>
+//       _selectedItems.fold(0.0, (sum, item) => sum + (item.finalAmount ?? 0.0));
+//
+//   double get grandTotal {
+//     final discount = double.tryParse(_discountController.text) ?? 0.0;
+//     return totalAmount - discount;
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     getRateEnquiries();
+//   }
+//
+//   void getRateEnquiries() {
+//     // TODO: Replace with API
+//     _rateEnquiries = [
+//       RateEnquiryModelResponse(id: "1", name: "Service A", rate: 100.0),
+//       RateEnquiryModelResponse(id: "2", name: "Service B", rate: 200.0),
+//       RateEnquiryModelResponse(id: "3", name: "Service C", rate: 300.0),
+//     ];
+//   }
+//
+//   void _addItem() {
+//     setState(() {
+//       _selectedItems.add(
+//         RateEnquiryModel(
+//           rateEnqModel: null, // No default selection
+//           quantity: 1,
+//           discountPercentage: 0,
+//           finalAmount: 0.0, // Start with 0 amount
+//         ),
+//       );
+//     });
+//   }
+//
+//   void _removeItem(int index) {
+//     setState(() => _selectedItems.removeAt(index));
+//   }
+//
+//   void _updateItem(int index) {
+//     final item = _selectedItems[index];
+//
+//     // Only update if a service is selected
+//     if (item.rateEnqModel == null) {
+//       setState(() {
+//         _selectedItems[index] = RateEnquiryModel(
+//           rateEnqModel: null,
+//           quantity: item.quantity ?? 1,
+//           discountPercentage: item.discountPercentage ?? 0,
+//           finalAmount: 0.0,
+//         );
+//       });
+//       return;
+//     }
+//
+//     final qty = item.quantity ?? 1;
+//     final discount = item.discountPercentage ?? 0;
+//     final discountAmount = (item.rateEnqModel!.rate * qty) * (discount / 100);
+//     final finalAmount = (item.rateEnqModel!.rate * qty) - discountAmount;
+//
+//     setState(() {
+//       _selectedItems[index] = RateEnquiryModel(
+//         rateEnqModel: item.rateEnqModel,
+//         quantity: qty,
+//         discountPercentage: discount,
+//         finalAmount: finalAmount,
+//       );
+//     });
+//   }
+//
+//   static const Color textPrimary = Colors.black87;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return PatientDetailsScreenLayout(
+//       slivers: [
+//         // Header
+//         SliverToBoxAdapter(
+//           child: Padding(
+//             padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+//             child: Row(
+//               children: [
+//                 _roundIconButton(
+//                     icon: Icons.arrow_back_ios_new_rounded,
+//                     onTap: () => Navigator.pop(context)),
+//                 const SizedBox(width: 12),
+//                 Expanded(
+//                   child: Text(
+//                     "Rate Enquiry",
+//                     style: TextStyle(
+//                       color: textPrimary,
+//                       fontSize: 22,
+//                       fontWeight: FontWeight.w800,
+//                       letterSpacing: 0.2,
+//                     ),
+//                     overflow: TextOverflow.ellipsis, // Prevent overflow
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         // sticky summary
+//         SliverPersistentHeader(
+//           pinned: true,
+//           delegate: _SummaryHeaderDelegate(
+//             child: _buildSummaryCard(),
+//           ),
+//         ),
+//
+//         // form list
+//         SliverList(
+//           delegate: SliverChildBuilderDelegate(
+//             (context, index) {
+//               if (index == _selectedItems.length) {
+//                 return Padding(
+//                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+//                   child: SizedBox(
+//                     width: double.infinity,
+//                     child: OutlinedButton.icon(
+//                       style: OutlinedButton.styleFrom(
+//                         elevation: 4,
+//                         backgroundColor: const Color.fromARGB(255, 209, 206, 238),
+//                         padding: const EdgeInsets.symmetric(vertical: 14),
+//                         shape: RoundedRectangleBorder(
+//                           borderRadius: BorderRadius.circular(12),
+//                         ),
+//                       ),
+//                       onPressed: _addItem,
+//                       icon: const Icon(Icons.add),
+//                       label: const Text("Add Rate Item"),
+//                     ),
+//                   ),
+//                 );
+//               }
+//
+//               final item = _selectedItems[index];
+//               return _buildFormItem(index, item);
+//             },
+//             childCount: _selectedItems.length + 1,
+//           ),
+//         ),
+//
+//         // submit button
+//         SliverToBoxAdapter(
+//           child: Padding(
+//             padding: const EdgeInsets.all(16),
+//             child: SizedBox(
+//               width: double.infinity,
+//               child: ElevatedButton(
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: Colors.white,
+//                   padding: const EdgeInsets.symmetric(vertical: 16),
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(12),
+//                   ),
+//                 ),
+//                 onPressed: () {
+//                   // TODO: handle submit
+//                   ScaffoldMessenger.of(context).showSnackBar(
+//                     const SnackBar(content: Text("Form Submitted ")),
+//                   );
+//                 },
+//                 child: const Text("Submit", style: TextStyle(fontSize: 16)),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _roundIconButton(
+//       {required IconData icon, required VoidCallback onTap}) {
+//     return InkResponse(
+//       onTap: () {
+//         HapticFeedback.selectionClick();
+//         onTap();
+//       },
+//       radius: 28,
+//       child: Container(
+//         width: 44,
+//         height: 44,
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           shape: BoxShape.circle,
+//           boxShadow: [
+//             BoxShadow(
+//                 color: Colors.black.withOpacity(0.10),
+//                 blurRadius: 16,
+//                 offset: const Offset(0, 6)),
+//             BoxShadow(
+//                 color: Colors.white.withOpacity(0.85),
+//                 blurRadius: 4,
+//                 offset: const Offset(-2, -2)),
+//           ],
+//         ),
+//         child: Icon(icon, color: textPrimary),
+//       ),
+//     );
+//   }
+//
+// Widget _buildSummaryCard() {
+//   return Container(
+//     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//     padding: const EdgeInsets.all(12),
+//     decoration: BoxDecoration(
+//       color: Colors.white,
+//       borderRadius: BorderRadius.circular(12),
+//       boxShadow: [
+//         BoxShadow(
+//           color: Colors.black.withOpacity(0.1),
+//           blurRadius: 6,
+//           offset: const Offset(0, 3),
+//         ),
+//       ],
+//     ),
+//     child: Column(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         Row(
+//           children: [
+//             Expanded(
+//               child: _summaryField(
+//                 icon: Icons.attach_money,
+//                 label: "Total",
+//                 value: "₹${totalAmount.toStringAsFixed(0)}",
+//                 readOnly: true,
+//               ),
+//             ),
+//             const SizedBox(width: 10),
+//             Expanded(
+//               child: _summaryField(
+//                 icon: Icons.local_offer,
+//                 label: "Discount",
+//                 controller: _discountController,
+//                 prefixText: "₹",
+//                 onChanged: (_) => setState(() {}),
+//               ),
+//             ),
+//           ],
+//         ),
+//         const SizedBox(height: 10),
+//         _summaryField(
+//           icon: Icons.check_circle,
+//           label: "Grand Total",
+//           value: "₹${grandTotal.toStringAsFixed(0)}",
+//           readOnly: true,
+//           isBold: true,
+//         ),
+//       ],
+//     ),
+//   );
+// }
+//
+// Widget _summaryField({
+//   required IconData icon,
+//   required String label,
+//   String? value,
+//   TextEditingController? controller,
+//   bool readOnly = false,
+//   void Function(String)? onChanged,
+//   String? prefixText,
+//   bool isBold = false,
+// }) {
+//   final effectiveController = controller ?? TextEditingController(text: value ?? "");
+//
+//   return ConstrainedBox(
+//     constraints: const BoxConstraints(
+//       minHeight: 48,
+//       maxHeight: 56,
+//     ),
+//     child: TextField(
+//       controller: effectiveController,
+//       readOnly: readOnly,
+//       onChanged: onChanged,
+//       keyboardType: readOnly ? null : TextInputType.number,
+//       decoration: InputDecoration(
+//         prefixIcon: Icon(icon, size: 18, color: Colors.grey[700]),
+//         labelText: label,
+//         hintText: readOnly ? null : value, // ✅ show hint only if editable
+//         prefixText: prefixText,
+//         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+//         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//         isDense: true,
+//         labelStyle: const TextStyle(fontSize: 13),
+//         floatingLabelBehavior: FloatingLabelBehavior.always, // ✅ keeps label above
+//       ),
+//       style: TextStyle(
+//         fontSize: 14,
+//         fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+//       ),
+//       maxLines: 1,
+//     ),
+//   );
+// }
+//
+//   Widget _buildFormItem(int index, RateEnquiryModel item) {
+//     return Card(
+//       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//       elevation: 3,
+//       child: Padding(
+//
+//         padding: const EdgeInsets.all(12),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             CommonSearchableDropdown<RateEnquiryModelResponse>(
+//               items: (filter, props) async {
+//                 if (filter.isEmpty) return _rateEnquiries;
+//                 return _rateEnquiries
+//                     .where((e) =>
+//                         e.name.toLowerCase().contains(filter.toLowerCase()))
+//                     .toList();
+//               },
+//               hintText: "Charge Name",
+//               selectedItem: item.rateEnqModel, // Keep the selected item to show current selection
+//               itemAsString: (e) => "${e.name} (₹${e.rate.toStringAsFixed(2)})",
+//
+//               compareFn: (item1, item2) => item1.id == item2.id,
+//               onChanged: (val) {
+//                 setState(() {
+//                   _selectedItems[index] = RateEnquiryModel(
+//                     rateEnqModel: val,
+//                     quantity: item.quantity ?? 1,
+//                     discountPercentage: item.discountPercentage ?? 0,
+//                     finalAmount: val != null ? val.rate * (item.quantity ?? 1) : 0.0,
+//                   );
+//                 });
+//               },
+//             ),
+//             const SizedBox(height: 12),
+//
+//             Row(
+//               children: [
+//                 Expanded(
+//                   child: TextFormField(
+//                     key: ValueKey('rate_${index}_${item.rateEnqModel?.id}'), // Force rebuild when service changes
+//                     initialValue: item.rateEnqModel?.rate?.toString() ?? "0",
+//                     readOnly: true,
+//                     decoration: const InputDecoration(
+//                       labelText: "Rate",
+//                       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                     ),
+//                     style: const TextStyle(fontSize: 14),
+//                   ),
+//                 ),
+//                 const SizedBox(width: 12),
+//                 Expanded(
+//                   child: TextFormField(
+//                     key: ValueKey('quantity_${index}'), // Maintain state for quantity
+//                     initialValue: item.quantity?.toString() ?? "1",
+//                     keyboardType: TextInputType.number,
+//                     decoration: const InputDecoration(
+//                       labelText: "Quantity",
+//                       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                     ),
+//                     style: const TextStyle(fontSize: 14),
+//                     onChanged: (val) {
+//                       _selectedItems[index].quantity = int.tryParse(val) ?? 1;
+//                       _updateItem(index);
+//                     },
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+//
+//             Row(
+//               children: [
+//                 Expanded(
+//                   child: TextFormField(
+//                     key: ValueKey('discount_${index}'), // Maintain state for discount
+//                     initialValue: item.discountPercentage?.toString() ?? "0",
+//                     keyboardType: TextInputType.number,
+//                     decoration: const InputDecoration(
+//                       labelText: "Discount (%)",
+//                       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                     ),
+//                     style: const TextStyle(fontSize: 14),
+//                     onChanged: (val) {
+//                       _selectedItems[index].discountPercentage =
+//                           double.tryParse(val) ?? 0;
+//                       _updateItem(index);
+//                     },
+//                   ),
+//                 ),
+//                 const SizedBox(width: 12),
+//                 Expanded(
+//                   child: TextFormField(
+//                     key: ValueKey('final_${index}_${item.rateEnqModel?.id}_${item.finalAmount}'), // Force rebuild when amount changes
+//                     initialValue: item.finalAmount?.toStringAsFixed(2) ?? "0.00",
+//                     readOnly: true,
+//                     decoration: const InputDecoration(
+//                       labelText: "Final Amount",
+//                       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+//                     ),
+//                     style: const TextStyle(fontSize: 14),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 IconButton(
+//                   icon: const Icon(Icons.delete, color: Colors.red),
+//                   onPressed: () => _removeItem(index),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//
+// class _SummaryHeaderDelegate extends SliverPersistentHeaderDelegate {
+//   final Widget child;
+//   _SummaryHeaderDelegate({required this.child});
+//
+//   @override
+//   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+//     return SizedBox.expand(
+//       child: Align(
+//         alignment: Alignment.topCenter,
+//         child: child,
+//       ),
+//     );
+//   }
+//
+//   @override
+//   double get maxExtent => 180; // Enough space for 2 rows + padding
+//   @override
+//   double get minExtent => 180;
+//
+//   @override
+//   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true;
+// }
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,23 +477,29 @@ class RateEnquiryScreen extends StatefulWidget {
 }
 
 class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
+  // Mock data (replace with API)
   List<RateEnquiryModelResponse> _rateEnquiries = [];
+
   final List<RateEnquiryModel> _selectedItems = [];
 
+  // Global discount controls
   final TextEditingController _discountController = TextEditingController();
+  bool _isGlobalDiscountPercent = false; // toggle between ₹ and %
 
-  double get totalAmount =>
-      _selectedItems.fold(0.0, (sum, item) => sum + (item.finalAmount ?? 0.0));
-
-  double get grandTotal {
-    final discount = double.tryParse(_discountController.text) ?? 0.0;
-    return totalAmount - discount;
-  }
+  static const Color textPrimary = Colors.black87;
+  static const Color accent = Color(0xFF4F46E5); // indigo
+  static const Color softBg = Color(0xFFF7F8FB);
 
   @override
   void initState() {
     super.initState();
     getRateEnquiries();
+  }
+
+  @override
+  void dispose() {
+    _discountController.dispose();
+    super.dispose();
   }
 
   void getRateEnquiries() {
@@ -39,58 +508,81 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
       RateEnquiryModelResponse(id: "1", name: "Service A", rate: 100.0),
       RateEnquiryModelResponse(id: "2", name: "Service B", rate: 200.0),
       RateEnquiryModelResponse(id: "3", name: "Service C", rate: 300.0),
+      RateEnquiryModelResponse(id: "4", name: "ECG", rate: 450.0),
+      RateEnquiryModelResponse(id: "5", name: "MRI Brain", rate: 5200.0),
     ];
   }
 
+  // ---------- totals ----------
+  double get totalAmount =>
+      _selectedItems.fold(0.0, (sum, item) => sum + (item.finalAmount ?? 0.0));
+
+  double get _globalDiscountValue {
+    final raw = double.tryParse(_discountController.text.trim()) ?? 0.0;
+    if (_isGlobalDiscountPercent) {
+      final pct = raw.clamp(0, 100);
+      return (totalAmount * pct) / 100.0;
+    } else {
+      // flat discount cannot exceed subtotal
+      return raw.clamp(0, totalAmount);
+    }
+  }
+
+  double get grandTotal {
+    final gt = (totalAmount - _globalDiscountValue);
+    return gt < 0 ? 0 : gt;
+  }
+
+  String _(num v) => "₹${v.toStringAsFixed(0)}";
+
+  // ---------- actions ----------
   void _addItem() {
     setState(() {
       _selectedItems.add(
         RateEnquiryModel(
-          rateEnqModel: null, // No default selection
+          rateEnqModel: null,
           quantity: 1,
           discountPercentage: 0,
-          finalAmount: 0.0, // Start with 0 amount
+          finalAmount: 0.0,
         ),
       );
     });
   }
 
   void _removeItem(int index) {
+    HapticFeedback.selectionClick();
     setState(() => _selectedItems.removeAt(index));
   }
 
   void _updateItem(int index) {
     final item = _selectedItems[index];
-    
-    // Only update if a service is selected
+
     if (item.rateEnqModel == null) {
       setState(() {
         _selectedItems[index] = RateEnquiryModel(
           rateEnqModel: null,
-          quantity: item.quantity ?? 1,
-          discountPercentage: item.discountPercentage ?? 0,
+          quantity: (item.quantity ?? 1).clamp(1, 999),
+          discountPercentage: (item.discountPercentage ?? 0).clamp(0, 100),
           finalAmount: 0.0,
         );
       });
       return;
     }
-    
-    final qty = item.quantity ?? 1;
-    final discount = item.discountPercentage ?? 0;
-    final discountAmount = (item.rateEnqModel!.rate * qty) * (discount / 100);
-    final finalAmount = (item.rateEnqModel!.rate * qty) - discountAmount;
+
+    final qty = (item.quantity ?? 1).clamp(1, 999);
+    final discountPct = (item.discountPercentage ?? 0).clamp(0, 100);
+    final base = (item.rateEnqModel!.rate * qty);
+    final finalAmount = base - (base * (discountPct / 100.0));
 
     setState(() {
       _selectedItems[index] = RateEnquiryModel(
         rateEnqModel: item.rateEnqModel,
         quantity: qty,
-        discountPercentage: discount,
+        discountPercentage: discountPct.toDouble(),
         finalAmount: finalAmount,
       );
     });
   }
-
-  static const Color textPrimary = Colors.black87;
 
   @override
   Widget build(BuildContext context) {
@@ -99,60 +591,56 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
         // Header
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
             child: Row(
               children: [
                 _roundIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context)),
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  onTap: () => Navigator.pop(context),
+                ),
                 const SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: Text(
                     "Rate Enquiry",
                     style: TextStyle(
                       color: textPrimary,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.2,
                     ),
-                    overflow: TextOverflow.ellipsis, // Prevent overflow
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                if (_selectedItems.isNotEmpty)
+                  TextButton.icon(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedItems.clear());
+                    },
+                    icon: const Icon(Icons.restart_alt_rounded, size: 18),
+                    label: const Text("Reset"),
+                  ),
               ],
             ),
           ),
         ),
-        // sticky summary
+
+        // Sticky summary
         SliverPersistentHeader(
           pinned: true,
           delegate: _SummaryHeaderDelegate(
-            child: _buildSummaryCard(),
+            child: _buildSummaryCard(context),
           ),
         ),
 
-        // form list
+        // Form list
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               if (index == _selectedItems.length) {
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        elevation: 4,
-                        backgroundColor: const Color.fromARGB(255, 209, 206, 238),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onPressed: _addItem,
-                      icon: const Icon(Icons.add),
-                      label: const Text("Add Rate Item"),
-                    ),
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 22),
+                  child: _addItemButton(),
                 );
               }
 
@@ -163,27 +651,40 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
           ),
         ),
 
-        // submit button
+        // Submit button
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             child: SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.done_all_rounded),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor:
+                      _selectedItems.isEmpty ? Colors.grey[300] : accent,
+                  foregroundColor:
+                      _selectedItems.isEmpty ? Colors.black54 : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
+                  elevation: 3,
                 ),
-                onPressed: () {
-                  // TODO: handle submit
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Form Submitted ")),
-                  );
-                },
-                child: const Text("Submit", style: TextStyle(fontSize: 16)),
+                onPressed: _selectedItems.isEmpty
+                    ? null
+                    : () {
+                        // TODO: handle submit (use _selectedItems + grandTotal)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Form submitted"),
+                          ),
+                        );
+                      },
+                label: Text(
+                  "Submit • ${_(grandTotal)}",
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
           ),
@@ -192,8 +693,11 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  // ---------- UI pieces ----------
+  Widget _roundIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return InkResponse(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -206,15 +710,472 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2)
+        ),
+        child: Icon(icon, color: textPrimary),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(BuildContext context) {
+    final itemsCount = _selectedItems.length;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(.95),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: Colors.black12.withOpacity(.06)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Top row: Items + Subtotal
+          Row(
+            children: [
+              _miniStat(
+                icon: Icons.receipt_long_rounded,
+                label: "Items",
+                value: "$itemsCount",
+              ),
+              const SizedBox(width: 10),
+              _miniStat(
+                icon: Icons.attach_money_rounded,
+                label: "Subtotal",
+                value: _(totalAmount),
+              ),
+              const Spacer(),
+              // Discount type toggle
+              _discountToggle(),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Discount input
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _discountController,
+                  onChanged: (_) => setState(() {}),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: _isGlobalDiscountPercent
+                        ? "Discount (%)"
+                        : "Discount (₹)",
+                    prefixIcon: Icon(
+                      _isGlobalDiscountPercent
+                          ? Icons.percent_rounded
+                          : Icons.currency_rupee_rounded,
+                      size: 18,
+                    ),
+                    hintText: _isGlobalDiscountPercent ? "0 - 100" : "0.00",
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Grand total
+              _grandTotalBox(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _discountToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: softBg,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _segBtn(
+            selected: !_isGlobalDiscountPercent,
+            label: "₹",
+            onTap: () {
+              if (_isGlobalDiscountPercent) {
+                HapticFeedback.selectionClick();
+                setState(() => _isGlobalDiscountPercent = false);
+              }
+            },
+          ),
+          _segBtn(
+            selected: _isGlobalDiscountPercent,
+            label: "%",
+            onTap: () {
+              if (!_isGlobalDiscountPercent) {
+                HapticFeedback.selectionClick();
+                setState(() => _isGlobalDiscountPercent = true);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _segBtn({
+    required bool selected,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.w700,
+            letterSpacing: .2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _grandTotalBox() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: accent.withOpacity(.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: accent.withOpacity(.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            "Grand Total",
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (child, anim) =>
+                FadeTransition(opacity: anim, child: child),
+            child: Text(
+              _(grandTotal),
+              key: ValueKey(grandTotal.toStringAsFixed(0)),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                color: textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _miniStat({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: softBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: Colors.black87),
+          const SizedBox(width: 6),
+          Text(
+            "$label: ",
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addItemButton() {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        side: const BorderSide(color: Colors.black12),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      onPressed: _addItem,
+      icon: const Icon(Icons.add_circle_outline_rounded),
+      label: const Text(
+        "Add Rate Item",
+        style: TextStyle(fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget _buildFormItem(int index, RateEnquiryModel item) {
+    final rate = item.rateEnqModel?.rate ?? 0.0;
+    final qty = item.quantity ?? 1;
+    final disc = item.discountPercentage ?? 0.0;
+    final lineTotal = item.finalAmount ?? 0.0;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.black12.withOpacity(.10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.05),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          // Row 1: Title + delete
+          Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: softBg,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: Text(
+                  "Item ${index + 1}",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800, letterSpacing: .2),
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon:
+                    const Icon(Icons.delete_forever_rounded, color: Colors.red),
+                onPressed: () => _removeItem(index),
+                tooltip: "Remove",
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Row 2: Service picker
+          CommonSearchableDropdown<RateEnquiryModelResponse>(
+            items: (filter, props) async {
+              if (filter.isEmpty) return _rateEnquiries;
+              return _rateEnquiries
+                  .where((e) =>
+                      e.name.toLowerCase().contains(filter.toLowerCase()))
+                  .toList();
+            },
+            hintText: "Charge Name",
+            selectedItem: item.rateEnqModel,
+            itemAsString: (e) => "${e.name} (₹${e.rate.toStringAsFixed(2)})",
+            compareFn: (a, b) => a.id == b.id,
+            onChanged: (val) {
+              HapticFeedback.selectionClick();
+              _selectedItems[index].rateEnqModel = val;
+              _updateItem(index);
+            },
+          ),
+          const SizedBox(height: 12),
+
+          // Row 3: Rate pill + Quantity stepper
+          Row(
+            children: [
+              _pill(
+                label: "Rate",
+                child: Text(
+                  "₹${rate.toStringAsFixed(2)}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _qtyStepper(
+                  qty: qty,
+                  onDec: () {
+                    if (qty > 1) {
+                      _selectedItems[index].quantity = qty - 1;
+                      _updateItem(index);
+                    }
+                  },
+                  onInc: () {
+                    _selectedItems[index].quantity = qty + 1;
+                    _updateItem(index);
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Row 4: Discount% + Final amount
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  key: ValueKey('discount_${index}'),
+                  initialValue: disc.toStringAsFixed(0),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: InputDecoration(
+                    labelText: "Discount (%)",
+                    prefixIcon: const Icon(Icons.percent_rounded, size: 18),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                  onChanged: (val) {
+                    _selectedItems[index].discountPercentage =
+                        double.tryParse(val) ?? 0;
+                    _updateItem(index);
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              _pill(
+                label: "Final Amount",
+                alignEnd: true,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (c, a) =>
+                      FadeTransition(opacity: a, child: c),
+                  child: Text(
+                    "₹${lineTotal.toStringAsFixed(2)}",
+                    key: ValueKey(lineTotal.toStringAsFixed(2)),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _qtyStepper({
+    required int qty,
+    required VoidCallback onDec,
+    required VoidCallback onInc,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: softBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Row(
+        children: [
+          _circleIcon(
+            icon: Icons.remove_rounded,
+            onTap: onDec,
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                "$qty",
+                style:
+                    const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              ),
+            ),
+          ),
+          _circleIcon(
+            icon: Icons.add_rounded,
+            onTap: onInc,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _circleIcon({required IconData icon, required VoidCallback onTap}) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 22,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black12),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.10),
-                blurRadius: 16,
-                offset: const Offset(0, 6)),
-            BoxShadow(
-                color: Colors.white.withOpacity(0.85),
-                blurRadius: 4,
-                offset: const Offset(-2, -2)),
+              color: Colors.black.withOpacity(.06),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
           ],
         ),
         child: Icon(icon, color: textPrimary),
@@ -222,217 +1183,33 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
     );
   }
 
-Widget _buildSummaryCard() {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 6,
-          offset: const Offset(0, 3),
+  Widget _pill({
+    required String label,
+    required Widget child,
+    bool alignEnd = false,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.black12),
         ),
-      ],
-    ),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _summaryField(
-                icon: Icons.attach_money,
-                label: "Total",
-                value: "₹${totalAmount.toStringAsFixed(0)}",
-                readOnly: true,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _summaryField(
-                icon: Icons.local_offer,
-                label: "Discount",
-                controller: _discountController,
-                prefixText: "₹",
-                onChanged: (_) => setState(() {}),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _summaryField(
-          icon: Icons.check_circle,
-          label: "Grand Total",
-          value: "₹${grandTotal.toStringAsFixed(0)}",
-          readOnly: true,
-          isBold: true,
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _summaryField({
-  required IconData icon,
-  required String label,
-  String? value,
-  TextEditingController? controller,
-  bool readOnly = false,
-  void Function(String)? onChanged,
-  String? prefixText,
-  bool isBold = false,
-}) {
-  final effectiveController = controller ?? TextEditingController(text: value ?? "");
-
-  return ConstrainedBox(
-    constraints: const BoxConstraints(
-      minHeight: 48,
-      maxHeight: 56,
-    ),
-    child: TextField(
-      controller: effectiveController,
-      readOnly: readOnly,
-      onChanged: onChanged,
-      keyboardType: readOnly ? null : TextInputType.number,
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon, size: 18, color: Colors.grey[700]),
-        labelText: label,
-        hintText: readOnly ? null : value, // ✅ show hint only if editable
-        prefixText: prefixText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        isDense: true,
-        labelStyle: const TextStyle(fontSize: 13),
-        floatingLabelBehavior: FloatingLabelBehavior.always, // ✅ keeps label above
-      ),
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-      ),
-      maxLines: 1,
-    ),
-  );
-}
-
-  Widget _buildFormItem(int index, RateEnquiryModel item) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        
-        padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            CommonSearchableDropdown<RateEnquiryModelResponse>(
-              items: (filter, props) async {
-                if (filter.isEmpty) return _rateEnquiries;
-                return _rateEnquiries
-                    .where((e) =>
-                        e.name.toLowerCase().contains(filter.toLowerCase()))
-                    .toList();
-              },
-              hintText: "Charge Name",
-              selectedItem: item.rateEnqModel, // Keep the selected item to show current selection
-              itemAsString: (e) => "${e.name} (₹${e.rate.toStringAsFixed(2)})",
-              
-              compareFn: (item1, item2) => item1.id == item2.id,
-              onChanged: (val) {
-                setState(() {
-                  _selectedItems[index] = RateEnquiryModel(
-                    rateEnqModel: val,
-                    quantity: item.quantity ?? 1,
-                    discountPercentage: item.discountPercentage ?? 0,
-                    finalAmount: val != null ? val.rate * (item.quantity ?? 1) : 0.0,
-                  );
-                });
-              },
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.black54,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('rate_${index}_${item.rateEnqModel?.id}'), // Force rebuild when service changes
-                    initialValue: item.rateEnqModel?.rate?.toString() ?? "0",
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      labelText: "Rate",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('quantity_${index}'), // Maintain state for quantity
-                    initialValue: item.quantity?.toString() ?? "1",
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: "Quantity",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                    onChanged: (val) {
-                      _selectedItems[index].quantity = int.tryParse(val) ?? 1;
-                      _updateItem(index);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('discount_${index}'), // Maintain state for discount
-                    initialValue: item.discountPercentage?.toString() ?? "0",
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: "Discount (%)",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                    onChanged: (val) {
-                      _selectedItems[index].discountPercentage =
-                          double.tryParse(val) ?? 0;
-                      _updateItem(index);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('final_${index}_${item.rateEnqModel?.id}_${item.finalAmount}'), // Force rebuild when amount changes
-                    initialValue: item.finalAmount?.toStringAsFixed(2) ?? "0.00",
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      labelText: "Final Amount",
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _removeItem(index),
-                ),
-              ],
-            ),
+            const SizedBox(height: 4),
+            child,
           ],
         ),
       ),
@@ -442,23 +1219,33 @@ Widget _summaryField({
 
 class _SummaryHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
+
   _SummaryHeaderDelegate({required this.child});
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox.expand(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: child,
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // Keep the card neatly pinned with a soft backdrop
+    return Container(
+      color:
+          _RateEnquiryScreenState.softBg.withOpacity(overlapsContent ? 1 : 0),
+      padding: const EdgeInsets.only(bottom: 6),
+      child: SizedBox.expand(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: child,
+        ),
       ),
     );
   }
 
   @override
-  double get maxExtent => 180; // Enough space for 2 rows + padding
-  @override
-  double get minExtent => 180;
+  double get maxExtent => 190;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true;
+  double get minExtent => 190;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      true;
 }

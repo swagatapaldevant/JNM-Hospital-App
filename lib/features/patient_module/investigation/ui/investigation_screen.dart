@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/investigation_report/investigation_report_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 
 class InvestigationScreen extends StatefulWidget {
@@ -15,28 +14,14 @@ class InvestigationScreen extends StatefulWidget {
 
 class _InvestigationScreenState extends State<InvestigationScreen> {
   bool _filterExpanded = false;
-  final TextEditingController _search = TextEditingController();
-  List<InvstReportResModel> _reports = [];
 
+  List<InvstReportResModel> _reports = [];
   List<InvstReportResModel> _filteredReports = [];
 
-  _fetchReports() async {
-    setState(() {
-      _reports = [
-        InvstReportResModel(
-          billNo: 101,
-          billDate: DateTime.now().subtract(const Duration(days: 1)),
-          patientName: "John Doe",
-          age: "30Y 5M 10D",
-          doctorName: "Dr. Xyz",
-          status: "Delivered",
-        ),
-      ];
-      _filteredReports = [..._reports];
-    });
-  }
-
-  
+  // Current filters
+  FilterData _activeFilters = const FilterData(
+    status: ReportStatus.all,
+  );
 
   @override
   void initState() {
@@ -44,22 +29,101 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
     _fetchReports();
   }
 
+  void _fetchReports() {
+    // TODO: Replace with API
+    _reports = [
+      InvstReportResModel(
+        billNo: 101,
+        billDate: DateTime.now().subtract(const Duration(days: 1)),
+        patientName: "John Doe",
+        age: "30Y 5M 10D",
+        doctorName: "Dr. Xyz",
+        status: "Delivered",
+      ),
+      InvstReportResModel(
+        billNo: 102,
+        billDate: DateTime.now().subtract(const Duration(days: 3)),
+        patientName: "Anita Sharma",
+        age: "41Y 2M",
+        doctorName: "Dr. Gupta",
+        status: "Not Delivered",
+      ),
+      InvstReportResModel(
+        billNo: 103,
+        billDate: DateTime.now().subtract(const Duration(days: 9)),
+        patientName: "Rahul Kumar",
+        age: "26Y",
+        doctorName: "Dr. Xyz",
+        status: "Delivered",
+      ),
+    ];
+    _applyFilters(); // initialize filtered list
+  }
+
+  void _applyFilters([FilterData? data]) {
+    final f = data ?? _activeFilters;
+    List<InvstReportResModel> list = [..._reports];
+
+    // Status filter
+    if (f.status == ReportStatus.delivered) {
+      list = list.where((r) => (r.status ?? '').toLowerCase().contains('deliver')).toList();
+    } else if (f.status == ReportStatus.notDelivered) {
+      list = list.where((r) => !(r.status ?? '').toLowerCase().contains('deliver')).toList();
+    }
+
+    // Date range filter
+    if (f.fromDate != null) {
+      list = list.where((r) {
+        final d = r.billDate;
+        return d != null && !d.isBefore(DateTime(f.fromDate!.year, f.fromDate!.month, f.fromDate!.day));
+      }).toList();
+    }
+    if (f.toDate != null) {
+      list = list.where((r) {
+        final d = r.billDate;
+        // include the whole day
+        final end = DateTime(f.toDate!.year, f.toDate!.month, f.toDate!.day, 23, 59, 59);
+        return d != null && !d.isAfter(end);
+      }).toList();
+    }
+
+    // Multi-tags (example usage – if you later map tags to reports, plug in here)
+    if (f.tags.isNotEmpty) {
+      // Placeholder logic: keep all; or implement your own tag mapping.
+      // list = list.where((r) => yourTagCondition).toList();
+    }
+
+    setState(() {
+      _activeFilters = f;
+      _filteredReports = list;
+    });
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _activeFilters = const FilterData(status: ReportStatus.all);
+    });
+    _applyFilters();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PatientDetailsScreenLayout(
       slivers: [
+        // Header
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Row(
               children: [
                 _roundIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context)),
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  onTap: () => Navigator.pop(context),
+                ),
                 const SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: Text(
-                    "Investigations",
+                    "Ready Reports",
                     style: TextStyle(
                       color: Colors.black87,
                       fontSize: 20,
@@ -72,36 +136,54 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
             ),
           ),
         ),
-        SliverToBoxAdapter(
-            child: _ExpandableFilterCard(
-                expanded: _filterExpanded,
-                searchField: _SearchField(
-                  controller: _search,
-                  hint: 'Search Patient name, UID…',
-                  onChanged: (_) => setState(() {}),
-                ),
-                onToggle: () =>
-                    setState(() => _filterExpanded = !_filterExpanded),
-                filters: FilterForm(
-                  applyFilter: () {
 
-                  }
-                ))),
+        // Filters (NO search field)
+        SliverToBoxAdapter(
+          child: _ExpandableFilterCard(
+            expanded: _filterExpanded,
+            onToggle: () => setState(() => _filterExpanded = !_filterExpanded),
+            filters: FilterForm(
+              initial: _activeFilters,
+              onApply: (f) => _applyFilters(f),
+              onReset: _resetFilters,
+            ),
+          ),
+        ),
+
+        // List
         SliverList(
-            delegate: SliverChildListDelegate.fixed([
-          const SizedBox(height: 16),
-          ..._filteredReports
-              .map((report) => Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: InvestigationCard(onTap: () {}, report: report),
-              )),
-        ]))
+          delegate: SliverChildListDelegate.fixed([
+            const SizedBox(height: 16),
+            if (_filteredReports.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                child: _EmptyState(
+                  title: "No results",
+                  subtitle: "Try adjusting filters or date range.",
+                ),
+              ),
+            ..._filteredReports.map(
+                  (report) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: InvestigationCard(
+                  onTap: () {
+                    // TODO: handle open details
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Open bill #${report.billNo ?? ''}")),
+                    );
+                  },
+                  report: report,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ]),
+        ),
       ],
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  Widget _roundIconButton({required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -112,213 +194,309 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)),
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(.06),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
         child: Icon(icon, color: Colors.black87),
       ),
     );
   }
 }
 
+/* ===========================================================
+ * Models & Filter types
+ * ===========================================================
+*/
+
+enum ReportStatus { all, delivered, notDelivered }
+
+class FilterData {
+  final ReportStatus status;
+  final DateTime? fromDate;
+  final DateTime? toDate;
+  final List<String> tags;
+
+  const FilterData({
+    this.status = ReportStatus.all,
+    this.fromDate,
+    this.toDate,
+    this.tags = const [],
+  });
+
+  FilterData copyWith({
+    ReportStatus? status,
+    DateTime? fromDate,
+    DateTime? toDate,
+    List<String>? tags,
+  }) {
+    return FilterData(
+      status: status ?? this.status,
+      fromDate: fromDate ?? this.fromDate,
+      toDate: toDate ?? this.toDate,
+      tags: tags ?? this.tags,
+    );
+  }
+}
+
+/* ===========================================================
+ * Filter Form (no search)
+ * ===========================================================
+*/
+
 class FilterForm extends StatefulWidget {
-  const FilterForm({super.key, required this.applyFilter});
-  final VoidCallback applyFilter;
+  const FilterForm({
+    super.key,
+    required this.initial,
+    required this.onApply,
+    required this.onReset,
+  });
+
+  final FilterData initial;
+  final ValueChanged<FilterData> onApply;
+  final VoidCallback onReset;
+
   @override
   State<FilterForm> createState() => _FilterFormState();
 }
 
 class _FilterFormState extends State<FilterForm> {
-  final _formKey = GlobalKey<FormState>();
+  late FilterData _data;
 
-  String? selectedField;
-  final TextEditingController _fieldValueController = TextEditingController();
-  String? selectedReportStatus;
-  List<String> selectedMultiValues = [];
-  DateTime? fromDate;
-  DateTime? toDate;
-
-  // Dummy data for multi-select
-  final List<String> _dummyValues = [
-    "Option 1",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 5",
+  // Dummy tags for multi-select
+  final List<String> _dummyValues = const [
+    "Imaging",
+    "Bloodwork",
+    "Cardio",
+    "Urgent",
+    "Follow-up",
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _data = widget.initial;
+  }
+
   Future<void> _pickDate(BuildContext context, bool isFrom) async {
+    final now = DateTime.now();
+    final base = isFrom ? (_data.fromDate ?? now) : (_data.toDate ?? now);
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: base,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
         if (isFrom) {
-          fromDate = picked;
+          _data = _data.copyWith(fromDate: picked);
         } else {
-          toDate = picked;
+          _data = _data.copyWith(toDate: picked);
         }
       });
     }
   }
 
-  void _resetForm() {
+  void _clearDate(bool isFrom) {
     setState(() {
-      selectedField = null;
-      _fieldValueController.clear();
-      selectedReportStatus = null;
-      selectedMultiValues = [];
-      fromDate = null;
-      toDate = null;
+      if (isFrom) {
+        _data = _data.copyWith(fromDate: null);
+      } else {
+        _data = _data.copyWith(toDate: null);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Field Name Dropdown
-            DropdownButtonFormField<String>(
-              value: selectedField,
-              decoration: const InputDecoration(
-                labelText: "Field Name",
-                border: OutlineInputBorder(),
+      padding: const EdgeInsets.fromLTRB(6, 0, 6, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Status chips
+          const SizedBox(height: 4),
+          const Text(
+            "Status",
+            style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              _choiceChip(
+                label: "All",
+                selected: _data.status == ReportStatus.all,
+                onSelected: () => setState(() => _data = _data.copyWith(status: ReportStatus.all)),
               ),
-              items: ["Patient Name", "UHID", "Phone No."]
-                  .map((field) => DropdownMenuItem(
-                        value: field,
-                        child: Text(field),
-                      ))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedField = val),
-            ),
-            const SizedBox(height: 12),
-
-            // Field Value
-            TextFormField(
-              controller: _fieldValueController,
-              decoration: const InputDecoration(
-                labelText: "Field Value",
-                border: OutlineInputBorder(),
+              _choiceChip(
+                label: "Delivered",
+                selected: _data.status == ReportStatus.delivered,
+                onSelected: () => setState(() => _data = _data.copyWith(status: ReportStatus.delivered)),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // Report Status Dropdown
-            DropdownButtonFormField<String>(
-              value: selectedReportStatus,
-              decoration: const InputDecoration(
-                labelText: "Report Status",
-                border: OutlineInputBorder(),
+              _choiceChip(
+                label: "Not Delivered",
+                selected: _data.status == ReportStatus.notDelivered,
+                onSelected: () => setState(() => _data = _data.copyWith(status: ReportStatus.notDelivered)),
               ),
-              items: ["All", "Report Delivered", "Report Not Delivered"]
-                  .map((status) => DropdownMenuItem(
-                        value: status,
-                        child: Text(status),
-                      ))
-                  .toList(),
-              onChanged: (val) => setState(() => selectedReportStatus = val),
-            ),
-            const SizedBox(height: 12),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-            // Multi-select dropdown
-            CommonMultiSelectDropdown<String>(
-              hintText: "Select Multiple",
-              items: (filter, props) async {
-                if (filter.isEmpty) return _dummyValues;
-                return _dummyValues
-                    .where(
-                        (e) => e.toLowerCase().contains(filter.toLowerCase()))
-                    .toList();
-              },
-              selectedItems: selectedMultiValues,
-              itemAsString: (item) => item,
-              onChanged: (values) {
-                setState(() => selectedMultiValues = values);
-              },
-              popupProps: PopupPropsMultiSelection.menu(
-                showSearchBox: true,
-                showSelectedItems: true,
-                menuProps: MenuProps(
-                  backgroundColor: Colors.white,
-                  elevation: 4,
-                  borderRadius: BorderRadius.circular(8),
+          // Date range
+          const Text(
+            "Date Range",
+            style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _dateField(
+                  label: "From",
+                  date: _data.fromDate,
+                  onTap: () => _pickDate(context, true),
+                  onClear: () => _clearDate(true),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // From Date
-            InkWell(
-              onTap: () => _pickDate(context, true),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: "From Date",
-                  border: OutlineInputBorder(),
-                ),
-                child: Text(
-                  fromDate != null
-                      ? "${fromDate!.day}/${fromDate!.month}/${fromDate!.year}"
-                      : "Select date",
+              const SizedBox(width: 10),
+              Expanded(
+                child: _dateField(
+                  label: "To",
+                  date: _data.toDate,
+                  onTap: () => _pickDate(context, false),
+                  onClear: () => _clearDate(false),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-            // To Date
-            InkWell(
-              onTap: () => _pickDate(context, false),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: "To Date",
-                  border: OutlineInputBorder(),
-                ),
-                child: Text(
-                  toDate != null
-                      ? "${toDate!.day}/${toDate!.month}/${toDate!.year}"
-                      : "Select date",
-                ),
+          // Tags (optional)
+          const Text(
+            "Tags (optional)",
+            style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87),
+          ),
+          const SizedBox(height: 8),
+          CommonMultiSelectDropdown<String>(
+            hintText: "Select tags",
+            items: (filter, props) async {
+              if (filter.isEmpty) return _dummyValues;
+              return _dummyValues
+                  .where((e) => e.toLowerCase().contains(filter.toLowerCase()))
+                  .toList();
+            },
+            selectedItems: _data.tags,
+            itemAsString: (item) => item,
+            onChanged: (values) {
+              setState(() => _data = _data.copyWith(tags: values));
+            },
+            popupProps: PopupPropsMultiSelection.menu(
+              showSearchBox: true,
+              showSelectedItems: true,
+              menuProps: MenuProps(
+                backgroundColor: Colors.white,
+                elevation: 4,
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-            const SizedBox(height: 20),
+          ),
+          const SizedBox(height: 18),
 
-            // Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Apply filter logic
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Filter applied")),
-                      );
-                    }
-                  },
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => widget.onApply(_data),
                   icon: const Icon(Icons.filter_alt),
-                  label: const Text("Filter"),
+                  label: const Text("Apply Filters"),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _resetForm,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: widget.onReset,
                   icon: const Icon(Icons.refresh),
                   label: const Text("Reset"),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
+  Widget _choiceChip({
+    required String label,
+    required bool selected,
+    required VoidCallback onSelected,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onSelected(),
+      labelStyle: TextStyle(
+        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+        color: selected ? Colors.white : Colors.black87,
+      ),
+      selectedColor: const Color(0xFF4F46E5),
+      backgroundColor: Colors.white,
+      shape: StadiumBorder(
+        side: BorderSide(color: selected ? const Color(0xFF4F46E5) : Colors.black12),
+      ),
+    );
+  }
+
+  Widget _dateField({
+    required String label,
+    required DateTime? date,
+    required VoidCallback onTap,
+    required VoidCallback onClear,
+  }) {
+    final text = date == null ? "Select date" : _formatDate(date);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          suffixIcon: date == null
+              ? const Icon(Icons.event, size: 18)
+              : IconButton(
+            tooltip: "Clear",
+            icon: const Icon(Icons.close, size: 18),
+            onPressed: onClear,
+          ),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        ),
+        child: Text(text),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return "${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}";
+  }
 }
+
+/* ===========================================================
+ * Common Multi-Select (kept)
+ * ===========================================================
+*/
 
 class CommonMultiSelectDropdown<T> extends StatelessWidget {
   final FutureOr<List<T>> Function(String, LoadProps?) items;
@@ -374,18 +552,24 @@ class CommonMultiSelectDropdown<T> extends StatelessWidget {
       onSaved: onSaved,
       validator: validator,
       dropdownBuilder: dropdownBuilder ??
-          (context, selectedItems) {
+              (context, selectedItems) {
+            if (selectedItems == null || selectedItems.isEmpty) {
+              return const Text(
+                "None",
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              );
+            }
             return Wrap(
               spacing: 4,
               runSpacing: -8,
               children: selectedItems
                   .map((e) => Chip(
-                        label: Text(
-                          itemAsString?.call(e) ?? e.toString(),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                      ))
+                label: Text(
+                  itemAsString?.call(e) ?? e.toString(),
+                  style: const TextStyle(fontSize: 12),
+                ),
+                visualDensity: VisualDensity.compact,
+              ))
                   .toList(),
             );
           },
@@ -400,15 +584,12 @@ class CommonMultiSelectDropdown<T> extends StatelessWidget {
             ),
             searchFieldProps: TextFieldProps(
               decoration: InputDecoration(
-                hintText: "Search...",
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                hintText: "Search tags...",
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide:
-                      BorderSide(color: theme.colorScheme.primary, width: 2),
+                  borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
                 ),
                 hintStyle: const TextStyle(fontSize: 12),
               ),
@@ -421,32 +602,25 @@ class CommonMultiSelectDropdown<T> extends StatelessWidget {
           DropDownDecoratorProps(
             decoration: InputDecoration(
               labelText: hintText,
-              labelStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500),
-              hintStyle: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
+              labelStyle: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w500),
+              hintStyle: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w600),
               filled: true,
               fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: theme.colorScheme.primary, width: 2),
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: Colors.redAccent),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: Colors.redAccent, width: 2),
               ),
             ),
@@ -454,6 +628,11 @@ class CommonMultiSelectDropdown<T> extends StatelessWidget {
     );
   }
 }
+
+/* ===========================================================
+ * Cards & UI shells
+ * ===========================================================
+*/
 
 class _WhiteCard extends StatelessWidget {
   final Widget child;
@@ -465,7 +644,7 @@ class _WhiteCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white, // SOLID WHITE
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
         boxShadow: [
@@ -484,13 +663,11 @@ class _WhiteCard extends StatelessWidget {
 class _ExpandableFilterCard extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
-  final Widget searchField;
   final Widget filters;
 
   const _ExpandableFilterCard({
     required this.expanded,
     required this.onToggle,
-    required this.searchField,
     required this.filters,
   });
 
@@ -500,20 +677,19 @@ class _ExpandableFilterCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header row (tap anywhere to toggle)
+          // Header row (tap to toggle)
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(10),
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
-                  const Icon(Icons.tune_rounded,
-                      size: 20, color: Colors.indigo),
+                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'Search & Filters',
+                      'Filters',
                       style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
@@ -521,33 +697,27 @@ class _ExpandableFilterCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // chevron animates
                   AnimatedRotation(
                     duration: const Duration(milliseconds: 200),
                     turns: expanded ? 0.5 : 0.0, // 0 -> down, 0.5 -> up
-                    child: const Icon(Icons.keyboard_arrow_down_rounded,
-                        size: 22, color: Colors.black54),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, size: 22, color: Colors.black54),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Search always visible
-          searchField,
-
-          // Animated expand area
+          // Animated expand area (no search field)
           AnimatedCrossFade(
             firstCurve: Curves.easeOut,
             secondCurve: Curves.easeOut,
             sizeCurve: Curves.easeOut,
             duration: const Duration(milliseconds: 220),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Column(
               children: [
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 _softDivider(),
                 const SizedBox(height: 12),
                 filters,
@@ -560,61 +730,40 @@ class _ExpandableFilterCard extends StatelessWidget {
   }
 
   Widget _softDivider() => Container(
-        height: 1,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.black.withOpacity(0.06), Colors.transparent],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-        ),
-      );
+    height: 1,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+  );
 }
 
-class _SearchField extends StatelessWidget {
-  final TextEditingController controller;
-  final String hint;
-  final ValueChanged<String>? onChanged;
-  const _SearchField({
-    required this.controller,
-    required this.hint,
-    this.onChanged,
-  });
+class _EmptyState extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  const _EmptyState({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  controller.clear();
-                  onChanged?.call('');
-                },
-              ),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
-          borderSide: BorderSide(color: Colors.indigo),
-        ),
+    return _WhiteCard(
+      child: Column(
+        children: [
+          const Icon(Icons.inbox_rounded, size: 56, color: Colors.indigo),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black54),
+          ),
+        ],
       ),
     );
   }
@@ -627,55 +776,9 @@ class InvestigationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Accessors to be robust for snake/camel case
-    String _patientName() {
-      final pn = report.patientName ?? (report as dynamic).patient_name;
-      return (pn?.toString().trim().isNotEmpty ?? false)
-          ? pn.toString()
-          : 'Unknown Patient';
-    }
-
-    String _doctorName() {
-      final dn = report.doctorName ?? "NA";
-      return (dn?.toString().trim().isNotEmpty ?? false)
-          ? dn.toString()
-          : 'Unknown Doctor';
-    }
-
-    String _billDate() {
-      final v = report.billDate ?? (report as dynamic).bill_date;
-      return v?.toString() ?? '';
-    }
-
-    int _age() {
-      final t = report.age ?? (report as dynamic).age;
-      if (t is int) return t;
-      if (t is String) return int.tryParse(t) ?? 0;
-      return 0;
-    }
-
-    // String _type() {
-    //   final t = report.type ?? (report as dynamic).type;
-    //   return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
-    // }
-    int _billStatus() {
-      final s = report.status == "Delivered" ? 1 : 0;
-      return s;
-    }
-
-    String _uid() {
-      final u = report.id ?? (report as dynamic).uid;
-      return (u?.toString().trim().isNotEmpty ?? false) ? u.toString() : '—';
-    }
-
-    String _billNo() {
-      final id = report.billNo ?? (report as dynamic).bill_id;
-      return (id?.toString().trim().isNotEmpty ?? false) ? id.toString() : '—';
-    }
-
-    final statusPaid = _billStatus() == 1;
-    final statusColor = statusPaid ? Colors.green : Colors.orange;
-    final apptText = _formatDateTime(_billDate());
+    final status = (report.status ?? '').toLowerCase().contains('deliver');
+    final statusColor = status ? Colors.green : Colors.orange;
+    final dateText = _formatDateTime(report.billDate);
 
     return InkWell(
       onTap: onTap,
@@ -683,7 +786,7 @@ class InvestigationCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white, // SOLID WHITE CARD
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
           boxShadow: [
@@ -696,38 +799,28 @@ class InvestigationCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Leading circular gradient with ticket
+            // Leading circular gradient with bill no
             Container(
               width: 52,
               height: 52,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF00C2FF), Color(0xFF7F5AF0)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF00C2FF),
-                    Color(0xFF7F5AF0),
-                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
               ),
               child: Center(
-                  child: Text(
-                    _billNo(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                    ),
+                child: Text(
+                  (report.billNo ?? '—').toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
                   ),
-                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 14),
 
@@ -736,12 +829,12 @@ class InvestigationCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Row: Department + Paid/Pending
+                  // Name + status
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          _patientName(),
+                          (report.patientName ?? 'Unknown Patient'),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -759,7 +852,7 @@ class InvestigationCard extends StatelessWidget {
                           border: Border.all(color: statusColor.withOpacity(0.4)),
                         ),
                         child: Text(
-                          statusPaid ? 'Delivered' : 'Not Delivered',
+                          status ? 'Delivered' : 'Not Delivered',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w800,
@@ -772,54 +865,29 @@ class InvestigationCard extends StatelessWidget {
                   const SizedBox(height: 6),
 
                   // Doctor
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Dr  ${_doctorName()}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13.5,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "Dr ${report.doctorName ?? 'NA'}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 6),
 
-                  // Date & Type & UID
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
+                  // Date row
+                  Row(
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.event,
-                              size: 16, color: Colors.blueGrey),
-                          const SizedBox(width: 6),
-                          Text(apptText,
-                              style: const TextStyle(
-                                  fontSize: 12.5, color: Colors.black54)),
-                        ],
+                      const Icon(Icons.event, size: 16, color: Colors.blueGrey),
+                      const SizedBox(width: 6),
+                      Text(
+                        dateText,
+                        style: const TextStyle(fontSize: 12.5, color: Colors.black54),
                       ),
-                      //   _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
-                      //   if (_uid() != '—') _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
                     ],
                   ),
-                  const SizedBox(height: 8),
-
-                  // Due pill
-                  // _moneyPill(
-                  //   icon: Icons.account_balance_wallet,
-                  //   label: 'Due',
-                  //   value: _inr(_due()),
-                  //   emphasize: _due() > 0,
-                  // ),
                 ],
               ),
             ),
@@ -829,101 +897,14 @@ class InvestigationCard extends StatelessWidget {
     );
   }
 
-  static Widget _chip({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.black12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: Colors.blueGrey),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static String _formatDateTime(String? iso) {
-    if (iso == null || iso.isEmpty) return '—';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return iso;
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
+  static String _formatDateTime(DateTime? d) {
+    if (d == null) return '—';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     final dd = d.day.toString().padLeft(2, '0');
     final mm = months[d.month - 1];
     final yyyy = d.year.toString();
     final hh = d.hour.toString().padLeft(2, '0');
     final min = d.minute.toString().padLeft(2, '0');
     return '$dd $mm $yyyy • $hh:$min';
-  }
-
-  static String _inr(num? v) {
-    final n = (v ?? 0).toDouble();
-    final s = n.toStringAsFixed(2);
-    final parts = s.split('.');
-    final whole = parts[0];
-    final dec = parts[1];
-    final buf = StringBuffer();
-    for (int i = 0; i < whole.length; i++) {
-      final left = whole.length - i - 1;
-      buf.write(whole[i]);
-      if (left > 0 && left % 3 == 0) buf.write(',');
-    }
-    return '₹${buf.toString()}.$dec';
-  }
-
-  Widget _moneyPill({
-    required IconData icon,
-    required String label,
-    required String value,
-    bool emphasize = false,
-  }) {
-    final color = emphasize ? Colors.red : Colors.blueGrey;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.35)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 15, color: color),
-          const SizedBox(width: 6),
-          Text(
-            '$label: $value',
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: color.shade700,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

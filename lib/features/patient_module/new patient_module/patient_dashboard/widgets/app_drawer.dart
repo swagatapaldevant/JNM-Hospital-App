@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
+import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_button.dart';
+import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+
 
 //convert AppDrawer to Stateful widget
 class AppDrawer extends StatefulWidget {
@@ -41,6 +44,140 @@ class _AppDrawerState extends State<AppDrawer> {
     //print(initials);
     return initials;
   }
+
+  commonDialog({
+  required String title,
+  required String msg,
+  required String activeButtonLabel,
+  Color? activeButtonLabelColor,
+  Color? activeButtonSolidColor,
+  IconData? icon,
+  bool isCancelButtonShow = true,
+  Function()? activeButtonOnClicked,
+  required BuildContext context,
+}) {
+  showDialog(
+    barrierDismissible: false, // iOS feel: must click button
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue.shade400,
+                Colors.deepPurple.shade400,
+              ],
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(ScreenUtils().screenWidth(context) * 0.08),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // shrink to content like iOS
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: ScreenUtils().screenHeight(context) * 0.1,
+                  width: ScreenUtils().screenWidth(context) * 0.2,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.9),
+                        Colors.white.withOpacity(0.6),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Icon(
+                    icon ?? Icons.info_outline,
+                    color: Colors.deepPurple.shade600,
+                    size: 36,
+                  ),
+                ),
+                SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                        fontFamily: "SF Pro Display",
+                        color: Colors.white,
+                        fontSize: ScreenUtils().screenWidth(context) * 0.05,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    msg,
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                          fontFamily: "SF Pro Text",
+                          color: Colors.white70,
+                          fontSize: ScreenUtils().screenWidth(context) * 0.038,
+                          fontWeight: FontWeight.w400,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: ScreenUtils().screenHeight(context) * 0.04),
+                Row(
+                  children: [
+                    if (isCancelButtonShow)
+                      Expanded(
+                        child: CustomButton(
+                          borderRadius: 12,
+                          labelTextSize:
+                              ScreenUtils().screenWidth(context) * 0.034,
+                          verticalPadding:
+                              ScreenUtils().screenWidth(context) * 0.022,
+                          horizontalPadding:
+                              ScreenUtils().screenWidth(context) * 0.06,
+                          labelTextColor: Colors.deepPurple.shade600,
+                          color: Colors.white,
+                          borderColor: Colors.transparent,
+                          onPressed: () => Navigator.pop(context),
+                          text: "Cancel",
+                        ),
+                      ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomButton(
+                        borderRadius: 12,
+                        labelTextSize:
+                            ScreenUtils().screenWidth(context) * 0.034,
+                        verticalPadding:
+                            ScreenUtils().screenWidth(context) * 0.022,
+                        horizontalPadding:
+                            ScreenUtils().screenWidth(context) * 0.06,
+                        labelTextColor: Colors.white,
+                        color: Colors.deepPurple.shade600,
+                        borderColor: Colors.transparent,
+                        onPressed: activeButtonOnClicked,
+                        text: activeButtonLabel,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,13 +313,20 @@ class _AppDrawerState extends State<AppDrawer> {
                     icon: Icons.logout_rounded,
                     label: 'Logout',
                     danger: true,
-                    onTap: () async {
-                      _pref.clearOnLogout();
-                      await Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        RouteGenerator.kPatientLoginScreen,
-                        (Route<dynamic> route) => false,
-                      );
+                    onTap: () {
+                      commonDialog(
+                          title: "Logout",
+                          msg: "Are you sure you want to logout?",
+                          activeButtonLabel: "Logout",
+                          context: context,
+                          activeButtonOnClicked: () {
+                            _pref.clearOnLogout();
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              RouteGenerator.kPatientLoginScreen,
+                              (Route<dynamic> route) => false,
+                            );
+                          });
                     },
                   ),
                 ],

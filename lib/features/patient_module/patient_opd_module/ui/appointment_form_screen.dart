@@ -22,7 +22,6 @@ class AppointmentFormScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PatientDetailsScreenLayout(
-      
       slivers: [
         // Header
         SliverToBoxAdapter(
@@ -83,7 +82,6 @@ class AppointmentFormScreen extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _AppointmentForm extends StatefulWidget {
@@ -344,6 +342,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     _softButton(
                       label: "Reset",
@@ -456,6 +455,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                               child: TextFormField(
                                 readOnly: true,
                                 enabled: false,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 decoration: _inputDecoration(
                                   hint: "Select appointment date",
                                   suffixIcon: const Icon(Icons.calendar_today,
@@ -477,6 +480,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                               child: TextFormField(
                                 readOnly: true,
                                 enabled: false,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 decoration: _inputDecoration(
                                   hint: "Select slot time",
                                   suffixIcon: const Icon(Icons.access_time,
@@ -504,6 +511,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                               label: 'UHID',
                               child: TextFormField(
                                 controller: uhidController,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 decoration:
                                     _inputDecoration(hint: "Enter UHID"),
                                 validator: (v) =>
@@ -515,6 +526,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                             _fieldShell(
                               label: 'Mobile No.',
                               child: TextFormField(
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 controller: mobileController,
                                 keyboardType: TextInputType.phone,
                                 decoration: _inputDecoration(
@@ -529,6 +544,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                               label: 'Name *',
                               child: TextFormField(
                                 controller: nameController,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 decoration:
                                     _inputDecoration(hint: "Enter full name"),
                                 validator: (v) =>
@@ -566,44 +585,46 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                             _fieldShell(
                               label: 'Year',
                               child: CommonSearchableDropdown<int>(
-                                items: (filter, _) {
-                                  final nowYear = DateTime.now().year;
-                                  final years = List.generate(
-                                      201, (i) => nowYear - 100 + i);
-                                  return years.reversed.toList();
-                                },
-                                hintText: "Select year",
-                                selectedItem: yearController.text.isNotEmpty
-                                    ? int.tryParse(yearController.text)
-                                    : null,
-                                onChanged: (val) =>
-                                    yearController.text = val?.toString() ?? "",
-                              ),
+                                  items: (filter, _) {
+                                    final nowYear = DateTime.now().year;
+                                    final years = List.generate(
+                                        201, (i) => nowYear - 100 + i);
+                                    return years.toList();
+                                  },
+                                  hintText: "Select year",
+                                  selectedItem: yearController.text.isNotEmpty
+                                      ? int.tryParse(yearController.text)
+                                      : null,
+                                  onChanged: (val) {
+                                    yearController.text = val?.toString() ?? "";
+                                    setState(() {});
+                                  }),
                             ),
                             _fieldShell(
                               label: 'Month',
                               child: CommonSearchableDropdown<String>(
-                                items: (filter, _) => const [
-                                  "January",
-                                  "February",
-                                  "March",
-                                  "April",
-                                  "May",
-                                  "June",
-                                  "July",
-                                  "August",
-                                  "September",
-                                  "October",
-                                  "November",
-                                  "December"
-                                ],
-                                hintText: "Select month",
-                                selectedItem: monthController.text.isNotEmpty
-                                    ? monthController.text
-                                    : null,
-                                onChanged: (val) =>
-                                    monthController.text = val ?? "",
-                              ),
+                                  items: (filter, _) => const [
+                                        "January",
+                                        "February",
+                                        "March",
+                                        "April",
+                                        "May",
+                                        "June",
+                                        "July",
+                                        "August",
+                                        "September",
+                                        "October",
+                                        "November",
+                                        "December"
+                                      ],
+                                  hintText: "Select month",
+                                  selectedItem: monthController.text.isNotEmpty
+                                      ? monthController.text
+                                      : null,
+                                  onChanged: (val) {
+                                    monthController.text = val ?? "";
+                                    setState(() {});
+                                  }),
                             ),
                             _fieldShell(
                               label: 'Day',
@@ -648,7 +669,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                                         : null,
                                     onChanged: (val) {
                                       dayController.text = val ?? "";
-                                      setInner(() {});
+                                      setState(() {});
                                     },
                                   );
                                 },
@@ -659,6 +680,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                               child: TextFormField(
                                 readOnly: true,
                                 enabled: false,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 decoration: _inputDecoration(hint: "—"),
                                 controller:
                                     TextEditingController(text: _dobText()),
@@ -674,6 +699,10 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                         _fieldShell(
                           label: 'Full Address',
                           child: TextFormField(
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
                             controller: addressController,
                             maxLines: 2,
                             decoration: _inputDecoration(hint: "Enter address"),
@@ -781,7 +810,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
         Text(label,
             style: const TextStyle(
               fontSize: 12.5,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
               color: Colors.black87,
             )),
         const SizedBox(height: 8),
@@ -847,7 +876,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
           title,
           style: const TextStyle(
             fontSize: 14.5,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w700,
             color: Colors.black87,
             letterSpacing: 0.2,
           ),
@@ -1022,68 +1051,68 @@ class _StickySubmitBar extends StatelessWidget {
     required this.time,
     required this.onSubmit,
   });
-@override
-Widget build(BuildContext context) {
-  return Material(
-    elevation: 14,
-    color: Colors.transparent,
-    child: Container(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.92),
-        border: Border(
-          top: BorderSide(color: Colors.black.withOpacity(0.06)),
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 14,
+      color: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.92),
+          border: Border(
+            top: BorderSide(color: Colors.black.withOpacity(0.06)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.10),
+              blurRadius: 18,
+              offset: const Offset(0, -6),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.10),
-            blurRadius: 18,
-            offset: const Offset(0, -6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Wrap(
-            spacing: 8,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              _chip(icon: Icons.apartment, text: department),
-              _chip(icon: Icons.person, text: doctor),
-              _chip(icon: Icons.calendar_month, text: date),
-              _chip(icon: Icons.access_time, text: time),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Opacity(
-            opacity: valid ? 1 : 0.6,
-            child: ElevatedButton.icon(
-              onPressed: valid ? onSubmit : null,
-              icon: const Icon(Icons.check_circle_rounded),
-              label: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                child: Text(
-                  'Submit',
-                  style: TextStyle(fontWeight: FontWeight.w900),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                _chip(icon: Icons.apartment, text: department),
+                _chip(icon: Icons.person, text: doctor),
+                _chip(icon: Icons.calendar_month, text: date),
+                _chip(icon: Icons.access_time, text: time),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Opacity(
+              opacity: valid ? 1 : 0.6,
+              child: ElevatedButton.icon(
+                onPressed: valid ? onSubmit : null,
+                icon: const Icon(Icons.check_circle_rounded),
+                label: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7F5AF0),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF7F5AF0),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   static Widget _chip({required IconData icon, required String text}) {
     return Container(
@@ -1317,7 +1346,6 @@ class _DateTimePopupState extends State<DateTimePopup> {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -1367,16 +1395,16 @@ class _DateTimePopupState extends State<DateTimePopup> {
                       const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                   child: Row(
                     children: [
-                      IconButton(
+                      IconButton.filledTonal(
                         onPressed: () => _scrollDates(false),
-                        icon: const Icon(Icons.arrow_back_ios, size: 18),
+                        icon: const Icon(Icons.arrow_back_ios, size: 18, weight: 30, ),
                       ),
                       Expanded(
                         child: _buildDateGrid(theme),
                       ),
-                      IconButton(
+                      IconButton.filledTonal(
                         onPressed: () => _scrollDates(true),
-                        icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                        icon: const Icon(Icons.arrow_forward_ios, size: 18,  weight: 30),
                       ),
                     ],
                   ),

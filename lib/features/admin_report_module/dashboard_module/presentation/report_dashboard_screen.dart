@@ -916,6 +916,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           StatisticalGraph(
+                            key: ValueKey('${newData.join(",")}::${oldData.join(",")}'),
                             text:
                             "Old New Patient Count per Department",
                             categories: const [

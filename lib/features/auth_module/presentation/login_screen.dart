@@ -242,9 +242,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     if (resource.status == STATUS.SUCCESS) {
       _pref.setLoginStatus(true);
-      _pref.setUserAuthToken(resource.data["access_token"]);
-      _pref.setProfileImage(resource.data["user"]["profile_img"]);
-      _pref.setUserName(resource.data["user"]["name"]);
+      _pref.setUserAuthToken(resource.data["access_token"].toString());
+      _pref.setProfileImage(resource.data["user"]["profile_img"].toString());
+      _pref.setUserName(resource.data["user"]["name"].toString());
 
       setState(() => isLoading = false);
 

@@ -198,6 +198,26 @@ class _AppointmentFormState extends State<_AppointmentForm> {
     });
   }
 
+  Future<void> submitRegistration() async {
+    if (!_validateForm()) return;
+
+    // Prepare data for submission
+    final data = {
+      "uhid": uhidController.text.trim(),
+      "mobile": mobileController.text.trim(),
+      "name": nameController.text.trim(),
+      "gender": genderController.text.trim(),
+      "dob": _dobText(),
+      "address": addressController.text.trim(),
+      "department": selectedDepartment?.values.first,
+      "doctor": selectedDoctor?.values.first,
+      "date": _dateToChip(selectedDate),
+      "time": selectedTime,
+    };
+
+    // Call API to submit registration
+  }
+
   Future<List<SlotSelectionModel>> getTimeslotData(
       DateTime selectedDate) async {
     setState(() {
@@ -409,7 +429,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                                 controller: TextEditingController(
                                   text: selectedTime ?? "",
                                 ),
-                                readOnly: true, // ✅ Prevent typing
+                                readOnly: true, 
                                 onTap: () async {
                                   TimeOfDay? pickedTime = await showTimePicker(
                                     context: context,

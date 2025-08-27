@@ -10,9 +10,9 @@ class ApiEndPoint{
   ApiEndPoint._internal();
 
   //static const baseurl = "http://192.168.29.243:8001/api";
-   static const baseurl = "https://devanthims.in/rainbow/api";
+ //  static const baseurl = "https://devanthims.in/rainbow/api";
   // static const baseurl = "https://devanttest.in/kgh-demo/api";
-   //static const baseurl = "https://devanttest.in/kgh-demo/api";
+   static const baseurl = "https://devanttest.in/kgh-demo/api";
  // static const baseurl = "https://jmnmedicalcollege.com/api";
 
   // auth api
@@ -46,5 +46,11 @@ class ApiEndPoint{
     static const getInvestigationReport =  "$baseurl/complete_investigation_report";
     static const rateEnquiry =  "$baseurl/rate_query";
 
+  //approval system api
+  static const approvalSystemOPD =  "$baseurl/approvalsystem/opd";
+  static const approvalSystemIPD =  "$baseurl/approvalsystem/ipd";
+  static const approvalSystemInvestigation =  "$baseurl/approvalsystem/investigation";
+  static const approvalSystemEMR =  "$baseurl/approvalsystem/emg";
+  static const approvalSystemDialysis =  "$baseurl/approvalsystem/dialysis";
 
 }

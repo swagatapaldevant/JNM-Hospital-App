@@ -8,6 +8,8 @@ import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref_impl.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase_impl.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_screen/data/approval_usecases.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_screen/data/approval_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
@@ -32,4 +34,5 @@ void initializeDependency(){
   getIt.registerFactory<PatientDetailsUsecase>(()=> PatientDetailsUsecaseImpl());
   getIt.registerFactory<PatientOPDUsecases>(()=> PatientOPDUsecasesImpl());
   getIt.registerFactory<RateEnquiryUsecases>(()=> RateEnquiryUsecasesImpl());
+  getIt.registerFactory<ApprovalUsecases>(()=> ApprovalUsecasesImpl());
 }

@@ -12,6 +12,9 @@ import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/presentation/ipd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/landscape_view_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/ui/approval_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/auth/ui/approval_login_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_screen/ui/approval_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/login_screen.dart';
 import 'package:jnm_hospital_app/features/auth_module/presentation/signup_screen.dart';
 import 'package:jnm_hospital_app/features/login_type_selection/ui/login_type_selection_screen.dart';
@@ -92,6 +95,14 @@ class RouteGenerator{
   static const kRateEnquiryScreen = "/RateEnquiryScreen";
   static const kInvestigationScreen = "/InvestigationScreen";
   static const kOPDRegistrationScreen = "/OPDRegistrationScreen";
+  static const kApprovalLoginScreen = "/ApprovalLoginScreen";
+  static const kApprovalDashboardScreen = "/ApprovalDashboardScreen";
+  static const kApprovalDetailscreen = "/ApprovalDetailscreen";
+  static const kApprovalIPDScreen = "/ApprovalIPDScreen";
+  static const kApprovalEMGScreen = "/ApprovalEMGScreen";
+  static const kApprovalDialysisScreen = "/ApprovalDialysisScreen";
+  static const kApprovalInvestigationScreen = "/ApprovalInvestigationScreen";
+
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -198,6 +209,19 @@ class RouteGenerator{
         return _animatedPageRoute(RateEnquiryScreen());
       case kInvestigationScreen:
         return _animatedPageRoute(InvestigationScreen());
+      /**Approval System Routes below */
+      case kApprovalLoginScreen:
+        return _animatedPageRoute(ApprovalLoginScreen());
+      case kApprovalDashboardScreen:
+        return _animatedPageRoute(ApprovalDashboardScreen());
+      case kApprovalDetailscreen:
+       final args = settings.arguments as Map<String, dynamic>;
+        return _animatedPageRoute(ApprovalScreen(
+           apiEndpoint: args['apiEndpoint'] as String? ?? '',
+          title: args['title'] as String? ?? '',
+        ));
+   
+   
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");

@@ -1,20 +1,24 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/glasscard.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/data/dashboard_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
 
-class PatientDashboardScreen extends StatefulWidget {
-  const PatientDashboardScreen({super.key});
+class ApprovalDashboardScreen extends StatefulWidget {
+  const ApprovalDashboardScreen({super.key});
 
   @override
-  State<PatientDashboardScreen> createState() => _PatientDashboardScreenState();
+  State<ApprovalDashboardScreen> createState() =>
+      _ApprovalDashboardScreenState();
 }
 
-class _PatientDashboardScreenState extends State<PatientDashboardScreen>
+class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     with TickerProviderStateMixin {
   // Background palette
   static const Color bg1 = Color(0xFFF0F0F0);
@@ -28,42 +32,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   static const double _hPad = 20;
 
   bool _loading = true;
-
-  // --- Sample Data (replace with API/Repository) ---
-  List<DoctorModel> _doctorsToday = [];
-
-  List<_Appointment> _opdUpcoming = const [
-    _Appointment(
-      typeLabel: 'OPD',
-      doctor: 'Dr. Ananya Gupta',
-      specialization: 'Cardiologist',
-      when: 'Today, 12:15 PM',
-      token: 'A-17',
-      location: 'OPD Block · Rm 203',
-      accent: opdAccent,
-    ),
-    _Appointment(
-      typeLabel: 'OPD',
-      doctor: 'Dr. Arjun Mehta',
-      specialization: 'Dermatologist',
-      when: 'Tomorrow, 10:00 AM',
-      token: 'B-03',
-      location: 'OPD Block · Rm 110',
-      accent: opdAccent,
-    ),
-  ];
-
-  List<_Appointment> _opticalUpcoming = const [
-    _Appointment(
-      typeLabel: 'Optical',
-      doctor: 'Dr. Kavya Iyer',
-      specialization: 'Optometrist',
-      when: 'Tomorrow, 10:30 AM',
-      token: 'OPT-05',
-      location: 'Optical Center · Rm 02',
-      accent: opticalAccent,
-    ),
-  ];
 
   Color _getCardColor(String color) {
     final Color defaultColor = opticalAccent;
@@ -82,7 +50,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
       if (!mounted) return;
       setState(() => _loading = false);
     });
-    getDoctorData();
   }
 
   Future<void> _onRefresh() async {
@@ -117,22 +84,6 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Future<void> getDoctorData() async {
-    setState(() {
-      _loading = true;
-    });
-    final resource = await DashboardUsecaseImpl().getDoctors();
-    if (resource.status == STATUS.SUCCESS) {
-      //print(resource.data);
-      resource.data.forEach((doctor) {
-        _doctorsToday.add(DoctorModel.fromJson(doctor));
-      });
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,207 +193,17 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   height: 1.35),
                             ),
                             const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                _QuickActionChip(
-                                  icon: Icons.event_available_rounded,
-                                  label: 'Book OPD',
-                                  color: opdAccent,
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kOPDRegistrationScreen);
-                                  },
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.visibility_outlined,
-                                  label: 'Optical',
-                                  color: opticalAccent,
-                                  onTap: () => HapticFeedback.selectionClick(),
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.receipt_long_outlined,
-                                  label: 'Prescriptions',
-                                  color: const Color(0xFF20C997),
-                                  onTap: () => HapticFeedback.selectionClick(),
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.receipt_long_outlined,
-                                  label: 'Details',
-                                  color: opticalAccent,
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, "/PatientDetailsScreen");
-                                  },
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.currency_exchange,
-                                  label: 'Rate Enquiry',
-                                  color: const Color(0xFF20C997),
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kRateEnquiryScreen);
-                                  },
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.search,
-                                  label: 'Investigation',
-                                  color: opdAccent,
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kInvestigationScreen);
-                                  },
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-
-                  // Today's Doctors
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 18, _hPad, 8),
-                      child: _SectionHeader(
-                          title: "Today's Doctors",
-                          actionText: 'See all',
-                          onAction: () {}),
+                      padding: const EdgeInsets.all(16.0),
+                      child: buildPatientDetailsGrid(context),
                     ),
                   ),
-                  if (_loading)
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: 1,
-                        itemBuilder: (_, __) =>
-                            const _DoctorCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    )
-                  else if(_doctorsToday.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        child: const _EmptyStateCard(
-                          icon: Icons.local_hospital_outlined,
-                          message: 'No doctors available today',
-                          hint: 'Check back later or book an appointment.',
-                        ),
-                      ),
-                    )
-                  else
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 156,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _doctorsToday.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemBuilder: (context, i) => _DoctorCard(
-                          doctor: _doctorsToday[i],
-                          accent: _getCardColor(_doctorsToday[i].color ?? ""),
-                          onTap: () {
-                            Navigator.pushNamed(context, "/DoctorDetailsScreen", arguments:_doctorsToday[i]);
-                          }
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // OPD Upcoming (separate list)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
-                      child: _SectionHeader(
-                          title: 'Upcoming Appointment',
-                          actionText: 'View all',
-                          onAction: () {}),
-                    ),
-                  ),
-                  if (_loading)
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: 2,
-                        itemBuilder: (_, __) =>
-                            const _AppointmentCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    )
-                  else if (_opdUpcoming.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        child: const _EmptyStateCard(
-                          icon: Icons.local_hospital_outlined,
-                          message: 'No upcoming OPD appointments',
-                          hint: 'Book a new OPD slot from Quick actions.',
-                        ),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: _opdUpcoming.length,
-                        itemBuilder: (context, i) =>
-                            _AppointmentCard(appt: _opdUpcoming[i]),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    ),
-
-                  // Optical Upcoming (separate list)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
-                      child: _SectionHeader(
-                          title: 'Optical Appointment',
-                          actionText: 'View all',
-                          onAction: () {}),
-                    ),
-                  ),
-                  if (_loading)
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: 1,
-                        itemBuilder: (_, __) =>
-                            const _AppointmentCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    )
-                  else if (_opticalUpcoming.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        child: const _EmptyStateCard(
-                          icon: Icons.visibility_outlined,
-                          message: 'No upcoming Optical appointments',
-                          hint: 'Schedule a new visit from Quick actions.',
-                        ),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: _opticalUpcoming.length,
-                        itemBuilder: (context, i) =>
-                            _AppointmentCard(appt: _opticalUpcoming[i]),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    ),
-
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
               ),
             ),
@@ -452,6 +213,143 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     );
   }
 
+  Widget buildPatientDetailsGrid(
+      BuildContext context) {
+    final tiles = <Widget>[];
+
+    tiles.add(GlassTile(
+      icon: Icons.local_hospital,
+      label: "OPD",
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteGenerator.kApprovalDetailscreen,
+          arguments: {
+            'apiEndpoint': ApiEndPoint.approvalSystemOPD,
+            'title': 'OPD Approval'
+          }
+        );
+      },
+    ));
+
+    tiles.add(GlassTile(
+      icon: Icons.bed,
+      label: "IPD/Daycare",
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteGenerator.kApprovalDetailscreen,
+          arguments: {
+            'apiEndpoint': ApiEndPoint.approvalSystemIPD,
+            'title': 'IPD/Daycare Approval'
+          }
+        );
+      },
+    ));
+
+
+      tiles.add(GlassTile(
+      icon: Icons.history,
+      label: "EMR",
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteGenerator.kApprovalDetailscreen,
+          arguments: {
+            'apiEndpoint': ApiEndPoint.approvalSystemEMR,
+            'title': 'EMR Approval'
+          }
+        );
+      },
+    ));
+
+    tiles.add(GlassTile(
+      icon: Icons.receipt_long,
+      label: "DIALYSIS",
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteGenerator.kApprovalDetailscreen,
+          arguments: {
+            'apiEndpoint': ApiEndPoint.approvalSystemDialysis,
+            'title': 'Dialysis Approval'
+          },
+        );
+      },
+    ));
+
+    
+      tiles.add(GlassTile(
+        icon: Icons.payments,
+        label: "INVESTIGATION",
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            RouteGenerator.kApprovalDetailscreen,
+            arguments: {
+              'apiEndpoint': ApiEndPoint.approvalSystemInvestigation,
+              'title': 'Investigation Approval'
+            },
+          );
+        },
+      ));
+    
+
+
+    if (tiles.isEmpty) return const SizedBox.shrink();
+    const double _maxContentWidth = 720.0;
+    final screenW = MediaQuery.of(context).size.width;
+    final contentW = screenW < _maxContentWidth ? screenW : _maxContentWidth;
+
+    int crossAxisCount;
+    if (contentW < 380) {
+      crossAxisCount = 2;
+    } else if (contentW < 640) {
+      crossAxisCount = 3;
+    } else {
+      crossAxisCount = 4;
+    }
+
+    final aspect = contentW < 380 ? 0.95 : 1.05;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 12, bottom: 15),
+            child: Text(
+              "Approval System",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          GridView.count(
+            crossAxisCount: crossAxisCount,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: aspect,
+            children: tiles,
+          ),
+        ],
+      ),
+    );
+  }
   // ---------- Helpers / Decor ----------
 
   Widget _blob(double size, Color color) {
@@ -483,10 +381,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.cyan, width: 2)
-        ),
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.cyan, width: 2)),
         child: Icon(icon, color: textPrimary),
       ),
     );
@@ -728,7 +625,7 @@ class _DoctorCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      
+
                       Wrap(
                         spacing: 10,
                         runSpacing: 6,
@@ -782,7 +679,7 @@ class _DoctorCard extends StatelessWidget {
     if (availableTime == null || availableTime.isEmpty) {
       return "No timing info";
     }
-    List<String>time = availableTime.split('--').map((e) => e.trim()).toList();
+    List<String> time = availableTime.split('--').map((e) => e.trim()).toList();
     String formattedTime = '${time[0]} to ${time[1]}';
 
     return formattedTime;
@@ -1026,225 +923,6 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
         return Opacity(opacity: t, child: child);
       },
       child: widget.child,
-    );
-  }
-}
-
-class _SkeletonBox extends StatelessWidget {
-  final double height;
-  final double width;
-  final double radius;
-  const _SkeletonBox(
-      {required this.height, required this.width, this.radius = 10});
-
-  @override
-  Widget build(BuildContext context) {
-    return _Pulse(
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(radius),
-          border: Border.all(color: Colors.white.withOpacity(0.7)),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4))
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DoctorCardSkeleton extends StatelessWidget {
-  const _DoctorCardSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final screenW = MediaQuery.of(context).size.width;
-    final double cardWidth = screenW < 360 ? screenW - 40 : 248; // matches real card
-
-    return Container(
-      width: cardWidth,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // gentle sheen
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Colors.white.withOpacity(0.18),
-                      Colors.white.withOpacity(0.04),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.22, 0.55],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // inner hairline
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Container(
-                margin: const EdgeInsets.all(1.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(17),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.30),
-                    width: 0.8,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // content placeholders
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _SkeletonBox(height: 52, width: 32, radius: 26),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    // Simulate two lines of a long name safely
-                    _SkeletonBox(height: 14, width: 180),
-                    SizedBox(height: 6),
-                    _SkeletonBox(height: 14, width: 140),
-                    SizedBox(height: 10),
-                    // specialization line
-                    _SkeletonBox(height: 12, width: 140),
-                    SizedBox(height: 10),
-                    // time row
-                    _SkeletonBox(height: 12, width: 120),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AppointmentCardSkeleton extends StatelessWidget {
-  const _AppointmentCardSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.black12),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 14,
-              offset: const Offset(0, 6))
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _SkeletonBox(height: 48, width: 48, radius: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // pill + when
-                _SkeletonBox(height: 12, width: 160, radius: 8),
-                SizedBox(height: 10),
-                _SkeletonBox(height: 14, width: 180),
-                SizedBox(height: 6),
-                _SkeletonBox(height: 12, width: 120),
-                SizedBox(height: 10),
-                _SkeletonBox(height: 12, width: 200),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          const _SkeletonBox(height: 28, width: 60, radius: 999),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyStateCard extends StatelessWidget {
-  final IconData icon;
-  final String message;
-  final String hint;
-  const _EmptyStateCard(
-      {required this.icon, required this.message, required this.hint});
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(18);
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: radius,
-        border: Border.all(color: Colors.black12),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 6))
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, color: Colors.black.withOpacity(0.06)),
-            child: Icon(icon, color: Colors.black54),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(message,
-                  style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14.5)),
-              const SizedBox(height: 4),
-              Text(hint,
-                  style: TextStyle(
-                      color: Colors.black.withOpacity(0.65), fontSize: 13)),
-            ]),
-          ),
-        ],
-      ),
     );
   }
 }

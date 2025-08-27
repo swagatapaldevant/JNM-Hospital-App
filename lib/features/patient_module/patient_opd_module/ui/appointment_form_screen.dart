@@ -226,7 +226,22 @@ class _AppointmentFormState extends State<_AppointmentForm> {
       if (response.statusCode == 200) {
         final resource = response.data;
 
-        if (resource["success"] == true) {
+        if 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        (resource["success"] == true) {
           final List<dynamic> slots = resource["uniqueDates_withtiming"] ?? [];
 
           for (var timeslot in slots) {

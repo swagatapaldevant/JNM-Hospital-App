@@ -4,30 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
-import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase.dart';
 
-class PatientLoginScreen extends StatefulWidget {
-  const PatientLoginScreen({super.key});
+class ApprovalLoginScreen extends StatefulWidget {
+  const ApprovalLoginScreen({super.key});
 
   @override
-  State<PatientLoginScreen> createState() => _PatientLoginScreenState();
+  State<ApprovalLoginScreen> createState() => _ApprovalLoginScreenState();
 }
 
-class _PatientLoginScreenState extends State<PatientLoginScreen> {
+class _ApprovalLoginScreenState extends State<ApprovalLoginScreen> {
   static const Color splashBg1 = Color(0xFFF0F0F0);
   static const Color splashBg2 = Color(0xFFCDDBFF);
 
   static const Color patientAccent = Color(0xFF00C2FF); // sky blue
   static const Color adminAccent = Color(0xFF7F5AF0); // violet
-  static const Color approvalAccent = Color.fromARGB(255, 115, 253, 173); // amber
-
   static const Color textColor = Colors.black87;
 
   final _phoneCtrl = TextEditingController();
@@ -50,102 +46,61 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
     super.dispose();
   }
 
-  // void loginPatient() async {
-  //   HapticFeedback.lightImpact();
-  //   if (!_isValidPhone) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //           content: Text('Please enter a valid 10-digit phone number')),
-  //     );
-  //     return;
-  //   }
-  //   try {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   Map<String, dynamic> requestData = {
-  //     "phone": _phoneCtrl.text.trim(),
-  //   };
-  //   print("logging in..");
-  //   Resource resource = await _patientLoginUsecase.login(requestData: requestData);
-
-  //     if (resource.status == STATUS.SUCCESS) {
-  //       print("logging in..");
-  //       // _pref.setLoginStatus(true);
-  //       // _pref.setUserAuthToken(resource.data["access_token"]);
-  //       // _pref.setProfileImage(resource.data["user"]["profile_img"]);
-  //       // _pref.setUserName(resource.data["user"]["name"]);
-  //       // Navigator.pushNamedAndRemoveUntil(
-  //       //     context,
-  //       //     "/PatientDashboardScreen",
-  //       //     (Route<dynamic> route) => false,
-  //       //   );
-  //     } else {
-
-  //       CommonUtils().flutterSnackBar(
-  //           context: context, mes: resource.message ?? "", messageType: 4);
-  //     }
-  //   } catch (err, stacktrace) {
-  //     print(err);
-  //     print(stacktrace);
-  //     CommonUtils().flutterSnackBar(
-  //         context: context, mes: "Something went wrong", messageType: 4);
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-
   Future<void> loginUser() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response = await _dio.post(
-        ApiEndPoint.patientLogin,
-        data: {
-          "phone": _phoneCtrl.text.trim(),
-        },
-      );
+    // setState(() {
+    //   isLoading = true;
+    // });
+    // try {
+    //   final response = await _dio.post(
+    //     ApiEndPoint.patientLogin,
+    //     data: {
+    //       "phone": _phoneCtrl.text.trim(),
+    //     },
+    //   );
 
-      if (response.statusCode == 200) {
-        print("logging in..");
-        if (response.data["data"].toString().isNotEmpty) {
-          _pref.setUserAuthToken(response.data["access_token"].toString());
-          _pref.setName("${response.data["data"]["name"].toString()} ");
-          _pref.setUserId(
-              int.parse(response.data["data"]["id"].toString())); // set suer id
-          _pref.setUserGender(response.data["data"]["gender"].toString());
-          _pref.setLoginStatus(true);
-          _pref.setUserPhone(response.data["data"]["phone"].toString());
-          _pref.setUserAddress(response.data["data"]["address"].toString());
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/PatientDashboardScreen",
-            (Route<dynamic> route) => false,
-          );
-          print(await _pref.getUserAuthToken());
-        }
-      } else {
-        CommonUtils().flutterSnackBar(
-            context: context, mes: "Invalid credentials", messageType: 4);
-        setState(() {
-          isLoading = false;
-        });
-      }
-    } on DioException catch (e) {
-      if (e.response != null) {
-        CommonUtils().flutterSnackBar(
-            context: context, mes: "Invalid credentials", messageType: 4);
-      } else {
-        CommonUtils().flutterSnackBar(
-            context: context, mes: "Invalid credentials", messageType: 4);
-      }
-      setState(() {
-        isLoading = false;
-      });
-    }
+    //   if (response.statusCode == 200) {
+    //     print("logging in..");
+    //     if (response.data["data"].toString().isNotEmpty) {
+    //       _pref.setUserAuthToken(response.data["access_token"].toString());
+    //       _pref.setName("${response.data["data"]["name"].toString()} ");
+    //       _pref.setUserId(
+    //           int.parse(response.data["data"]["id"].toString())); // set suer id
+    //       _pref.setUserGender(response.data["data"]["gender"].toString());
+    //       _pref.setLoginStatus(true);
+    //       _pref.setUserPhone(response.data["data"]["phone"].toString());
+    //       _pref.setUserAddress(response.data["data"]["address"].toString());
+    //       Navigator.pushNamedAndRemoveUntil(
+    //         context,
+    //         "/PatientDashboardScreen",
+    //         (Route<dynamic> route) => false,
+    //       );
+    //       print(await _pref.getUserAuthToken());
+    //     }
+    //   } else {
+    //     CommonUtils().flutterSnackBar(
+    //         context: context, mes: "Invalid credentials", messageType: 4);
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //   }
+    // } on DioException catch (e) {
+    //   if (e.response != null) {
+    //     CommonUtils().flutterSnackBar(
+    //         context: context, mes: "Invalid credentials", messageType: 4);
+    //   } else {
+    //     CommonUtils().flutterSnackBar(
+    //         context: context, mes: "Invalid credentials", messageType: 4);
+    //   }
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // }
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RouteGenerator.kApprovalDashboardScreen,
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -203,7 +158,7 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                                 // Top bar
                                 Center(
                                   child: const Text(
-                                    'Patient  Login',
+                                    'Approval Login',
                                     style: TextStyle(
                                       color: textColor,
                                       fontSize: 24,
@@ -268,7 +223,8 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                                       _PrimaryButton(
                                         //label: 'Send OTP',
                                         label: 'Sign in',
-                                        enabled: _isValidPhone,
+                                        //enabled: _isValidPhone,
+                                        enabled: true,
                                         accent: patientAccent,
                                         onTap: loginUser,
                                       ),
@@ -298,25 +254,6 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                                 ),
 
                                 const SizedBox(height: 12),
-
-                                // --- OR divider ---
-                                _OrDivider(),
-
-                                const SizedBox(height: 12),
-
-                                // Login as Admin section
-                                _AdminAccessCard(
-                                  accent: adminAccent,
-                                  onTap: _goAdmin,
-                                ),
-
-                                const SizedBox(height: 12),
-                                _ApprovalAccessCard(
-                                  accent: approvalAccent,
-                                  onTap: _goApproval,
-                                ),
-
-                                const SizedBox(height: 24),
                               ],
                             ),
                           ),
@@ -328,16 +265,6 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
         ],
       ),
     );
-  }
-
-  void _goAdmin() {
-    HapticFeedback.selectionClick();
-    Navigator.pushNamed(context, "/LoginScreen");
-  }
-
-  void _goApproval() {
-    HapticFeedback.selectionClick();
-    Navigator.pushNamed(context, "/ApprovalLoginScreen");
   }
 
   // Decorative blob
@@ -652,142 +579,6 @@ class _OrDivider extends StatelessWidget {
         ),
         Expanded(child: Container(height: 1, color: color)),
       ],
-    );
-  }
-}
-
-/// "Login as Admin" promo card
-class _AdminAccessCard extends StatelessWidget {
-  final Color accent;
-  final VoidCallback onTap;
-
-  const _AdminAccessCard({
-    required this.accent,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(18);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: radius,
-            border: Border.all(color: accent.withOpacity(0.45), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: accent.withOpacity(0.12),
-                    border: Border.all(color: accent.withOpacity(0.45)),
-                  ),
-                  child: Icon(Icons.admin_panel_settings_outlined,
-                      color: accent, size: 22),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Login as Admin',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Icon(Icons.arrow_forward_rounded, color: accent),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// "Login as Admin" promo card
-class _ApprovalAccessCard extends StatelessWidget {
-  final Color accent;
-  final VoidCallback onTap;
-
-  const _ApprovalAccessCard({
-    required this.accent,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(18);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: radius,
-            border: Border.all(color: accent.withOpacity(0.45), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: accent.withOpacity(0.12),
-                    border: Border.all(color: accent.withOpacity(0.45)),
-                  ),
-                  child: Icon(Icons.approval_outlined,
-                      color: accent, size: 22),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Approval Login',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Icon(Icons.arrow_forward_rounded, color: accent),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

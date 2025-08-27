@@ -29,6 +29,7 @@ import 'package:jnm_hospital_app/features/patient_module/patient_details_module/
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_receipt_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/appointment_form_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/opd_registration.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/patient_opd_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/rate_enquiry_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_auth_screen.dart';
@@ -90,6 +91,7 @@ class RouteGenerator{
   static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
   static const kRateEnquiryScreen = "/RateEnquiryScreen";
   static const kInvestigationScreen = "/InvestigationScreen";
+  static const kOPDRegistrationScreen = "/OPDRegistrationScreen";
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -142,7 +144,8 @@ class RouteGenerator{
         return _animatedPageRoute(PatientEmrDetailsScreen(emrList: args,));
       case kDoctorDetailsScreen:
         return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
-
+      case kOPDRegistrationScreen:
+        return _animatedPageRoute(OpdRegistration());
       // case kPatientButtonNavigation:
       //   return _animatedPageRoute(PatientButtonNavigation());
       // case kTopDoctorScreen:

@@ -253,7 +253,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   onTap: () {
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
-                                        context, RouteGenerator.kOPDBookAppointmentScreen);
+                                        context, RouteGenerator.kOPDRegistrationScreen);
                                   },
                                 ),
                                 _QuickActionChip(

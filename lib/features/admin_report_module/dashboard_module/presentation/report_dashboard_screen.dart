@@ -1081,8 +1081,8 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                       ),
                     ),
                     Text(
-                      "John Doe",
-                      //userName,
+                      //"John Doe",
+                      userName,
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         color: AppColors.white,
@@ -1107,9 +1107,10 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          (profilePhoto.isEmpty || profilePhoto == "null")
-                              ? "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg"
-                              : profilePhoto,
+                          "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg",
+                          // (profilePhoto.isEmpty || profilePhoto == "null")
+                          //     ? "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg"
+                          //     : profilePhoto,
                           height: AppDimensions.screenHeight * 0.07,
                           width: AppDimensions.screenWidth * 0.15,
                           fit: BoxFit.fill,

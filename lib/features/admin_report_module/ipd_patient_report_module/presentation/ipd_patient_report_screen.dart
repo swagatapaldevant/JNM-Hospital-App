@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
@@ -103,11 +104,30 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
     super.dispose();
   }
 
+  String getOneMonthBeforeDate() {
+    final now = DateTime.now();
+    int year = now.year;
+    int month = now.month - 1;
+    if (month < 1) {
+      month = 12;
+      year -= 1;
+    }
+    final lastDayPrevMonth = DateTime(year, month + 1, 0).day; // day 0 = last day of prev month
+    final day = now.day > lastDayPrevMonth ? lastDayPrevMonth : now.day;
+    final dt = DateTime(year, month, day);
+    return _formatYMD(dt);
+  }
+
+  String _formatYMD(DateTime d) =>
+      "${d.year.toString().padLeft(4,'0')}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}";
+
+  //String getCurrentDate() => _formatYMD(DateTime.now());
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    selectedFromDate = getCurrentDate();
+    selectedFromDate = getOneMonthBeforeDate();
     selectedToDate = getCurrentDate();
     getIpdPatientData();
     getAllFilteredListForIpd();
@@ -426,9 +446,9 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                               mobile: ipdReportList[index]
                                                   .phone
                                                   .toString(),
-                                              appointmentDate: ipdReportList[index]
+                                              appointmentDate: formatAnyTimestampString(ipdReportList[index]
                                                   .admissionDate
-                                                  .toString(),
+                                                  .toString()),
                                               departmentName: ipdReportList[index]
                                                   .departmentName
                                                   .toString(),
@@ -645,5 +665,51 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
     final String formattedDate =
         "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     return formattedDate;
+  }
+
+
+  String formatAnyTimestampString(
+      String timestamp, {
+        String pattern = 'dd MMM yyyy, h:mm a',
+        String? locale,
+        bool toLocalTime = true,
+      }) {
+    if (timestamp.trim().isEmpty) return '';
+
+    DateTime? dt;
+
+    // Try numeric epoch first
+    final intVal = int.tryParse(timestamp);
+    if (intVal != null) {
+      final absVal = intVal.abs();
+      int ms;
+      if (absVal >= 1000000000000000000) {
+        // ns -> ms
+        ms = intVal ~/ 1000000;
+      } else if (absVal >= 1000000000000000) {
+        // µs -> ms
+        ms = intVal ~/ 1000;
+      } else if (absVal >= 1000000000000) {
+        // ms
+        ms = intVal;
+      } else {
+        // s -> ms
+        ms = intVal * 1000;
+      }
+      dt = DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true); // safe default
+    } else {
+      // ISO-8601 parse (handles Z / ±HH:MM)
+      try {
+        dt = DateTime.parse(timestamp);
+      } catch (_) {
+        return '';
+      }
+    }
+
+    final display = toLocalTime
+        ? (dt.isUtc ? dt.toLocal() : dt)
+        : (dt.isUtc ? dt : dt.toUtc());
+
+    return DateFormat(pattern, locale).format(display);
   }
 }

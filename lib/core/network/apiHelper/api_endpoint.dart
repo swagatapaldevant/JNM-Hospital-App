@@ -52,5 +52,6 @@ class ApiEndPoint{
   static const approvalSystemInvestigation =  "$baseurl/approvalsystem/investigation";
   static const approvalSystemEMR =  "$baseurl/approvalsystem/emg";
   static const approvalSystemDialysis =  "$baseurl/approvalsystem/dialysis";
+  static const approveData =  "$baseurl/api/approvalsystem/approve";
 
 }

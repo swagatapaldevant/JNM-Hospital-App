@@ -3,4 +3,5 @@ import 'package:jnm_hospital_app/features/approval_system_module/model/paginatio
 
 abstract class ApprovalUsecases {
   Future<Resource> getApprovalData(String url, PaginationModel requestData);
+ // Future<Resource> approveData(String url, PaginationModel requestData);
 }

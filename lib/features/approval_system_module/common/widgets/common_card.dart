@@ -113,13 +113,44 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                   childrenPadding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                  title: Text(
-                    "Bill Summary",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade800,
-                    ),
+                  title: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    
+                    children: [
+                      Text(
+                        "Bill Summary",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+
+                      // Chips Row
+                      Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildChip(
+                              label: "Due",
+                              value:
+                                  "₹${approvalData.dueAmount?.toStringAsFixed(2) ?? '0.00'}",
+                              color: Colors.red.shade100,
+                              textColor: Colors.red.shade700,
+                            ),
+                            const SizedBox(width: 6),
+                            _buildChip(
+                              label: "Paid",
+                              value:
+                                  "₹${approvalData.totalPayment?.toStringAsFixed(2) ?? '0.00'}",
+                              color: Colors.green.shade100,
+                              textColor: Colors.green.shade700,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   trailing: Icon(
                     _expanded ? Icons.expand_less : Icons.expand_more,
@@ -204,6 +235,29 @@ class _ApprovalCardState extends State<ApprovalCard> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChip({
+    required String label,
+    required String value,
+    required Color color,
+    required Color textColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        "$label: $value",
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: textColor,
         ),
       ),
     );

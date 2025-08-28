@@ -31,7 +31,12 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     _fetchBills();
   }
 
+  bool isLoading = false;
+
   Future<void> _fetchBills() async {
+    setState(() {
+      isLoading = true;
+    });
     final response = await getIt<ApprovalUsecases>().getApprovalData(
         widget.apiEndpoint, PaginationModel(page: 1, searchData: 1));
     if (response.status == STATUS.SUCCESS) {
@@ -45,6 +50,9 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         bills = [];
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -52,7 +60,18 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     return ApprovalSystemLayout(
       slivers: [
         CommonHeader(title: widget.title),
-       
+        if (isLoading)
+          const SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (bills.isEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                  child: Text("No Data found", style: TextStyle(fontSize: 18))),
+            ),
+          ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
@@ -78,7 +97,6 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     );
   }
 }
-
 
 class Pagination extends StatelessWidget {
   final int currentPage;
@@ -124,9 +142,8 @@ class Pagination extends StatelessWidget {
         // Previous button
         IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: currentPage > 1
-              ? () => onPageChanged(currentPage - 1)
-              : null,
+          onPressed:
+              currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
         ),
 
         // Page numbers

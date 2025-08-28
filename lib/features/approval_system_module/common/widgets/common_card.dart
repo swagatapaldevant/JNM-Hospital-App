@@ -3,8 +3,10 @@ import 'package:jnm_hospital_app/features/approval_system_module/model/approval_
 
 class ApprovalCard extends StatefulWidget {
   final ApprovalSystemModel approvalData;
+  final Function(int) onApprove;
 
-  const ApprovalCard({super.key, required this.approvalData});
+  const ApprovalCard(
+      {super.key, required this.approvalData, required this.onApprove});
 
   @override
   State<ApprovalCard> createState() => _ApprovalCardState();
@@ -115,7 +117,6 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                   title: Wrap(
                     alignment: WrapAlignment.spaceBetween,
-                    
                     children: [
                       Text(
                         "Bill Summary",
@@ -209,28 +210,36 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       ),
                     ],
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // handle approve action
-                    },
-                    icon: const Icon(Icons.check_circle_outline,
-                        size: 16, color: Colors.white),
-                    label: const Text(
-                      "Approve",
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF667eea),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      elevation: 0,
-                    ),
-                  ),
+                  if (approvalData.approvedBy == null)
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // handle approve action
+                        widget.onApprove(approvalData.id);
+                      },
+                      icon: const Icon(Icons.check_circle_outline,
+                          size: 16, color: Colors.white),
+                      label: const Text(
+                        "Approve",
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF667eea),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        elevation: 0,
+                      ),
+                    )
+                  else
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.check_box_outline_blank),
+                      onPressed: () {},
+                      label: Text("Approved by: ${approvalData.approvedBy}"),
+                    )
                 ],
               ),
             ],

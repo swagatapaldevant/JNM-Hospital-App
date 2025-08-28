@@ -25,4 +25,18 @@ class ApprovalUsecasesImpl implements ApprovalUsecases {
     }
   }
 
+  @override
+  Future<Resource> approveData(String url, int billId) async {
+    final ApiClient _apiClient = getIt<ApiClient>();
+    final SharedPref _pref = getIt<SharedPref>();
+    
+    Resource resource = await _apiClient.getRequest(
+      url: '$url/$billId',
+    );
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 }

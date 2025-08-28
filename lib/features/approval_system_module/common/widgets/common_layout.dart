@@ -6,10 +6,10 @@ import 'package:jnm_hospital_app/features/patient_module/model/patient_details/p
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
 
 class ApprovalSystemLayout extends StatefulWidget {
-  const ApprovalSystemLayout({super.key, required this.slivers});
+  const ApprovalSystemLayout({super.key, required this.slivers, this.controller});
 
   final List<Widget> slivers;
-  
+  final ScrollController? controller;
 
   @override
   State<ApprovalSystemLayout> createState() => _ApprovalSystemLayoutState();
@@ -87,6 +87,7 @@ class _ApprovalSystemLayoutState extends State<ApprovalSystemLayout>
               color: opdAccent,
               onRefresh: _onRefresh,
               child: CustomScrollView(
+                controller: widget.controller,
                 physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
                 slivers: widget.slivers,

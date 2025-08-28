@@ -9,14 +9,14 @@ import 'package:jnm_hospital_app/features/approval_system_module/approval_screen
 
 class ApprovalUsecasesImpl implements ApprovalUsecases {
   @override
-  Future<Resource> getApprovalData(String url, PaginationModel requestData) async {
+  Future<Resource> getApprovalData(String url, int requestData) async {
     final ApiClient _apiClient = getIt<ApiClient>();
     final SharedPref _pref = getIt<SharedPref>();
     
     Resource resource = await _apiClient.postRequest(
       url: url,
       header: {},
-      requestData: requestData.toJson()
+      requestData: {'page': requestData}
     );
     if (resource.status == STATUS.SUCCESS) {
       return resource;

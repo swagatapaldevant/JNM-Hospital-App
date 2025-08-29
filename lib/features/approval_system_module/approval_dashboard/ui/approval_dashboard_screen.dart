@@ -127,19 +127,18 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                       padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
                       child: Row(
                         children: [
-                          _roundIconButton(
-                            icon: Icons.menu_rounded,
-                            onTap: () =>
-                                _scaffoldKey.currentState?.openDrawer(),
-                          ),
-                          const SizedBox(width: 12),
+                          // _roundIconButton(
+                          //   icon: Icons.menu_rounded,
+                          //   onTap: () =>
+                          //       _scaffoldKey.currentState?.openDrawer(),
+                          // ),
                           const Expanded(
                             child: Text(
-                              'Dashboard',
+                              'Approval Dashboard',
                               style: TextStyle(
                                 color: textPrimary,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
                                 letterSpacing: 0.2,
                               ),
                             ),
@@ -222,12 +221,12 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       label: "OPD",
       onTap: () {
         Navigator.pushNamed(
-          context,
-          RouteGenerator.kApprovalDetailscreen,
-          arguments: {
-            'apiEndpoint': ApiEndPoint.approvalSystemOPD,
-            'title': 'OPD Approval'
-          }
+            context,
+            RouteGenerator.kApprovalDetailscreen,
+            arguments: {
+              'apiEndpoint': ApiEndPoint.approvalSystemOPD,
+              'title': 'OPD Approval'
+            }
         );
       },
     ));
@@ -237,28 +236,28 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       label: "IPD/Daycare",
       onTap: () {
         Navigator.pushNamed(
-          context,
-          RouteGenerator.kApprovalDetailscreen,
-          arguments: {
-            'apiEndpoint': ApiEndPoint.approvalSystemIPD,
-            'title': 'IPD/Daycare Approval'
-          }
+            context,
+            RouteGenerator.kApprovalDetailscreen,
+            arguments: {
+              'apiEndpoint': ApiEndPoint.approvalSystemIPD,
+              'title': 'IPD/Daycare Approval'
+            }
         );
       },
     ));
 
 
-      tiles.add(GlassTile(
+    tiles.add(GlassTile(
       icon: Icons.history,
       label: "EMR",
       onTap: () {
         Navigator.pushNamed(
-          context,
-          RouteGenerator.kApprovalDetailscreen,
-          arguments: {
-            'apiEndpoint': ApiEndPoint.approvalSystemEMR,
-            'title': 'EMR Approval'
-          }
+            context,
+            RouteGenerator.kApprovalDetailscreen,
+            arguments: {
+              'apiEndpoint': ApiEndPoint.approvalSystemEMR,
+              'title': 'EMR Approval'
+            }
         );
       },
     ));
@@ -278,22 +277,22 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       },
     ));
 
-    
-      tiles.add(GlassTile(
-        icon: Icons.payments,
-        label: "INVESTIGATION",
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            RouteGenerator.kApprovalDetailscreen,
-            arguments: {
-              'apiEndpoint': ApiEndPoint.approvalSystemInvestigation,
-              'title': 'Investigation Approval'
-            },
-          );
-        },
-      ));
-    
+
+    tiles.add(GlassTile(
+      icon: Icons.payments,
+      label: "INVESTIGATION",
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          RouteGenerator.kApprovalDetailscreen,
+          arguments: {
+            'apiEndpoint': ApiEndPoint.approvalSystemInvestigation,
+            'title': 'Investigation Approval'
+          },
+        );
+      },
+    ));
+
 
 
     if (tiles.isEmpty) return const SizedBox.shrink();
@@ -453,7 +452,7 @@ class _GlassCard extends StatelessWidget {
               borderRadius: radius,
               color: Colors.white.withOpacity(0.78),
               border:
-                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+              Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -515,9 +514,9 @@ class _QuickActionChip extends StatelessWidget {
   final VoidCallback onTap;
   const _QuickActionChip(
       {required this.icon,
-      required this.label,
-      required this.color,
-      required this.onTap});
+        required this.label,
+        required this.color,
+        required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -926,3 +925,5 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
     );
   }
 }
+
+

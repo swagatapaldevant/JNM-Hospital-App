@@ -11,8 +11,11 @@ import 'package:jnm_hospital_app/features/approval_system_module/approval_screen
 import '../../common/widgets/common_header.dart' show CommonHeader;
 
 class ApprovalScreen extends StatefulWidget {
-  const ApprovalScreen(
-      {super.key, required this.apiEndpoint, required this.title});
+  const ApprovalScreen({
+    super.key,
+    required this.apiEndpoint,
+    required this.title,
+  });
 
   final String apiEndpoint;
   final String title;
@@ -22,72 +25,115 @@ class ApprovalScreen extends StatefulWidget {
 }
 
 class _ApprovalScreenState extends State<ApprovalScreen> {
-  List<ApprovalSystemModel> bills = [];
-  int currentPage = 1;
-  bool isLoading = false;
+  final ScrollController _scrollController = ScrollController();
+
+  final List<ApprovalSystemModel> _bills = [];
+  int _currentPage = 1;
+
+  bool _isInitialLoading = false; // full-screen first load
+  bool _isPaging = false;         // bottom loader while fetching next page
+  bool _hasMore = true;           // stop when server returns no more rows
+  bool _mounted = true;           // guard async setState after dispose
 
   @override
   void initState() {
     super.initState();
-    _fetchBills();
+    _fetchBills(initial: true);
 
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          !isLoading &&
-          bills.isNotEmpty) {
-        currentPage += 1;
-        _fetchBills();
-      }
-    });
+    _scrollController.addListener(_onScroll);
   }
 
-  ScrollController _scrollController = ScrollController();
+  @override
+  void dispose() {
+    _mounted = false;
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-  Future<void> _fetchBills() async {
-    setState(() {
-      isLoading = true;
-    });
+  void _onScroll() {
+    if (!_hasMore || _isPaging || _isInitialLoading) return;
+
+    // Trigger when user nears the bottom (200px before end)
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _currentPage += 1;
+      _fetchBills();
+    }
+  }
+
+  Future<void> _fetchBills({bool initial = false}) async {
+    if (initial) {
+      setState(() => _isInitialLoading = true);
+    } else {
+      setState(() => _isPaging = true);
+    }
+
     final response = await getIt<ApprovalUsecases>()
-        .getApprovalData(widget.apiEndpoint, currentPage);
+        .getApprovalData(widget.apiEndpoint, _currentPage);
+
+    if (!_mounted) return;
+
     if (response.status == STATUS.SUCCESS) {
-      print(response.data);
-      List<dynamic> data = response.data ?? [];
-      if (bills.isEmpty) {
+      final List<dynamic> data = (response.data ?? []) as List<dynamic>;
+      final newItems = data.map((e) => ApprovalSystemModel.fromJson(e)).toList();
+
+      setState(() {
+        if (initial) {
+          _bills
+            ..clear()
+            ..addAll(newItems);
+        } else {
+          _bills.addAll(newItems);
+        }
+        // If the server returned empty, there are no more pages.
+        _hasMore = newItems.isNotEmpty;
+      });
+    } else {
+      if (initial) {
         setState(() {
-          bills =
-              data.map((item) => ApprovalSystemModel.fromJson(item)).toList();
-        });
-      } else {
-        setState(() {
-          if (data.isNotEmpty) {
-            bills.addAll(data
-                .map((item) => ApprovalSystemModel.fromJson(item))
-                .toList());
-          }
+          _bills.clear();
+          _hasMore = false;
         });
       }
-    } else {
-      setState(() {
-        bills = [];
-      });
+      // Show a non-blocking error
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: "Failed to load data",
+        messageType: 2,
+      );
     }
+
     setState(() {
-      isLoading = false;
+      _isInitialLoading = false;
+      _isPaging = false;
     });
   }
 
   Future<void> approveData(int billId) async {
-    if (bills.isNotEmpty) {
-      final response = await getIt<ApprovalUsecases>()
-          .approveData(ApiEndPoint.approveData, billId);
-      if (response.status == STATUS.SUCCESS) {
-        CommonUtils().flutterSnackBar(
-            context: context, mes: "Approval successful", messageType: 1);
-      } else {
-        CommonUtils().flutterSnackBar(
-            context: context, mes: "Approval failed", messageType: 2);
-      }
+    if (_bills.isEmpty) return;
+
+    final response = await getIt<ApprovalUsecases>()
+        .approveData(ApiEndPoint.approveData, billId);
+
+    if (!_mounted) return;
+
+    if (response.status == STATUS.SUCCESS) {
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: "Approval successful",
+        messageType: 1,
+      );
+      // OPTIONAL: Refresh the list or locally mark approved
+      // _currentPage = 1;
+      // _hasMore = true;
+      // await _fetchBills(initial: true);
+    } else {
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: "Approval failed",
+        messageType: 2,
+      );
     }
   }
 
@@ -97,27 +143,68 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       controller: _scrollController,
       slivers: [
         CommonHeader(title: widget.title),
-        if (isLoading)
+
+        // Initial full-screen loader
+        if (_isInitialLoading)
           const SliverFillRemaining(
+            hasScrollBody: false,
             child: Center(child: CircularProgressIndicator()),
           )
-        else if (bills.isEmpty)
+
+        // Empty state (only after initial load)
+        else if (_bills.isEmpty)
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16),
               child: Center(
-                  child: Text("No Data found", style: TextStyle(fontSize: 18))),
+                child: Text(
+                  "No Data found",
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
             ),
-          ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final bill = bills[index];
-              return ApprovalCard(approvalData: bill, onApprove: approveData);
-            },
-            childCount: bills.length,
-          ),
-        )
+          )
+
+        // List + bottom loader
+        else ...[
+            SliverList.separated(
+              itemCount: _bills.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final bill = _bills[index];
+                return ApprovalCard(
+                  approvalData: bill,
+                  onApprove: approveData,
+                );
+              },
+            ),
+
+            // Bottom space so last card isn't hidden under system bars
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+            // Bottom loader only when paging (keeps it below the screen)
+            if (_isPaging)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ),
+
+            // Optional: “No more data” indicator
+            if (!_isPaging && !_hasMore)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Center(
+                    child: Text(
+                      "You’ve reached the end",
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ),
+                ),
+              ),
+          ],
       ],
     );
   }

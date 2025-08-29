@@ -642,6 +642,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approved_list_screen/data/approved_list_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_card.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 
@@ -698,24 +702,21 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
 
   // Dummy fetch function
   Future<void> _fetchTabData(int tabIndex) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    // setState(() {
-    //   _tabData[tabIndex] = List.generate(
-    //     10,
-    //     (i) => ApprovalSystemModel(
-    //       id: i,
-    //       uid: "UID-$i",
-    //       section: _tabNames[tabIndex],
-    //       status: _tabNames[tabIndex],
-    //       patientName: "Patient $i",
-    //       grandTotal: 1500.0 + i,
-    //       dueAmount: (i % 3 == 0) ? 200.0 : 0.0,
-    //       patientId: 1000 + i,
-    //       billDate: DateTime.now(),
-    //       createdByName: "Doctor $i",
-    //     ),
-    //   );
-    // });
+    List<String> tabURL = ['opd', 'ipd', 'emr', 'dialysis', 'investigation'];
+
+    Resource resource = await ApprovedListUsecasesImpl()
+        .fetchApprovedList('${ApiEndPoint.approvalList}/${tabURL[tabIndex]}');
+    
+    if (resource.status == STATUS.SUCCESS) {
+      print(resource.data);
+      List<ApprovalSystemModel> approvals = resource.data;
+      setState(() {
+        _tabData[tabIndex] = approvals;
+      });
+    } else {
+      // Handle the error case
+      print("Error fetching approved list: ${resource.message}");
+    }
   }
 
   void _onApprove(int approvalId) {
@@ -807,7 +808,9 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
                                 Navigator.of(context).pop();
                               },
                             ),
-                            SizedBox(width: 20,),
+                            SizedBox(
+                              width: 20,
+                            ),
                             const Expanded(
                               child: Text(
                                 'Approval List',
@@ -819,7 +822,6 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
                                 ),
                               ),
                             ),
-                            
                           ],
                         ),
                       ),

@@ -428,6 +428,8 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                             ),
                                             child: IpdPatientItemData(
                                               index: index,
+                                              visitType: ipdReportList[index].type
+                                                  .toString(),
                                               patientName: ipdReportList[index]
                                                   .patientName
                                                   .toString(),
@@ -440,7 +442,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                               gender: ipdReportList[index]
                                                   .gender
                                                   .toString(),
-                                              dobYear: ipdReportList[index]
+                                              age: ipdReportList[index]
                                                   .dobYear
                                                   .toString(),
                                               mobile: ipdReportList[index]
@@ -449,9 +451,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                               appointmentDate: formatAnyTimestampString(ipdReportList[index]
                                                   .admissionDate
                                                   .toString()),
-                                              departmentName: ipdReportList[index]
-                                                  .departmentName
-                                                  .toString(),
+                                              
                                               wardName: ipdReportList[index]
                                                   .wardName
                                                   .toString(),

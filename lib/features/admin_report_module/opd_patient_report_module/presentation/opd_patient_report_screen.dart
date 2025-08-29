@@ -389,7 +389,8 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                               visitType: patientList[index]
                                                   .type
                                                   .toString(),
-                                              appointmentDate: patientList[index]
+                                              appointmentDate: 
+                                                patientList[index]
                                                   .creDate
                                                   .toString(),
                                               appointmentTime: patientList[index]
@@ -565,6 +566,17 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
         "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     return formattedDate;
   }
+
+//   String formatDate(String date) {
+//   // final DateTime now = DateTime.now();
+//   // final String formattedDate =
+//   //     "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year.toString().padLeft(4, '0')}";
+//   // return formattedDate;
+  
+//   return date;
+// }
+
+ 
 }
 
 typedef SelectedFilterData = Map<String, MapEntry<int, String>?>;

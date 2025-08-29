@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/data/approval_dashboard_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/glasscard.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
 
@@ -28,16 +30,26 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   static const double _hPad = 20;
 
   bool _loading = true;
+  Map<String, int> _pendingCount = {};
 
+  Future<void> getPendingCount() async {
+    final resource = await ApprovalDashboardUseCasesImpl().getPendingCount();
+    if (resource.status == STATUS.SUCCESS) {
+      print(resource.data);
+      List<dynamic> data = resource.data as List;
+      setState(() {
+        data.forEach((item) {
+          _pendingCount[item['section']] = item['total_count'];
+        });
+      });
+    }
+    print(_pendingCount);
+  }
 
   @override
   void initState() {
     super.initState();
-    // Simulate initial fetch
-    Future.delayed(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      setState(() => _loading = false);
-    });
+    getPendingCount();
   }
 
   Future<void> _onRefresh() async {
@@ -200,53 +212,45 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     );
   }
 
-  Widget buildPatientDetailsGrid(
-      BuildContext context) {
+  Widget buildPatientDetailsGrid(BuildContext context) {
     final tiles = <Widget>[];
 
     tiles.add(GlassTile(
       icon: Icons.local_hospital,
       label: "OPD",
+      pendingCount: _pendingCount['OPD'].toString(),
       onTap: () {
-        Navigator.pushNamed(
-            context,
-            RouteGenerator.kApprovalDetailscreen,
+        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
             arguments: {
               'apiEndpoint': ApiEndPoint.approvalSystemOPD,
               'title': 'OPD Approval'
-            }
-        );
+            });
       },
     ));
 
     tiles.add(GlassTile(
       icon: Icons.bed,
       label: "IPD/Daycare",
+      pendingCount: _pendingCount['IPD'].toString(),
       onTap: () {
-        Navigator.pushNamed(
-            context,
-            RouteGenerator.kApprovalDetailscreen,
+        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
             arguments: {
               'apiEndpoint': ApiEndPoint.approvalSystemIPD,
               'title': 'IPD/Daycare Approval'
-            }
-        );
+            });
       },
     ));
-
 
     tiles.add(GlassTile(
       icon: Icons.history,
       label: "EMR",
+      //pendingCount: _pendingCount['emg'].toString(),
       onTap: () {
-        Navigator.pushNamed(
-            context,
-            RouteGenerator.kApprovalDetailscreen,
+        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
             arguments: {
               'apiEndpoint': ApiEndPoint.approvalSystemEMR,
               'title': 'EMR Approval'
-            }
-        );
+            });
       },
     ));
 
@@ -265,10 +269,10 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       },
     ));
 
-
     tiles.add(GlassTile(
       icon: Icons.payments,
       label: "INVESTIGATION",
+      pendingCount: _pendingCount['INVESTIGATION'].toString(),
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -280,8 +284,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
         );
       },
     ));
-
-
 
     if (tiles.isEmpty) return const SizedBox.shrink();
     const double _maxContentWidth = 720.0;
@@ -440,7 +442,7 @@ class _GlassCard extends StatelessWidget {
               borderRadius: radius,
               color: Colors.white.withOpacity(0.78),
               border:
-              Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -493,5 +495,3 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
     );
   }
 }
-
-

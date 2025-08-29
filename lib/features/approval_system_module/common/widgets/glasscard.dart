@@ -8,14 +8,16 @@ class GlassTile extends StatefulWidget {
   final VoidCallback? onTap;
   final Color? primaryColor;
   final Color? secondaryColor;
+  String? pendingCount;
 
-  const GlassTile({
+  GlassTile({
     super.key,
     required this.icon,
     required this.label,
     this.onTap,
     this.primaryColor,
     this.secondaryColor,
+    this.pendingCount
   });
 
   @override
@@ -123,7 +125,7 @@ class _GlassTileState extends State<GlassTile>
                             ),
                             child: Padding(
                               padding:  EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              child: Text("Pending : 28", style: TextStyle(
+                              child: Text("Pending : ${widget.pendingCount}", style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600

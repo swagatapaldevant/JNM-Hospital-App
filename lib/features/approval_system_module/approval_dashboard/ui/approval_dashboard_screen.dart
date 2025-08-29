@@ -203,6 +203,58 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                       child: buildPatientDetailsGrid(context),
                     ),
                   ),
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 24),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF007AFF), // iOS blue
+                              Color(0xFF8E44AD), // purple
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 14, horizontal: 24),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, RouteGenerator.kApprovedListScreen);
+                          },
+                          child: const Text(
+                            "Approved List",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 16,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -244,7 +296,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     tiles.add(GlassTile(
       icon: Icons.history,
       label: "EMR",
-      //pendingCount: _pendingCount['emg'].toString(),
+      //pendingCount: _pendingCount['OT'].toString(),
       onTap: () {
         Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
             arguments: {
@@ -257,6 +309,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     tiles.add(GlassTile(
       icon: Icons.receipt_long,
       label: "DIALYSIS",
+      //pendingCount: _pendingCount['OP'].toString(),
       onTap: () {
         Navigator.pushNamed(
           context,
@@ -299,7 +352,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       crossAxisCount = 4;
     }
 
-    final aspect = contentW < 380 ? 0.15 : 1.1;
+    final aspect = contentW < 380 ? 0.8 : 1.1;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),

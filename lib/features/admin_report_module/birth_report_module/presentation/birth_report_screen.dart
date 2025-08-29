@@ -312,6 +312,9 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                                       index: index,
                                                       name: birthReportList[index]
                                                           .name,
+                                                      /**TODO: Confirm if uhid is correct */
+                                                      uhid: birthReportList[index].id.toString(),
+                                                      //department: birthReportList[index].department,
                                                       gender:
                                                           birthReportList[index]
                                                               .gender,

@@ -426,7 +426,8 @@ class _OpdPatientItemDataState extends State<OpdPatientItemData>
                                     if (_has(widget.visitType))
                                       _Chip(
                                         label: _val(widget.visitType).toUpperCase(),
-                                        color: visitAccent,
+                                        color: _visitColor(widget.visitType),
+                                        bgColor: _visitColorBg(widget.visitType),
                                       ),
                                   ],
                                 ),
@@ -510,10 +511,8 @@ class _OpdPatientItemDataState extends State<OpdPatientItemData>
 
                                     _TagChip(
                                       icon: Icons.alarm,
-                                      label: _val(widget.appointmentTime),
+                                      label: formatDate(widget.appointmentTime.toString()),
                                     ),
-
-
 
                                   ],
                                 ),
@@ -550,14 +549,25 @@ class _OpdPatientItemDataState extends State<OpdPatientItemData>
 
   static Color _visitColor(String? v) {
     final s = (v ?? '').toLowerCase();
-    if (s.contains('new')) return const Color(0xFF2E7D32);
-    if (s.contains('old')) return const Color(0xFFEF6C00);
+    if (s.contains('new')) return Colors.white;
+    if (s.contains('old')) return const Color.fromARGB(255, 253, 248, 246);
+    return AppColors.arrowBackground;
+  }
+  static Color _visitColorBg(String? v) {
+    final s = (v ?? '').toLowerCase();
+    if (s.contains('new')) return const Color.fromARGB(255, 3, 97, 3);
+    if (s.contains('old')) return Colors.red;
     return AppColors.arrowBackground;
   }
 
   static String _buildApptLabel(String? time) {
     if (time?.isNotEmpty ?? false) return time!;
     return 'No appointment time';
+  }
+  
+  formatDate(String string) {
+    final DateTime date = DateTime.parse(string);
+    return "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year.toString().padLeft(4, '0')}";
   }
 }
 
@@ -629,24 +639,26 @@ class _TagChip extends StatelessWidget {
 
 class _Chip extends StatelessWidget {
   final String label;
+  final Color bgColor;
   final Color color;
-  const _Chip({required this.label, required this.color});
+  const _Chip({required this.label, required this.bgColor, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(.12),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(.5)),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(5),
+     //   border: Border.all(color: color.withOpacity(.5)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 11.5,
-          fontWeight: FontWeight.w700,
-          letterSpacing: .6,
+          fontSize: 8,
+          
+          fontWeight: FontWeight.w600,
+          letterSpacing: .4,
           color: color,
           height: 1.0,
         ),

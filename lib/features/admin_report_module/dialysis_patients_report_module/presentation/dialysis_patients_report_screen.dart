@@ -432,7 +432,7 @@ class _DialysisPatientsReportScreenState
                                                             index]
                                                         .gender
                                                         .toString(),
-                                                    dobYear: dialysisReportList[
+                                                    age: dialysisReportList[
                                                             index]
                                                         .dobYear
                                                         .toString(),
@@ -444,11 +444,6 @@ class _DialysisPatientsReportScreenState
                                                         dialysisReportList[
                                                                 index]
                                                             .admissionDate
-                                                            .toString(),
-                                                    departmentName:
-                                                        dialysisReportList[
-                                                                index]
-                                                            .departmentName
                                                             .toString(),
                                                     wardName:
                                                         dialysisReportList[

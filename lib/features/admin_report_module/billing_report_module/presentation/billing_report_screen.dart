@@ -390,14 +390,15 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                                     section: billingList[index]
                                                         .section
                                                         .toString(),
+                                                    /**WARNING_UHID */
                                                     uhid: billingList[index]
                                                         .patientId
                                                         .toString(),
-                                                    opdId: billingList[index]
+                                                    billId: billingList[index]
                                                         .id
                                                         .toString(),
                                                     uid: billingList[index]
-                                                        .uid
+                                                        .patientId
                                                         .toString(),
                                                     total: billingList[index]
                                                         .total

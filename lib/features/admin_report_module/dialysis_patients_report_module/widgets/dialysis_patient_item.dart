@@ -853,16 +853,17 @@ class _DialysisPatientItemState extends State<DialysisPatientItem>
     return Colors.blueGrey;
   }
 
+
   static Color _visitColor(String? v) {
     final s = (v ?? '').toLowerCase();
     if (s.contains('new')) return Colors.white;
-    if (s.contains('old')) return const Color(0xFFEF6C00);
+    if (s.contains('old')) return const Color.fromARGB(255, 253, 248, 246);
     return AppColors.arrowBackground;
   }
   static Color _visitColorBg(String? v) {
     final s = (v ?? '').toLowerCase();
     if (s.contains('new')) return const Color.fromARGB(255, 3, 97, 3);
-    if (s.contains('old')) return const Color.fromARGB(82, 239, 108, 0);
+    if (s.contains('old')) return Colors.red;
     return AppColors.arrowBackground;
   }
 
@@ -956,18 +957,19 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(.5)),
+        borderRadius: BorderRadius.circular(5),
+     //   border: Border.all(color: color.withOpacity(.5)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 11.5,
-          fontWeight: FontWeight.w700,
-          letterSpacing: .6,
+          fontSize: 8,
+          
+          fontWeight: FontWeight.w600,
+          letterSpacing: .4,
           color: color,
           height: 1.0,
         ),

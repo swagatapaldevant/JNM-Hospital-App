@@ -84,19 +84,6 @@ class _GlassTileState extends State<GlassTile>
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: primaryColor.withOpacity(_isPressed ? 0.3 : 0.15),
-                    blurRadius: _isPressed ? 25 : 20,
-                    offset: const Offset(0, 8),
-                    spreadRadius: _isPressed ? 0 : -5,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
@@ -105,6 +92,7 @@ class _GlassTileState extends State<GlassTile>
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
+
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -116,16 +104,36 @@ class _GlassTileState extends State<GlassTile>
                         stops: const [0.0, 0.5, 1.0],
                       ),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1.5,
+                        color: primaryColor.withOpacity(0.5),
+                        width: 2,
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // Icon Container with gradient background
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: secondaryColor
+                            ),
+                            child: Padding(
+                              padding:  EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              child: Text("Pending : 28", style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600
+                              ),),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 8,),
+
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -163,7 +171,7 @@ class _GlassTileState extends State<GlassTile>
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             color: const Color(0xFF1E293B).withOpacity(0.9),
                             height: 1.2,
                           ),

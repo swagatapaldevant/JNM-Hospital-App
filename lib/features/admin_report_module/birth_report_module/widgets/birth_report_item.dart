@@ -412,9 +412,9 @@ class _BirthReportItemState extends State<BirthReportItem>
                                     _has(widget.doctorName)
                                         ? "DR. ${_val(widget.doctorName?.toUpperCase())}"
                                         : "Doctor —",
-                                    _has(widget.address)
-                                        ? _val(widget.uhid?.toUpperCase())
-                                        : "UHID —" ,
+                                    // _has(widget.address)
+                                    //     ? _val(widget.uhid?.toUpperCase())
+                                    //     : "UHID —" ,
                                   ],
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -609,10 +609,12 @@ class _TagChip extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 14, color: c),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w600, color: c, height: 1.0),
+        Flexible(
+          child: Text(
+            label,
+            style: TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w600, color: c, height: 1.0, overflow: TextOverflow.ellipsis),
+          ),
         ),
       ]),
     );

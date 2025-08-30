@@ -54,6 +54,6 @@ class ApiEndPoint{
   static const approvalSystemDialysis =  "$baseurl/approvalsystem/dialysis";
   static const approveData =  "$baseurl/approvalsystem/approve";
   static const approvalDeptWiseCount =  "$baseurl/approval-list-count";
-  static const approvalList =  "$baseurl/approval-list";
+  static const approvalList =  "$baseurl/approvalList";
 
 }

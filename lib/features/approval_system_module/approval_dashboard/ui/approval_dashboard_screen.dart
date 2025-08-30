@@ -55,7 +55,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   Future<void> _onRefresh() async {
     HapticFeedback.lightImpact();
     setState(() => _loading = true);
-    // TODO: call your API here
+    getPendingCount();
     await Future.delayed(const Duration(seconds: 1)); // simulate
     if (!mounted) return;
 
@@ -296,7 +296,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     tiles.add(GlassTile(
       icon: Icons.history,
       label: "EMR",
-      //pendingCount: _pendingCount['OT'].toString(),
+      pendingCount: _pendingCount['OT'].toString(),
       onTap: () {
         Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
             arguments: {
@@ -309,7 +309,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     tiles.add(GlassTile(
       icon: Icons.receipt_long,
       label: "DIALYSIS",
-      //pendingCount: _pendingCount['OP'].toString(),
+      pendingCount: _pendingCount['OP'].toString(),
       onTap: () {
         Navigator.pushNamed(
           context,

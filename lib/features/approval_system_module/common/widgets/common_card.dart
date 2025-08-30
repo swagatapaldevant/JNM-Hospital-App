@@ -5,9 +5,13 @@ import 'package:jnm_hospital_app/features/approval_system_module/model/approval_
 class ApprovalCard extends StatefulWidget {
   final ApprovalSystemModel approvalData;
   final Function(int) onApprove;
+  final bool? isApproved;
 
   const ApprovalCard(
-      {super.key, required this.approvalData, required this.onApprove});
+      {super.key,
+      required this.approvalData,
+      required this.onApprove,
+      this.isApproved});
 
   @override
   State<ApprovalCard> createState() => _ApprovalCardState();
@@ -65,18 +69,15 @@ class _ApprovalCardState extends State<ApprovalCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildBillTypeChip(approvalData.section ?? ''),
-                    Text("Bill Id: ${approvalData.id}",
+                    Text("Bill ID: ${approvalData.id}",
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           color: Color.fromARGB(255, 255, 255, 255),
                         )),
                     Text(
-                     " ${approvalData.billDate
-        ?.toLocal()
-        .toString()
-        .split(' ')[0] ??
-    ''} \n ( ${getDayNameFromDate(approvalData.billDate.toString())})",
+                      " ${approvalData.billDate?.toLocal().toString().split(' ')[0] ?? ''} \n  ${extractTime12h(approvalData.billDate.toString())}",
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 11,
@@ -136,20 +137,22 @@ class _ApprovalCardState extends State<ApprovalCard> {
                           runSpacing: 4,
                           //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildChip(
+                            approvalData.totalPayment?.toStringAsFixed(2) == '0.00'?SizedBox.shrink():                            _buildChip(
                               label: "Paid",
                               value:
-                              "₹${approvalData.totalPayment?.toStringAsFixed(2) ?? '0.00'}",
+                                  "₹${approvalData.totalPayment?.toStringAsFixed(2) ?? '0.00'}",
                               color: Colors.green.shade100,
                               textColor: Colors.green.shade700,
                             ),
+                            approvalData.discount?.toStringAsFixed(2) == '0.00'?SizedBox.shrink():
                             _buildChip(
                               label: "Discount",
                               value:
-                              "₹${approvalData.discount?.toStringAsFixed(2) ?? '0.00'}",
+                                  "₹${approvalData.discount?.toStringAsFixed(2) ?? '0.00'}",
                               color: Colors.blue,
                               textColor: Colors.white,
                             ),
+                            approvalData.dueAmount?.toStringAsFixed(2) == '0.00'?SizedBox.shrink():
                             _buildChip(
                               label: "Due",
                               value:
@@ -157,8 +160,6 @@ class _ApprovalCardState extends State<ApprovalCard> {
                               color: Colors.red.shade100,
                               textColor: Colors.red.shade700,
                             ),
-
-
                           ],
                         ),
                       ),
@@ -221,36 +222,31 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       ),
                     ],
                   ),
-                  if (approvalData.approvedBy == null)
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // handle approve action
-                        widget.onApprove(approvalData.id);
-                      },
-                      icon: const Icon(Icons.check_circle_outline,
-                          size: 16, color: Colors.white),
-                      label: const Text(
-                        "Approve",
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF667eea),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        elevation: 0,
-                      ),
-                    )
-                  else
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.check_box_outline_blank),
-                      onPressed: () {},
-                      label: Text("Approved by: ${approvalData.approvedBy}"),
-                    )
+                  widget.isApproved == true
+                      ? SizedBox.shrink()
+                      : ElevatedButton.icon(
+                          onPressed: () {
+                            // handle approve action
+                            widget.onApprove(approvalData.id);
+                          },
+                          icon: const Icon(Icons.check_circle_outline,
+                              size: 16, color: Colors.white),
+                          label: const Text(
+                            "Approve",
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF667eea),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            elevation: 0,
+                          ),
+                        )
                 ],
               ),
             ],
@@ -406,6 +402,14 @@ class _ApprovalCardState extends State<ApprovalCard> {
       return "Invalid date";
     }
   }
+
+
+  String extractTime12h(String dateTimeString) {
+    try {
+      final dt = DateTime.parse(dateTimeString).toLocal();
+      return DateFormat.jm().format(dt); // e.g. "10:14 AM"
+    } catch (e) {
+      return '';
+    }
+  }
 }
-
-

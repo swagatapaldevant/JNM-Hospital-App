@@ -12,7 +12,7 @@ class ApprovedListUsecasesImpl implements ApprovedListUseCases {
     final ApiClient _apiClient = getIt<ApiClient>();
     final SharedPref _pref = getIt<SharedPref>();
 
-    final resource = await _apiClient.getRequest(url: ApiEndPoint.approvalList);
+    final resource = await _apiClient.getRequest(url: url);
     if (resource.status == STATUS.SUCCESS) {
       return resource;
     } else {

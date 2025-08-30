@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_modal.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -84,7 +85,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
     getAllFilteredList();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           !isLoading &&
           hasMoreData) {
         currentPage += 1;
@@ -92,7 +93,6 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +110,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
             },
             filterTap: () async {
               final SelectedFilterData? selectedData =
-              await showCommonModalForAdvancedSearch(
+                  await showCommonModalForAdvancedSearch(
                 context,
                 {1: "New", 2: "Old"},
                 departmentMap,
@@ -137,291 +137,322 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                   currentPage = 1;
                   getEmgPatientData();
                 });
-
               } else {
                 print("Modal closed without filtering");
               }
             },
           ),
           Expanded(
-            child:  isLoading && patientList.isEmpty
-          ? Center(
-          child: CircularProgressIndicator(
-            color: AppColors.arrowBackground,
-          ))
-        :  SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
-                child: Column(
-                  children: [
-                    SizedBox(height: AppDimensions.contentGap3),
-
-                    if (isVisible) ...[
-                      CommonSearchBar(
-                        searchIconOnClick: (){
-                          selectedFromDate = "";
-                          selectedToDate = "";
-                          patientList.clear();
-                          graphData.clear();
-                          newCount.clear();
-                          oldCount.clear();
-                          departmentName.clear();
-                          selectedVisitType = "";
-                          selectedDepartment = "";
-                          selectedDoctor = "";
-                          selectedReferral ="";
-                          selectedMarketByData ="";
-                          selectedProviderData = "";
-                          currentPage = 1;
-                          hasMoreData = true;
-                          getEmgPatientData();
-                        },
-                        controller: _searchController,
-                        hintText: "Search something...",
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                        onTap: () {
-                          setState(() {
-                            isVisible = false;
-                          });
-                        },
-                      ),
-                      SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
-                    ],
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: CustomDatePickerField(
-                            selectedDate: selectedFromDate,
-                            onDateChanged: (String value) {
-                              setState(() {
-                                selectedFromDate = value;
-                              });
-                            },
-                            placeholderText: 'From date',
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: CustomDatePickerField(
-                            selectedDate: selectedToDate,
-                            onDateChanged: (String value) {
-                              setState(() {
-                                selectedToDate = value;
-                              });
-                            },
-                            placeholderText: 'To date',
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CommonButton(
-                          onTap: (){
-                            setState(() {
-                              patientList.clear();
-                              graphData.clear();
-                              newCount.clear();
-                              oldCount.clear();
-                              departmentName.clear();
-                              currentPage = 1;
-                              hasMoreData = true;
-                              getEmgPatientData();
-                            });
-
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Filter",
-                        ),
-                        CommonButton(
-                          onTap: (){
-                            setState(() {
-                              selectedFromDate = getCurrentDate();
-                              selectedToDate = getCurrentDate();
-                              patientList.clear();
-                              graphData.clear();
-                              newCount.clear();
-                              oldCount.clear();
-                              departmentName.clear();
-                              currentPage = 1;
-                              hasMoreData = true;
-                              getEmgPatientData();
-                            });
-
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Today",
-                        ),
-                        CommonButton(
-                          onTap: (){
-                            setState(() {
-                              selectedFromDate = "";
-                              selectedToDate = "";
-                              patientList.clear();
-                              graphData.clear();
-                              newCount.clear();
-                              oldCount.clear();
-                              departmentName.clear();
-                              selectedVisitType = "";
-                              selectedDepartment = "";
-                              selectedDoctor = "";
-                              selectedReferral ="";
-                              selectedMarketByData ="";
-                              selectedProviderData = "";
-                              currentPage = 1;
-                              hasMoreData = true;
-                              _searchQuery = "";
-                              isVisible = false;
-                              getEmgPatientData();
-                            });
-                          },
-                          borderRadius: 8,
-                          bgColor: AppColors.arrowBackground,
-                          height: ScreenUtils().screenHeight(context) * 0.05,
-                          width: ScreenUtils().screenWidth(context) * 0.28,
-                          buttonName: "Reset",
-                        ),
-
-                      ],
-                    ),
-
-
-                    SizedBox(height: ScreenUtils().screenHeight(context) * 0.01),
-
-                    patientList.isEmpty
-                        ? Center(
-                      child: Text(
-                        "No Emg patient is there in this time frame",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.colorBlack),
-                      ),
-                    )
-                        :
-                    Column(
-                      children: [
-                        DepartmentWiseOpdReport(
-                          isVisible: false,
-                          graphTitle: "Department-wise EMG Report",
-                          onTapFullScreen: () {
-                            Navigator.pushNamed(context,
-                                "/DepartmentWiseOpdReportLandscapeScreen",
-                                arguments: {
-                                  "newCount": newCount,
-                                  "oldCount": oldCount,
-                                  "departmentName": departmentName
+            child: isLoading && patientList.isEmpty
+                ? Center(
+                    child: CircularProgressIndicator(
+                    color: AppColors.arrowBackground,
+                  ))
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppDimensions.screenPadding),
+                      child: Column(
+                        children: [
+                          SizedBox(height: AppDimensions.contentGap3),
+                          if (isVisible) ...[
+                            CommonSearchBar(
+                              searchIconOnClick: () {
+                                selectedFromDate = "";
+                                selectedToDate = "";
+                                patientList.clear();
+                                graphData.clear();
+                                newCount.clear();
+                                oldCount.clear();
+                                departmentName.clear();
+                                selectedVisitType = "";
+                                selectedDepartment = "";
+                                selectedDoctor = "";
+                                selectedReferral = "";
+                                selectedMarketByData = "";
+                                selectedProviderData = "";
+                                currentPage = 1;
+                                hasMoreData = true;
+                                getEmgPatientData();
+                              },
+                              controller: _searchController,
+                              hintText: "Search something...",
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value;
                                 });
-                          },
-                          yearLabels: departmentName.length > 10
-                              ? departmentName.take(10).toList()
-                              : departmentName,
-                          spotsType1: newCount.length > 10
-                              ? newCount.take(10).toList()
-                              : newCount,
-                          spotsType2: oldCount.length > 10
-                              ? oldCount.take(10).toList()
-                              : oldCount,
-                        ),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: patientList.length +
-                              (isLoading && hasMoreData ? 1 : 0),
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index < patientList.length) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                duration: const Duration(milliseconds: 500),
-                                child: SlideAnimation(
-                                  verticalOffset: 50.0,
-                                  curve: Curves.easeOut,
-                                  child: FadeInAnimation(
-                                    curve: Curves.easeIn,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom: ScreenUtils()
-                                            .screenHeight(context) *
-                                            0.02,
-                                      ),
-                                      child: OpdPatientItemData(
-                                        index: index,
-                                        patientName: patientList[index]
-                                            .patientName
-                                            .toString(),
-                                        department: patientList[index]
-                                            .departmentName
-                                            .toString(),
-                                        uhid: patientList[index]
-                                            .patientId
-                                            .toString(),
-                                        opdId:
-                                        patientList[index].id.toString(),
-                                        gender: patientList[index]
-                                            .gender
-                                            .toString(),
-                                        age: patientList[index]
-                                            .dobYear
-                                            .toString(),
-                                        mobile: patientList[index]
-                                            .phone
-                                            .toString(),
-                                        visitType: patientList[index]
-                                            .type
-                                            .toString(),
-                                        appointmentDate: patientList[index]
-                                            .creDate
-                                            .toString(),
-                                        appointmentTime: patientList[index]
-                                            .appointmentDate
-                                            .toString(),
-                                        doctor: patientList[index]
-                                            .doctorName
-                                            .toString(),
+                              },
+                              onTap: () {
+                                setState(() {
+                                  isVisible = false;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.02),
+                          ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: CustomDatePickerField(
+                                  selectedDate: selectedFromDate,
+                                  onDateChanged: (String value) {
+                                    setState(() {
+                                      selectedFromDate = value;
+                                    });
+                                  },
+                                  placeholderText: 'From date',
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: CustomDatePickerField(
+                                  selectedDate: selectedToDate,
+                                  onDateChanged: (String value) {
+                                    setState(() {
+                                      selectedToDate = value;
+                                    });
+                                  },
+                                  placeholderText: 'To date',
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                              height:
+                                  ScreenUtils().screenHeight(context) * 0.02),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CommonButton(
+                                onTap: () {
+                                  setState(() {
+                                    patientList.clear();
+                                    graphData.clear();
+                                    newCount.clear();
+                                    oldCount.clear();
+                                    departmentName.clear();
+                                    currentPage = 1;
+                                    hasMoreData = true;
+                                    getEmgPatientData();
+                                  });
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Filter",
+                              ),
+                              CommonButton(
+                                onTap: () {
+                                  setState(() {
+                                    selectedFromDate = getCurrentDate();
+                                    selectedToDate = getCurrentDate();
+                                    patientList.clear();
+                                    graphData.clear();
+                                    newCount.clear();
+                                    oldCount.clear();
+                                    departmentName.clear();
+                                    currentPage = 1;
+                                    hasMoreData = true;
+                                    getEmgPatientData();
+                                  });
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Today",
+                              ),
+                              CommonButton(
+                                onTap: () {
+                                  setState(() {
+                                    selectedFromDate = "";
+                                    selectedToDate = "";
+                                    patientList.clear();
+                                    graphData.clear();
+                                    newCount.clear();
+                                    oldCount.clear();
+                                    departmentName.clear();
+                                    selectedVisitType = "";
+                                    selectedDepartment = "";
+                                    selectedDoctor = "";
+                                    selectedReferral = "";
+                                    selectedMarketByData = "";
+                                    selectedProviderData = "";
+                                    currentPage = 1;
+                                    hasMoreData = true;
+                                    _searchQuery = "";
+                                    isVisible = false;
+                                    getEmgPatientData();
+                                  });
+                                },
+                                borderRadius: 8,
+                                bgColor: AppColors.arrowBackground,
+                                height:
+                                    ScreenUtils().screenHeight(context) * 0.05,
+                                width:
+                                    ScreenUtils().screenWidth(context) * 0.28,
+                                buttonName: "Reset",
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                              height:
+                                  ScreenUtils().screenHeight(context) * 0.01),
+                          patientList.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No Emg patient is there in this time frame",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.colorBlack),
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    TableStatsSwitcher(
+                                      rows: ["New", "Old"],
+                                      cols: departmentName,
+                                      data: [
+                                      graphData
+                                          .map((e) =>
+                                              int.tryParse(
+                                                  e.newCount.toString()) ??
+                                              0)
+                                          .toList(),
+                                       graphData
+                                          .map((e) =>
+                                              int.tryParse(
+                                                  e.oldCount.toString()) ??
+                                              0)
+                                          .toList()],
+                                      headingText: "Department Wise OPD Report",
+                                      graphWidget: DepartmentWiseOpdReport(
+                                        isVisible: false,
+                                        graphTitle:
+                                            "Department-wise EMG Report",
+                                        onTapFullScreen: () {
+                                          Navigator.pushNamed(context,
+                                              "/DepartmentWiseOpdReportLandscapeScreen",
+                                              arguments: {
+                                                "newCount": newCount,
+                                                "oldCount": oldCount,
+                                                "departmentName": departmentName
+                                              });
+                                        },
+                                        yearLabels: departmentName.length > 10
+                                            ? departmentName.take(10).toList()
+                                            : departmentName,
+                                        spotsType1: newCount.length > 10
+                                            ? newCount.take(10).toList()
+                                            : newCount,
+                                        spotsType2: oldCount.length > 10
+                                            ? oldCount.take(10).toList()
+                                            : oldCount,
                                       ),
                                     ),
-                                  ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: patientList.length +
+                                          (isLoading && hasMoreData ? 1 : 0),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (index < patientList.length) {
+                                          return AnimationConfiguration
+                                              .staggeredList(
+                                            position: index,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: SlideAnimation(
+                                              verticalOffset: 50.0,
+                                              curve: Curves.easeOut,
+                                              child: FadeInAnimation(
+                                                curve: Curves.easeIn,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    bottom: ScreenUtils()
+                                                            .screenHeight(
+                                                                context) *
+                                                        0.02,
+                                                  ),
+                                                  child: OpdPatientItemData(
+                                                    index: index,
+                                                    patientName:
+                                                        patientList[index]
+                                                            .patientName
+                                                            .toString(),
+                                                    department:
+                                                        patientList[index]
+                                                            .departmentName
+                                                            .toString(),
+                                                    uhid: patientList[index]
+                                                        .patientId
+                                                        .toString(),
+                                                    opdId: patientList[index]
+                                                        .id
+                                                        .toString(),
+                                                    gender: patientList[index]
+                                                        .gender
+                                                        .toString(),
+                                                    age: patientList[index]
+                                                        .dobYear
+                                                        .toString(),
+                                                    mobile: patientList[index]
+                                                        .phone
+                                                        .toString(),
+                                                    visitType:
+                                                        patientList[index]
+                                                            .type
+                                                            .toString(),
+                                                    appointmentDate:
+                                                        patientList[index]
+                                                            .creDate
+                                                            .toString(),
+                                                    appointmentTime:
+                                                        patientList[index]
+                                                            .appointmentDate
+                                                            .toString(),
+                                                    doctor: patientList[index]
+                                                        .doctorName
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                  color: AppColors
+                                                      .arrowBackground),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              );
-                            } else {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                      color: AppColors.arrowBackground),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),
     );
   }
-
 
   Future<void> getEmgPatientData() async {
     setState(() {
@@ -431,7 +462,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
     Map<String, dynamic> requestData = {
       "page": currentPage,
       "visit_type": selectedVisitType,
-      "search_data":_searchQuery,
+      "search_data": _searchQuery,
       "department": selectedDepartment,
       "doctor": selectedDoctor,
       "referral": selectedReferral,
@@ -494,7 +525,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
     Map<String, dynamic> requestData = {};
 
     Resource resource =
-    await _adminReportUsecase.getFilterData(requestData: requestData);
+        await _adminReportUsecase.getFilterData(requestData: requestData);
 
     if (resource.status == STATUS.SUCCESS) {
       // for department list
@@ -556,12 +587,10 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
     }
   }
 
-
   String getCurrentDate() {
     final DateTime now = DateTime.now();
     final String formattedDate =
         "${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     return formattedDate;
   }
-
 }

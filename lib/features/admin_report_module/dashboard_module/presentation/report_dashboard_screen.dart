@@ -800,7 +800,9 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/customer_pie_chart.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/dashboard_tabular_data.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/statistical_graph.dart';
 // import 'package:jnm_hospital_app/features/admin_report_module/model/dashboard/dashboard_opd_data_model.dart';
 import 'package:jnm_hospital_app/features/auth_module/model/patient_statistics_model.dart';
@@ -862,11 +864,20 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   String newPatientDialysis = "0";
   String oldPatientDialysis = "0";
 
+  static const List<String> departments = [
+    "OPD",
+    "EMR",
+    "IPD",
+    "Daycare",
+    "INV",
+    "DIA",
+  ];
+
   @override
   void initState() {
     super.initState();
     userData();
-    getDashboardData(); // initial load with big loader
+    getDashboardData();
   }
 
   Future<void> userData() async {
@@ -915,20 +926,20 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          StatisticalGraph(
-                            key: ValueKey('${newData.join(",")}::${oldData.join(",")}'),
-                            text:
-                            "Old New Patient Count per Department",
-                            categories: const [
-                              "OPD",
-                              "Emergency",
-                              "IPD",
-                              "Daycare",
-                              "Investigation",
-                              "Dialysis"
-                            ],
-                            newData: newData,
-                            oldData: oldData,
+                          TableStatsSwitcher(
+                            rows: ["New", "Old"],
+                            cols: departments,
+                            data: [newData, oldData],
+                            headingText: "Old New patient count per department",
+                            graphWidget: StatisticalGraph(
+                              key: ValueKey(
+                                '${newData.join(",")}::${oldData.join(",")}',
+                              ),
+                              text: "Old New patient count per department",
+                              categories: departments,
+                              newData: newData,
+                              oldData: oldData,
+                            ),
                           ),
                           SizedBox(height: AppDimensions.contentGap3),
                           Text(
@@ -1473,6 +1484,10 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
           int.tryParse(oldPatientInvestigation) ?? 0,
           int.tryParse(oldPatientDialysis) ?? 0,
         ]);
+
+        print(newData);
+        print(oldData);
+
       } else {
         CommonUtils().flutterSnackBar(
           context: context,

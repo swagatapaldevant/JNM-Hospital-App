@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
@@ -357,34 +358,53 @@ class _DialysisPatientsReportScreenState
                                 )
                               : Column(
                                   children: [
-                                    DepartmentWiseOpdReport(
-                                      graphTitle:
-                                          "Department wise Dialysis Patient",
-                                      onTapFullScreen: () {
-                                        Navigator.pushNamed(context,
-                                            "/DepartmentWiseOpdReportLandscapeScreen",
-                                            arguments: {
-                                              "newCount": newCount,
-                                              "oldCount": oldCount,
-                                              "departmentName": departmentName
-                                            });
-                                      },
-                                      yearLabels: departmentName.length > 10
-                                          ? departmentName.take(10).toList()
-                                          : departmentName,
-                                      spotsType1: newCount.length > 10
-                                          ? newCount.take(10).toList()
-                                          : newCount,
-                                      spotsType2: oldCount.length > 10
-                                          ? oldCount.take(10).toList()
-                                          : oldCount,
-                                      onTapPieChart: () {
-                                        showCommonModalForDeathGenderDistribution(
-                                            context,
-                                            double.parse(maleCount.toString()),
-                                            double.parse(
-                                                femaleCount.toString()));
-                                      },
+                                    TableStatsSwitcher(
+                                      rows: ["New", "Old"],
+                                      cols: departmentName,
+                                      data: [
+                                        newCount
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.y.toString()) ??
+                                                0)
+                                            .toList(),
+                                        oldCount
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.y.toString()) ??
+                                                0)
+                                            .toList(),
+                                      ],
+                                      headingText: "Department wise Dialysis Patient",
+                                      graphWidget: DepartmentWiseOpdReport(
+                                        graphTitle:
+                                            "Department wise Dialysis Patient",
+                                        onTapFullScreen: () {
+                                          Navigator.pushNamed(context,
+                                              "/DepartmentWiseOpdReportLandscapeScreen",
+                                              arguments: {
+                                                "newCount": newCount,
+                                                "oldCount": oldCount,
+                                                "departmentName": departmentName
+                                              });
+                                        },
+                                        yearLabels: departmentName.length > 10
+                                            ? departmentName.take(10).toList()
+                                            : departmentName,
+                                        spotsType1: newCount.length > 10
+                                            ? newCount.take(10).toList()
+                                            : newCount,
+                                        spotsType2: oldCount.length > 10
+                                            ? oldCount.take(10).toList()
+                                            : oldCount,
+                                        onTapPieChart: () {
+                                          showCommonModalForDeathGenderDistribution(
+                                              context,
+                                              double.parse(maleCount.toString()),
+                                              double.parse(
+                                                  femaleCount.toString()));
+                                        },
+                                      ),
                                     ),
                                     ListView.builder(
                                       shrinkWrap: true,

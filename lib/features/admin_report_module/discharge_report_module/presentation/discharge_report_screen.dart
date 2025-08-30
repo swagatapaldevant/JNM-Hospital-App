@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
@@ -264,15 +265,23 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                     ):
                     Column(
                       children: [
-                        DoctorDeathCountLineChart(
-                          title: "Discharge Report Status",
-                          lineColor: AppColors.colorGreen,
-                          grad1: AppColors.colorGreen.withOpacity(0.6),
-                          grad2: AppColors.colorGreen.withOpacity(0.1),
-                          doctorNames:type,
-                          deathCounts:totalCount,
-                          maleCount:maleCount.toString() ,
-                          femaleCount: femaleCount.toString(),
+                        TableStatsSwitcher(
+                          rows: ["Discharge Count"],
+                          cols: type,
+                          data: [
+                            totalCount
+                          ],
+                          headingText: "Discharge Report Status",
+                          graphWidget: DoctorDeathCountLineChart(
+                            title: "Discharge Report Status",
+                            lineColor: AppColors.colorGreen,
+                            grad1: AppColors.colorGreen.withOpacity(0.6),
+                            grad2: AppColors.colorGreen.withOpacity(0.1),
+                            doctorNames:type,
+                            deathCounts:totalCount,
+                            maleCount:maleCount.toString() ,
+                            femaleCount: femaleCount.toString(),
+                          ),
                         ),
 
                         ListView.builder(

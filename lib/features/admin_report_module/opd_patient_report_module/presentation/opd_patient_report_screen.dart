@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_modal.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -291,7 +292,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                     selectedProviderData = "";
                                     currentPage = 1;
                                     hasMoreData = true;
-                                    _searchQuery="";
+                                    _searchQuery = "";
                                     isVisible = false;
                                     getOpdPatientData(currentPage);
                                   });
@@ -311,112 +312,141 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                   ScreenUtils().screenHeight(context) * 0.01),
                           patientList.isEmpty
                               ? Center(
-                            child: Text(
-                              "No opd patient is there in this time frame",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.colorBlack),
-                            ),
-                          )
-                              :
-                          Column(
-                            children: [
-                              DepartmentWiseOpdReport(
-                                isVisible: false,
-                                onTapFullScreen: () {
-                                  Navigator.pushNamed(context,
-                                      "/DepartmentWiseOpdReportLandscapeScreen",
-                                      arguments: {
-                                        "newCount": newCount,
-                                        "oldCount": oldCount,
-                                        "departmentName": departmentName
-                                      });
-                                },
-                                yearLabels: departmentName.length > 10
-                                    ? departmentName.take(10).toList()
-                                    : departmentName,
-                                spotsType1: newCount.length > 10
-                                    ? newCount.take(10).toList()
-                                    : newCount,
-                                spotsType2: oldCount.length > 10
-                                    ? oldCount.take(10).toList()
-                                    : oldCount,
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: patientList.length +
-                                    (isLoading && hasMoreData ? 1 : 0),
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index < patientList.length) {
-                                    return AnimationConfiguration.staggeredList(
-                                      position: index,
-                                      duration: const Duration(milliseconds: 500),
-                                      child: SlideAnimation(
-                                        verticalOffset: 50.0,
-                                        curve: Curves.easeOut,
-                                        child: FadeInAnimation(
-                                          curve: Curves.easeIn,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              bottom: ScreenUtils()
-                                                      .screenHeight(context) *
-                                                  0.02,
-                                            ),
-                                            child: OpdPatientItemData(
-                                              index: index,
-                                              patientName: patientList[index]
-                                                  .patientName
-                                                  .toString(),
-                                              department: patientList[index]
-                                                  .departmentName
-                                                  .toString(),
-                                              uhid: patientList[index]
-                                                  .patientId
-                                                  .toString(),
-                                              opdId:
-                                                  patientList[index].id.toString(),
-                                              gender: patientList[index]
-                                                  .gender
-                                                  .toString(),
-                                              age: patientList[index]
-                                                  .dobYear
-                                                  .toString(),
-                                              mobile: patientList[index]
-                                                  .phone
-                                                  .toString(),
-                                              visitType: patientList[index]
-                                                  .type
-                                                  .toString(),
-                                              appointmentDate: 
-                                                patientList[index]
-                                                  .creDate
-                                                  .toString(),
-                                              appointmentTime: patientList[index]
-                                                  .appointmentDate
-                                                  .toString(),
-                                              doctor: patientList[index]
-                                                  .doctorName
-                                                  .toString(),
-                                            ),
-                                          ),
-                                        ),
+                                  child: Text(
+                                    "No opd patient is there in this time frame",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.colorBlack),
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    TableStatsSwitcher(
+                                      rows: ["New", "Old"],
+                                      cols: departmentName,
+                                      data: [
+                                        graphData
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.newCount.toString()) ??
+                                                0)
+                                            .toList(),
+                                        graphData
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.oldCount.toString()) ??
+                                                0)
+                                            .toList()
+                                      ],
+                                      headingText: "Department Wise OPD Report",
+                                      graphWidget: DepartmentWiseOpdReport(
+                                        isVisible: false,
+                                        onTapFullScreen: () {
+                                          Navigator.pushNamed(context,
+                                              "/DepartmentWiseOpdReportLandscapeScreen",
+                                              arguments: {
+                                                "newCount": newCount,
+                                                "oldCount": oldCount,
+                                                "departmentName": departmentName
+                                              });
+                                        },
+                                        yearLabels: departmentName.length > 10
+                                            ? departmentName.take(10).toList()
+                                            : departmentName,
+                                        spotsType1: newCount.length > 10
+                                            ? newCount.take(10).toList()
+                                            : newCount,
+                                        spotsType2: oldCount.length > 10
+                                            ? oldCount.take(10).toList()
+                                            : oldCount,
                                       ),
-                                    );
-                                  } else {
-                                    return Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 16),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                            color: AppColors.arrowBackground),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: patientList.length +
+                                          (isLoading && hasMoreData ? 1 : 0),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        if (index < patientList.length) {
+                                          return AnimationConfiguration
+                                              .staggeredList(
+                                            position: index,
+                                            duration: const Duration(
+                                                milliseconds: 500),
+                                            child: SlideAnimation(
+                                              verticalOffset: 50.0,
+                                              curve: Curves.easeOut,
+                                              child: FadeInAnimation(
+                                                curve: Curves.easeIn,
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                    bottom: ScreenUtils()
+                                                            .screenHeight(
+                                                                context) *
+                                                        0.02,
+                                                  ),
+                                                  child: OpdPatientItemData(
+                                                    index: index,
+                                                    patientName:
+                                                        patientList[index]
+                                                            .patientName
+                                                            .toString(),
+                                                    department:
+                                                        patientList[index]
+                                                            .departmentName
+                                                            .toString(),
+                                                    uhid: patientList[index]
+                                                        .patientId
+                                                        .toString(),
+                                                    opdId: patientList[index]
+                                                        .id
+                                                        .toString(),
+                                                    gender: patientList[index]
+                                                        .gender
+                                                        .toString(),
+                                                    age: patientList[index]
+                                                        .dobYear
+                                                        .toString(),
+                                                    mobile: patientList[index]
+                                                        .phone
+                                                        .toString(),
+                                                    visitType:
+                                                        patientList[index]
+                                                            .type
+                                                            .toString(),
+                                                    appointmentDate:
+                                                        patientList[index]
+                                                            .creDate
+                                                            .toString(),
+                                                    appointmentTime:
+                                                        patientList[index]
+                                                            .appointmentDate
+                                                            .toString(),
+                                                    doctor: patientList[index]
+                                                        .doctorName
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                  color: AppColors
+                                                      .arrowBackground),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
                         ],
                       ),
                     ),
@@ -435,7 +465,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     Map<String, dynamic> requestData = {
       "page": currentPage,
       "visit_type": selectedVisitType,
-      "search_data":_searchQuery,
+      "search_data": _searchQuery,
       "department": selectedDepartment,
       "doctor": selectedDoctor,
       "referral": selectedReferral,
@@ -572,11 +602,9 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
 //   // final String formattedDate =
 //   //     "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year.toString().padLeft(4, '0')}";
 //   // return formattedDate;
-  
+
 //   return date;
 // }
-
- 
 }
 
 typedef SelectedFilterData = Map<String, MapEntry<int, String>?>;

@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_bar_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_item_data.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_modal_for_advanced_search.dart';
@@ -349,13 +350,22 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                 )
                               : Column(
                                   children: [
-                                    BarChartDetails(
+                                    TableStatsSwitcher(rows: ["Total", "Discount", "Paid", "Due"],
+                                    cols: type, 
+                                    headingText: "Billing Chart", 
+                                    data: [
+                                      total,
+                                      discount,
+                                      paid,
+                                      due
+                                    ],
+                                    graphWidget: BarChartDetails(
                                         type: type,
                                         total: total,
                                         //grandTotal: grandTotal,
                                         discount: discount,
                                         paid: paid,
-                                        due: due),
+                                        due: due)),
                                     ListView.builder(
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
@@ -511,7 +521,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
         grandTotal.add(gt);
         paid.add(p);
         due.add(du);
-        type.add(dep);
+        type.add(dep); //contains department names
       }
 
       setState(() {

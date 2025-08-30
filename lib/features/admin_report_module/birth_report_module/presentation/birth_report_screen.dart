@@ -10,6 +10,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/male_female_pie_chart.dart';
@@ -277,11 +278,20 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                 )
                               : Column(
                                   children: [
-                                    GenderPieChart(
-                                      maleCount: maleCount ?? 0,
-                                      femaleCount: femaleCount ?? 0,
-                                      labels: type,
-                                      lucsCounts: totalCount,
+                                    TableStatsSwitcher(
+                                      rows: ["Male", "Female"],
+                                      cols: ["Male", "Female"],
+                                      data: [
+                                        [maleCount ?? 0, femaleCount ?? 0],
+                                        [maleCount ?? 0, femaleCount ?? 0],
+                                      ],
+                                      headingText: "Gender Distribution",
+                                      graphWidget: GenderPieChart(
+                                        maleCount: maleCount ?? 0,
+                                        femaleCount: femaleCount ?? 0,
+                                        labels: type,
+                                        lucsCounts: totalCount,
+                                      ),
                                     ),
                                     ListView.builder(
                                       shrinkWrap: true,

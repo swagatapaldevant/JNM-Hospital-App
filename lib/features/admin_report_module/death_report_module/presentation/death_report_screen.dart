@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/male_female_pie_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -247,11 +248,22 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                                 )
                               : Column(
                                   children: [
-                                    DoctorDeathCountLineChart(
-                                      maleCount: maleCount.toString(),
-                                      femaleCount: femaleCount.toString(),
-                                      doctorNames: doctor,
-                                      deathCounts: totalCount,
+                                    TableStatsSwitcher(
+                                      rows: ["Death Count"],
+                                      cols: doctor,
+                                      data: [
+                                        deathCountByDoctorList
+                                            .map((e) => int.tryParse(
+                                                e.totalCount.toString()) ?? 0)
+                                            .toList()
+                                      ],
+                                      headingText: "Gender Distribution",
+                                      graphWidget: DoctorDeathCountLineChart(
+                                        maleCount: maleCount.toString(),
+                                        femaleCount: femaleCount.toString(),
+                                        doctorNames: doctor,
+                                        deathCounts: totalCount,
+                                      ),
                                     ),
                                     ListView.builder(
                                       shrinkWrap: true,

@@ -179,7 +179,9 @@ class _EditBillReportScreenState extends State<EditBillReportScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         return Padding(
                           padding:  EdgeInsets.only(bottom: ScreenUtils().screenHeight(context)*0.02),
-                          child: OpdPatientItemData(),
+                          child: OpdPatientItemData(
+                            onTap: () => {},
+                          ),
                         );
                       },
                     ),

@@ -205,5 +205,22 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
     }
   }
 
+  @override
+  Future<Resource> getBillingDetails({required String deptId, required int billId}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    print("Bearer$token");
+    Resource resource = await _apiClient.getRequest(
+        url: '${ApiEndPoint.billingDetails}/$deptId/$billId', 
+        header: header);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
 
 }

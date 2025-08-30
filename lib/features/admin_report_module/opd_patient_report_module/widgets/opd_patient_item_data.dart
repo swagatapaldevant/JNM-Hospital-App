@@ -276,6 +276,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
@@ -293,6 +294,7 @@ class OpdPatientItemData extends StatefulWidget {
   final String? appointmentDate;     // optional
   final String? appointmentTime;
   final String? doctor;
+  final VoidCallback? onTap;
 
   final bool initiallyExpanded;      // NEW (optional)
   const OpdPatientItemData({
@@ -309,6 +311,7 @@ class OpdPatientItemData extends StatefulWidget {
     this.appointmentDate,
     this.appointmentTime,
     this.doctor,
+    this.onTap,
     this.initiallyExpanded = false,
   });
 
@@ -517,7 +520,10 @@ class _OpdPatientItemDataState extends State<OpdPatientItemData>
                                   ],
                                 ),
                               ),
-
+                              const SizedBox(height: 8),
+                              CommonButton(buttonName: "View Details", onTap: () {
+                                widget.onTap?.call();
+                              })
                             ],
                           ),
                         ),

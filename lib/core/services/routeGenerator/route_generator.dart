@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_fontSize.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/billing_details_screen/presentations/billing_details_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/presentation/billing_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/presentation/birth_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
@@ -10,6 +11,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_m
 import 'package:jnm_hospital_app/features/admin_report_module/edit_bill_report_module/presentation/edit_bill_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report_module/presentation/emg_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/presentation/ipd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/landscape_view_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/ui/approval_dashboard_screen.dart';
@@ -103,7 +105,8 @@ class RouteGenerator{
   static const kApprovalEMGScreen = "/ApprovalEMGScreen";
   static const kApprovalDialysisScreen = "/ApprovalDialysisScreen";
   static const kApprovalInvestigationScreen = "/ApprovalInvestigationScreen";
-   static const kApprovedListScreen = "/ApprovedListScreen";
+  static const kApprovedListScreen = "/ApprovedListScreen";
+  static const kBillingDetailsScreen = "/BillingDetailsScreen";
 
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -224,6 +227,11 @@ class RouteGenerator{
         ));
       case kApprovedListScreen:
         return _animatedPageRoute(ApprovedListScreen());
+      case kBillingDetailsScreen:
+        final args = settings.arguments;
+        return _animatedPageRoute(BillingDetailsScreen(
+          billingDetails: args as BillingDetailsModel,
+        ));
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");

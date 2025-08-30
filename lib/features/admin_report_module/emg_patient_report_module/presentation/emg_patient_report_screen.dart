@@ -425,6 +425,9 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                                                     doctor: patientList[index]
                                                         .doctorName
                                                         .toString(),
+                                                    onTap: () {
+                                                      
+                                                    },
                                                   ),
                                                 ),
                                               ),

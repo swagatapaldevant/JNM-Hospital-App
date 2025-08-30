@@ -6,6 +6,7 @@ import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -17,6 +18,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/com
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/department_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/opd_patient_graph_data_model.dart';
@@ -74,6 +76,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
   List<ReferralListModel> providerByList = [];
   Map<int, String> providerByDataMap = {};
   String? selectedProviderData = "";
+  BillingDetailsModel? billingDetails;
 
 
 
@@ -432,6 +435,17 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                     doctor: patientList[index]
                                                         .doctorName
                                                         .toString(),
+                                                    onTap: ()async {
+                                                      await getBillingDetails(
+                                                          "opd",
+                                                          patientList[index]
+                                                              .id!);
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            RouteGenerator
+                                                                .kBillingDetailsScreen,
+                                                            arguments: billingDetails);
+                                                    },
                                                   ),
                                                 ),
                                               ),
@@ -602,14 +616,29 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     return formattedDate;
   }
 
-//   String formatDate(String date) {
-//   // final DateTime now = DateTime.now();
-//   // final String formattedDate =
-//   //     "${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year.toString().padLeft(4, '0')}";
-//   // return formattedDate;
-
-//   return date;
-// }
+  Future<void> getBillingDetails(String deptId, int billId) async {
+    setState(() {
+      isLoading = true;
+    });
+  
+    Resource resource = await _adminReportUsecase.getBillingDetails(
+        deptId: deptId, billId: billId);
+  
+    if (resource.status == STATUS.SUCCESS) {
+      // Handle successful response
+      print(resource.data);
+      setState(() {
+        isLoading = false;
+        billingDetails = BillingDetailsModel.fromJson(resource.data);
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
 }
 
 typedef SelectedFilterData = Map<String, MapEntry<int, String>?>;

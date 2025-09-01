@@ -380,8 +380,9 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                               : Column(
                                   children: [
                                     TableStatsSwitcher(
-                                      rows: ["New", "Old"],
-                                      cols: departmentName,
+                                      rows: departmentName,
+                                      cols:  ["New", "Old"],
+                                      isTransposeData: true,
                                       data: [
                                         graphData
                                             .map((e) =>

@@ -70,14 +70,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TableStatsSwitcher<T> extends StatefulWidget {
-  final List<String> rows;        // row labels (e.g., departments)
-  final List<String> cols;        // metric labels (e.g., Today, MTD, YTD)
-  final List<List<T>> data;       // matrix [row][col]
+  final List<String> rows; // row labels (e.g., departments)
+  final List<String> cols; // metric labels (e.g., Today, MTD, YTD)
+  List<List<T>> data; // matrix [row][col]
   final String headingText;
   final Widget graphWidget;
-  final String? subTitle;         // optional: small helper/caption
+  final String? subTitle; // optional: small helper/caption
+  final bool isTransposeData;
 
-  const TableStatsSwitcher({
+  TableStatsSwitcher({
     super.key,
     required this.rows,
     required this.cols,
@@ -85,6 +86,7 @@ class TableStatsSwitcher<T> extends StatefulWidget {
     required this.graphWidget,
     required this.data,
     this.subTitle,
+    required this.isTransposeData,
   });
 
   @override
@@ -93,7 +95,25 @@ class TableStatsSwitcher<T> extends StatefulWidget {
 
 class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
   // 0 = Cards, 1 = Graph
-  int _segment = 1; // default to Graph like your original
+  int _segment = 1;
+  void initState() {
+    super.initState();
+    if (widget.isTransposeData) {
+      widget.data = transpose(widget.data);
+    }
+  }
+
+  List<List<T>> transpose<T>(List<List<T>> input) {
+    if (input.isEmpty || input.first.isEmpty) return [];
+
+    int rowCount = input.length;
+    int colCount = input.first.length;
+
+    return List.generate(
+      colCount,
+      (i) => List.generate(rowCount, (j) => input[j][i]),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,14 +158,14 @@ class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
           child: _segment == 1
               ? _GraphBlock(widget.graphWidget, key: const ValueKey('graph'))
               : CollapsibleInsightCardsBlock<T>(
-            key: const ValueKey('cards'),
-            headerLabel: 'Insights',
-            rows: widget.rows,
-            cols: widget.cols,
-            data: widget.data,
-            // start collapsed or expanded as you like:
-            initiallyExpanded: false,
-          ),
+                  key: const ValueKey('cards'),
+                  headerLabel: 'Insights',
+                  rows: widget.rows,
+                  cols: widget.cols,
+                  data: widget.data,
+                  // start collapsed or expanded as you like:
+                  initiallyExpanded: false,
+                ),
         ),
       ],
     );
@@ -288,77 +308,112 @@ class _CollapsibleInsightCardsBlockState<T>
           curve: Curves.easeInOut,
           alignment: Alignment.topCenter,
           child: _expanded
-              ? _InsightCardsBlock<T>(
-            rows: widget.rows,
-            cols: widget.cols,
-            data: widget.data,
-          )
+              ? InsightCardsBlock(
+                  rows: widget.rows,
+                  cols: widget.cols,
+                  data: widget.data,
+                )
               : const SizedBox.shrink(),
         ),
       ],
     );
   }
 }
+
 /// =================== END: Collapsible wrapper =======================
 
 /// INSIGHT CARDS (non-scrollable)
-class _InsightCardsBlock<T> extends StatelessWidget {
+///
+class InsightCardsBlock<T> extends StatefulWidget {
   final List<String> rows;
   final List<String> cols;
   final List<List<T>> data;
-
-  const _InsightCardsBlock({
+  const InsightCardsBlock({
     super.key,
     required this.rows,
     required this.cols,
     required this.data,
   });
+  createState() => _InsightCardsBlockState<T>();
+}
 
+class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
   bool _isNum(dynamic v) => v is num;
+   String? selectedRow; // null = all rows
 
   @override
   Widget build(BuildContext context) {
-    // Compute per-column min/max and totals for normalization/summary (numeric columns only)
+    final rows = widget.rows;
+    final cols = widget.cols;
+    final data = widget.data;
+
     final int rowCount = rows.length;
     final int colCount = cols.length;
 
-    final List<double?> colMin = List.filled(colCount, null);
-    final List<double?> colMax = List.filled(colCount, null);
-    final List<double> colSum = List.filled(colCount, 0.0);
-    final List<int> colNumCount = List.filled(colCount, 0);
+    final List<double?> rowMin = List.filled(rowCount, null);
+    final List<double?> rowMax = List.filled(rowCount, null);
+    final List<double> rowSum = List.filled(rowCount, 0.0);
+    final List<int> rowNumCount = List.filled(rowCount, 0);
+   
 
     for (var r = 0; r < rowCount; r++) {
       for (var c = 0; c < colCount; c++) {
         final val = data[r][c];
         if (_isNum(val)) {
           final v = (val as num).toDouble();
-          colMin[c] = (colMin[c] == null) ? v : (v < colMin[c]! ? v : colMin[c]!);
-          colMax[c] = (colMax[c] == null) ? v : (v > colMax[c]! ? v : colMax[c]!);
-          colSum[c] += v;
-          colNumCount[c] += 1;
+          rowMin[r] =
+              (rowMin[r] == null) ? v : (v < rowMin[r]! ? v : rowMin[r]!);
+          rowMax[r] =
+              (rowMax[r] == null) ? v : (v > rowMax[r]! ? v : rowMax[r]!);
+          rowSum[r] += v;
+          rowNumCount[r] += 1;
         }
       }
     }
 
-    // Summary chips (totals / averages for numeric columns)
+    // Summary chips
     final summary = Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: List.generate(colCount, (c) {
-        final isNumeric = colNumCount[c] > 0;
-        final title = cols[c];
-        final value = isNumeric ? _formatNumber(colSum[c]) : '—';
-        final subtitle = isNumeric ? 'Total' : '—';
-        return _SummaryChip(
-          label: title,
-          value: value,
-          subtitle: subtitle,
-          color: _metricColor(c),
-        );
-      }),
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() => selectedRow = null); // Show all
+          },
+          child: _SummaryChip(
+            label: "All",
+            value: _formatNumber(rowSum.fold(0, (a, b) => a + b)),
+            subtitle: "Grand Total",
+            color: selectedRow == null ? Colors.blue : Colors.grey,
+          ),
+        ),
+        ...List.generate(rowCount, (r) {
+          final isNumeric = rowNumCount[r] > 0;
+          final title = rows[r];
+          final value = isNumeric ? _formatNumber(rowSum[r]) : '—';
+          final subtitle = isNumeric ? 'Total' : '—';
+          return GestureDetector(
+            onTap: () {
+              setState(() => selectedRow = title);
+            },
+            child: _SummaryChip(
+              label: title,
+              value: value,
+              subtitle: subtitle,
+              color: selectedRow == title ? _metricColor(r) : Colors.grey,
+            ),
+          );
+        }),
+      ],
     );
 
-    // Cards grid (non-scrollable)
+    // Filtered rows
+    final filteredIndexes = selectedRow == null
+        ? List.generate(rowCount, (i) => i) // all rows
+        : [
+            rows.indexOf(selectedRow!) // only the selected row
+          ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -382,20 +437,21 @@ class _InsightCardsBlock<T> extends StatelessWidget {
               child: GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: rowCount,
+                itemCount: filteredIndexes.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.18,
                 ),
-                itemBuilder: (context, r) {
+                itemBuilder: (context, idx) {
+                  final r = filteredIndexes[idx];
                   return _InsightCard<T>(
                     title: rows[r],
                     cols: cols,
                     values: data[r],
-                    colMin: colMin,
-                    colMax: colMax,
+                    colMin: rowMin,
+                    colMax: rowMax,
                   );
                 },
               ),
@@ -446,7 +502,7 @@ class _InsightCard<T> extends StatelessWidget {
     required this.colMin,
     required this.colMax,
     this.initialExpanded = false, // ignored
-    this.collapsedItemCount = 3,  // ignored
+    this.collapsedItemCount = 3, // ignored
     super.key,
   });
 
@@ -476,8 +532,8 @@ class _InsightCard<T> extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
                   Padding(
@@ -487,8 +543,8 @@ class _InsightCard<T> extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
                 ],
@@ -503,7 +559,8 @@ class _InsightCard<T> extends StatelessWidget {
                 final label = cols[c];
                 final val = values[c];
                 final isNumeric = _isNum(val);
-                final display = isNumeric ? _prettyNum(val as num) : val.toString();
+                final display =
+                    isNumeric ? _prettyNum(val as num) : val.toString();
 
                 double? pct;
                 if (isNumeric &&
@@ -593,20 +650,20 @@ class _MetricTile extends StatelessWidget {
     final bar = progress == null
         ? const SizedBox.shrink()
         : Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: SizedBox(
-          height: 6,
-          child: LinearProgressIndicator(
-            value: progress!.clamp(0.0, 1.0),
-            backgroundColor: color.withOpacity(0.15),
-            valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 6,
-          ),
-        ),
-      ),
-    );
+            padding: const EdgeInsets.only(top: 6),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: SizedBox(
+                height: 6,
+                child: LinearProgressIndicator(
+                  value: progress!.clamp(0.0, 1.0),
+                  backgroundColor: color.withOpacity(0.15),
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                  minHeight: 6,
+                ),
+              ),
+            ),
+          );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -695,17 +752,18 @@ class _SummaryChip extends StatelessWidget {
           Container(
             width: 10,
             height: 10,
-            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(3)),
           ),
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(fontSize:12, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 8),
           Text(
             value,
-            style: const TextStyle(fontSize:10,fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
           ),
         ],
       ),

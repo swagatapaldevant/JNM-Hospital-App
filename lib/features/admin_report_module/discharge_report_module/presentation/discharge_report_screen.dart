@@ -266,8 +266,9 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                     Column(
                       children: [
                         TableStatsSwitcher(
-                          rows: ["Discharge Count"],
-                          cols: type,
+                          rows: type,
+                          cols: ["Discharge Count"],
+                          isTransposeData: true,
                           data: [
                             totalCount
                           ],

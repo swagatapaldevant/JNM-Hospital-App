@@ -927,9 +927,10 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TableStatsSwitcher(
-                            rows: ["New", "Old"],
-                            cols: departments,
-                            data: [newData, oldData],
+                            rows: departments,
+                            cols: ["New", "Old"],
+                            data:  [newData, oldData],
+                            isTransposeData: true,
                             headingText: "Old New patient count per department",
                             graphWidget: StatisticalGraph(
                               key: ValueKey(

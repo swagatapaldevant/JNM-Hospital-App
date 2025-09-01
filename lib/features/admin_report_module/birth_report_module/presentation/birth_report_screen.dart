@@ -281,6 +281,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                     TableStatsSwitcher(
                                       rows: ["Male", "Female"],
                                       cols: ["Male", "Female"],
+                                      isTransposeData: true,
                                       data: [
                                         [maleCount ?? 0, femaleCount ?? 0],
                                         [maleCount ?? 0, femaleCount ?? 0],

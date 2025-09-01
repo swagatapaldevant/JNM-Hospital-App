@@ -359,8 +359,9 @@ class _DialysisPatientsReportScreenState
                               : Column(
                                   children: [
                                     TableStatsSwitcher(
-                                      rows: ["New", "Old"],
-                                      cols: departmentName,
+                                      rows: departmentName,
+                                      cols: ["New", "Old"],
+                                      isTransposeData: true,
                                       data: [
                                         newCount
                                             .map((e) =>

@@ -249,8 +249,9 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                               : Column(
                                   children: [
                                     TableStatsSwitcher(
-                                      rows: ["Death Count"],
-                                      cols: doctor,
+                                      rows: doctor,
+                                      cols: ["Death Count"],
+                                      isTransposeData: true,
                                       data: [
                                         deathCountByDoctorList
                                             .map((e) => int.tryParse(

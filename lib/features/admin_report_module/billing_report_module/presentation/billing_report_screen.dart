@@ -350,8 +350,9 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                 )
                               : Column(
                                   children: [
-                                    TableStatsSwitcher(rows: ["Total", "Discount", "Paid", "Due"],
-                                    cols: type, 
+                                    TableStatsSwitcher(rows: type,
+                                    cols:  ["Total", "Discount", "Paid", "Due"],
+                                    isTransposeData: true,
                                     headingText: "Billing Chart", 
                                     data: [
                                       total,

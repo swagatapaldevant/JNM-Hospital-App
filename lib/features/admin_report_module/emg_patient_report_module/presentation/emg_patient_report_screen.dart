@@ -319,8 +319,9 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                               : Column(
                                   children: [
                                     TableStatsSwitcher(
-                                      rows: ["New", "Old"],
-                                      cols: departmentName,
+                                      rows: departmentName,
+                                      cols:  ["New", "Old"],
+                                      isTransposeData: true,
                                       data: [
                                       graphData
                                           .map((e) =>

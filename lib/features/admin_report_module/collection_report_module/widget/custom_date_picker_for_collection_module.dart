@@ -85,7 +85,7 @@ class _CustomDatePickerFieldForCollectionModuleState extends State<CustomDatePic
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: ScreenUtils().screenWidth(context) * 0.3,
+      width: ScreenUtils().screenWidth(context) * 0.32,
       padding: EdgeInsets.only(
         left: ScreenUtils().screenWidth(context) * 0.03,
       ),

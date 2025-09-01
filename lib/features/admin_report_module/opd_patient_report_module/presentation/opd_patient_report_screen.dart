@@ -12,6 +12,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/PatientItemDataCard.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_modal.dart';
@@ -395,46 +396,52 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: OpdPatientItemData(
+                                                  child: PatientItemData(
                                                     index: index,
                                                     patientName:
                                                         patientList[index]
                                                             .patientName
                                                             .toString(),
+                                                    uhid: patientList[index]
+                                                        .patientId
+                                                        .toString(),
+
                                                     department:
                                                         patientList[index]
                                                             .departmentName
                                                             .toString(),
-                                                    uhid: patientList[index]
-                                                        .patientId
-                                                        .toString(),
-                                                    opdId: patientList[index]
+                                                    id: patientList[index]
                                                         .id
                                                         .toString(),
-                                                    gender: patientList[index]
+                                                    deptId: "opd",
+                                                    info: [{
+                                                      "gender": patientList[index]
                                                         .gender
                                                         .toString(),
-                                                    age: patientList[index]
+                                                    "age": patientList[index]
                                                         .dobYear
                                                         .toString(),
-                                                    mobile: patientList[index]
+                                                    "mobile": patientList[index]
                                                         .phone
                                                         .toString(),
-                                                    visitType:
+                                                    "visitType":
                                                         patientList[index]
                                                             .type
                                                             .toString(),
-                                                    appointmentDate:
+                                                    "appointmentDate":
                                                         patientList[index]
                                                             .creDate
                                                             .toString(),
-                                                    appointmentTime:
+                                                    "appointmentTime":
                                                         patientList[index]
                                                             .appointmentDate
                                                             .toString(),
-                                                    doctor: patientList[index]
+                                                    "doctor": patientList[index]
                                                         .doctorName
-                                                        .toString(),
+                                                        .toString()
+
+                                                  }]
+                                                    ,
                                                     onTap: ()async {
                                                       await getBillingDetails(
                                                           "opd",

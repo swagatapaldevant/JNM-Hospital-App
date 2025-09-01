@@ -87,6 +87,7 @@ class _CollectionReportScreenState extends State<CollectionReportScreen> {
                   children: [
                     SizedBox(height: AppDimensions.contentGap3),
                     Row(
+                      spacing: 8,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
@@ -101,7 +102,7 @@ class _CollectionReportScreenState extends State<CollectionReportScreen> {
                             placeholderText: 'From date',
                           ),
                         ),
-                        SizedBox(width: 10),
+                        //SizedBox(width: 8),
                         Expanded(
                           child: CustomDatePickerFieldForCollectionModule(
                             selectedDate: selectedToDate,
@@ -114,7 +115,7 @@ class _CollectionReportScreenState extends State<CollectionReportScreen> {
                             placeholderText: 'To date',
                           ),
                         ),
-                        SizedBox(width: 10),
+                        //SizedBox(width: 8),
                         Bounceable(
                           onTap: () {
                             geCollectionReportData();

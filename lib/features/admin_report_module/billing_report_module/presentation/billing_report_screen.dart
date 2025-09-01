@@ -337,7 +337,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.01),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           billingList.isEmpty
                               ? Center(
                                   child: Text(

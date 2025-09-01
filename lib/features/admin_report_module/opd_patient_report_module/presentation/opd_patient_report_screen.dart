@@ -314,7 +314,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.01),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           patientList.isEmpty
                               ? Center(
                                   child: Text(

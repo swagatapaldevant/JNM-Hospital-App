@@ -1,70 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/dynamic_row_col_table.dart';
-// import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/dashboard_tabular_data.dart';
-//
-// class TableStatsSwitcher<T> extends StatefulWidget {
-//
-//   final List<String> rows;
-//   final List<String> cols;
-//   final List<List<T>> data;
-//   final String headingText;
-//   final Widget graphWidget;
-//
-//   const TableStatsSwitcher({
-//     super.key,
-//     required this.rows,
-//     required this.cols,
-//     required this.headingText,
-//     required this.graphWidget,
-//     required this.data
-//   });
-//
-//   @override
-//   State<TableStatsSwitcher> createState() => _TableStatsSwitcherState();
-// }
-//
-// class _TableStatsSwitcherState extends State<TableStatsSwitcher> {
-//   bool showGraph = true;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//
-//         Row(
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           children: [
-//             const Text("Table"),
-//             Switch(
-//               value: showGraph,
-//               onChanged: (val) {
-//                 setState(() {
-//                   showGraph = val;
-//                 });
-//               },
-//             ),
-//             const Text("Graph"),
-//           ],
-//         ),
-//
-//         const SizedBox(height: 8),
-//
-//         if (showGraph)
-//           widget.graphWidget
-//         else
-//           DynamicRowColTable(
-//             rows: widget.rows,
-//             columns: widget.cols,
-//             data: widget.data,
-//             headingText: widget.headingText,
-//           ),
-//       ],
-//     );
-//   }
-// }
-//
-
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +89,7 @@ class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
           switchInCurve: Curves.easeOutCubic,
           switchOutCurve: Curves.easeInCubic,
           child: _segment == 1
-              ? _GraphBlock(widget.graphWidget, key: const ValueKey('graph'))
+              ? _GraphBlock(widget.graphWidget, key: const ValueKey('All'))
               : InsightCardsBlock<T>(
                   key: const ValueKey('cards'),
                   rows: widget.rows,
@@ -258,7 +191,7 @@ class _CollapsibleInsightCardsBlockState<T>
       onTap: _toggle,
       borderRadius: BorderRadius.circular(10),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2),
         child: Row(
           children: [
             Expanded(
@@ -423,24 +356,6 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
       return sums.cast<T>();
     }
 
-    // Helper functions for min/max
-    E listMin<E extends Comparable<E>>(List<E> x) {
-      if (x.isEmpty) throw ArgumentError("List cannot be empty");
-      E smallest = x.first;
-      for (int i = 1; i < x.length; i++) {
-        if (x[i].compareTo(smallest) < 0) smallest = x[i];
-      }
-      return smallest;
-    }
-
-    E listMax<E extends Comparable<E>>(List<E> x) {
-      if (x.isEmpty) throw ArgumentError("List cannot be empty");
-      E largest = x.first;
-      for (int i = 1; i < x.length; i++) {
-        if (x[i].compareTo(largest) > 0) largest = x[i];
-      }
-      return largest;
-    }
 
     // Calculate column-wise min/max for "All" view
     final List<double?> colMin = List.filled(colCount, null);
@@ -488,8 +403,8 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
                       title: "All",
                       cols: cols,
                       values: colSumConverted,
-                      colMin: colMin, // Use calculated column minimums
-                      colMax: colMax, // Use calculated column maximums
+                      colMin: colMin, 
+                      colMax: colMax, 
                     )
                   : _InsightCard<T>(
                       title: rows[filteredIndexes.first],
@@ -514,12 +429,12 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
 
   Color _metricColor(int index) {
     const palette = [
-      Color(0xFF8EA6FF), // indigo
-      Color(0xFF6FD6FF), // sky
-      Color(0xFF8FE388), // green
-      Color(0xFFFFC48B), // orange
-      Color(0xFFF6A6D7), // pink
-      Color(0xFFE5D1FF), // violet
+      Color(0xFF3C4D99), // darker indigo
+      Color(0xFF2C82A3), // darker sky
+      Color(0xFF3F7A3C), // darker green
+      Color(0xFFB56A2E), // darker orange
+      Color(0xFF9B4C7F), // darker pink
+      Color(0xFF7C5DA8), // darker violet
     ];
     return palette[index % palette.length];
   }
@@ -608,7 +523,8 @@ class _InsightCardState<T> extends State<_InsightCard<T>> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14
                           ),
                     ),
                   ),
@@ -625,15 +541,16 @@ class _InsightCardState<T> extends State<_InsightCard<T>> {
                     _expanded
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: Colors.grey[700],
+                    color: const Color.fromARGB(255, 207, 207, 207),
                   )
                 ],
               ),
             ),
 
+          
             // Expanded content
             if (_expanded) ...[
-              const SizedBox(height: 12),
+              // const SizedBox(height: 12),
               _MetricsList(
                 count: totalCols,
                 itemBuilder: (context, c) {
@@ -783,7 +700,8 @@ class _MetricTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
                         color: Colors.black87,
                       ),
                     ),
@@ -793,7 +711,8 @@ class _MetricTile extends StatelessWidget {
                     value,
                     style: const TextStyle(
                       fontFeatures: [FontFeature.tabularFigures()],
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -826,7 +745,7 @@ class _SummaryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withOpacity(1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.35)),
       ),
@@ -837,17 +756,17 @@ class _SummaryChip extends StatelessWidget {
             width: 10,
             height: 10,
             decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(3)),
+                color: Colors.white, borderRadius: BorderRadius.circular(3)),
           ),
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500,  color: Colors.white),
           ),
           const SizedBox(width: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: Colors.white),
           ),
         ],
       ),

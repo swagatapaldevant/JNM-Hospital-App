@@ -923,9 +923,11 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                         left: AppDimensions.screenPadding,
                         right: AppDimensions.screenPadding,
                       ),
+                      
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          SizedBox(height: 30,),
                           TableStatsSwitcher(
                             rows: departments,
                             cols: ["New", "Old"],

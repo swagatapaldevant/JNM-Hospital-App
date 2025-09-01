@@ -345,7 +345,7 @@ class _DialysisPatientsReportScreenState
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.01),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           dialysisReportList.isEmpty
                               ? Center(
                                   child: Text(

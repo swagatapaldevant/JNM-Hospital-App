@@ -235,7 +235,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.02),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           deathReportList.isEmpty
                               ? Center(
                                   child: Text(

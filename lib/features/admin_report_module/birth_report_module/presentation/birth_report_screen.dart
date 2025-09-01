@@ -265,7 +265,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.02),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           birthReportList.isEmpty
                               ? Center(
                                   child: Text(

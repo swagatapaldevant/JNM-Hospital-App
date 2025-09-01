@@ -254,7 +254,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                     ),
 
 
-                    SizedBox(height: ScreenUtils().screenHeight(context) * 0.02),
+                    SizedBox(height: ScreenUtils().screenHeight(context) * 0.04),
 
                     dischargeReportList.isEmpty?Center(
                       child: Text("No discharge are there in that timeframe", style: TextStyle(

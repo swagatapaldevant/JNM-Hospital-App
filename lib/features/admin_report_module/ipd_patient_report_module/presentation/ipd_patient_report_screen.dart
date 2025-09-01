@@ -366,7 +366,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                           ),
                           SizedBox(
                               height:
-                                  ScreenUtils().screenHeight(context) * 0.01),
+                                  ScreenUtils().screenHeight(context) * 0.04),
                           ipdReportList.isEmpty
                               ? Center(
                                   child: Text(

@@ -157,14 +157,11 @@ class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
           switchOutCurve: Curves.easeInCubic,
           child: _segment == 1
               ? _GraphBlock(widget.graphWidget, key: const ValueKey('graph'))
-              : CollapsibleInsightCardsBlock<T>(
+              : InsightCardsBlock<T>(
                   key: const ValueKey('cards'),
-                  headerLabel: 'Insights',
                   rows: widget.rows,
                   cols: widget.cols,
                   data: widget.data,
-                  // start collapsed or expanded as you like:
-                  initiallyExpanded: false,
                 ),
         ),
       ],
@@ -308,7 +305,7 @@ class _CollapsibleInsightCardsBlockState<T>
           curve: Curves.easeInOut,
           alignment: Alignment.topCenter,
           child: _expanded
-              ? InsightCardsBlock(
+              ? InsightCardsBlock<T>(
                   rows: widget.rows,
                   cols: widget.cols,
                   data: widget.data,
@@ -337,9 +334,10 @@ class InsightCardsBlock<T> extends StatefulWidget {
   createState() => _InsightCardsBlockState<T>();
 }
 
+
 class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
   bool _isNum(dynamic v) => v is num;
-   String? selectedRow; // null = all rows
+  String? selectedRow; // null = all rows
 
   @override
   Widget build(BuildContext context) {
@@ -354,7 +352,6 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
     final List<double?> rowMax = List.filled(rowCount, null);
     final List<double> rowSum = List.filled(rowCount, 0.0);
     final List<int> rowNumCount = List.filled(rowCount, 0);
-   
 
     for (var r = 0; r < rowCount; r++) {
       for (var c = 0; c < colCount; c++) {
@@ -407,12 +404,62 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
       ],
     );
 
+    // Calculate column sums
+    final List<double> colSum = List.filled(colCount, 0.0);
+    for (var c = 0; c < colCount; c++) {
+      for (var r = 0; r < rowCount; r++) {
+        final val = data[r][c];
+        if (_isNum(val)) {
+          colSum[c] += (val as num).toDouble();
+        }
+      }
+    }
+
+    // Convert sums to type T
+    List<T> _convertSumToType(List<double> sums) {
+      if (T == int) {
+        return sums.map((s) => s.toInt()).cast<T>().toList();
+      }
+      return sums.cast<T>();
+    }
+
+    // Helper functions for min/max
+    E listMin<E extends Comparable<E>>(List<E> x) {
+      if (x.isEmpty) throw ArgumentError("List cannot be empty");
+      E smallest = x.first;
+      for (int i = 1; i < x.length; i++) {
+        if (x[i].compareTo(smallest) < 0) smallest = x[i];
+      }
+      return smallest;
+    }
+
+    E listMax<E extends Comparable<E>>(List<E> x) {
+      if (x.isEmpty) throw ArgumentError("List cannot be empty");
+      E largest = x.first;
+      for (int i = 1; i < x.length; i++) {
+        if (x[i].compareTo(largest) > 0) largest = x[i];
+      }
+      return largest;
+    }
+
+    // Calculate column-wise min/max for "All" view
+    final List<double?> colMin = List.filled(colCount, null);
+    final List<double?> colMax = List.filled(colCount, null);
+    
+    for (var c = 0; c < colCount; c++) {
+      for (var r = 0; r < rowCount; r++) {
+        final val = data[r][c];
+        if (_isNum(val)) {
+          final v = (val as num).toDouble();
+          colMin[c] = (colMin[c] == null) ? v : (v < colMin[c]! ? v : colMin[c]!);
+          colMax[c] = (colMax[c] == null) ? v : (v > colMax[c]! ? v : colMax[c]!);
+        }
+      }
+    }
+
     // Filtered rows
-    final filteredIndexes = selectedRow == null
-        ? List.generate(rowCount, (i) => i) // all rows
-        : [
-            rows.indexOf(selectedRow!) // only the selected row
-          ];
+    final filteredIndexes =
+        selectedRow == null ? [] : [rows.indexOf(selectedRow!)];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,29 +479,25 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
             } else if (width >= 600) {
               crossAxisCount = 2;
             }
-
+            
+            List<T> colSumConverted = _convertSumToType(colSum);
+            
             return Expanded(
-              child: GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: filteredIndexes.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.18,
-                ),
-                itemBuilder: (context, idx) {
-                  final r = filteredIndexes[idx];
-                  return _InsightCard<T>(
-                    title: rows[r],
-                    cols: cols,
-                    values: data[r],
-                    colMin: rowMin,
-                    colMax: rowMax,
-                  );
-                },
-              ),
+              child: selectedRow == null
+                  ? _InsightCard<T>(
+                      title: "All",
+                      cols: cols,
+                      values: colSumConverted,
+                      colMin: colMin, // Use calculated column minimums
+                      colMax: colMax, // Use calculated column maximums
+                    )
+                  : _InsightCard<T>(
+                      title: rows[filteredIndexes.first],
+                      cols: cols,
+                      values: data[filteredIndexes.first],
+                      colMin: rowMin,
+                      colMax: rowMax,
+                    ),
             );
           },
         ),
@@ -484,16 +527,15 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
 
 /// One row’s card with its metrics visualized (your version with internal collapse)
 
-class _InsightCard<T> extends StatelessWidget {
+class _InsightCard<T> extends StatefulWidget {
   final String title;
   final List<String> cols;
   final List<T> values;
   final List<double?> colMin;
   final List<double?> colMax;
 
-  // kept for backward compatibility; ignored now
   final bool initialExpanded;
-  final int collapsedItemCount;
+  final int collapsedItemCount; // still here if you want partial view later
 
   const _InsightCard({
     required this.title,
@@ -501,16 +543,50 @@ class _InsightCard<T> extends StatelessWidget {
     required this.values,
     required this.colMin,
     required this.colMax,
-    this.initialExpanded = false, // ignored
-    this.collapsedItemCount = 3, // ignored
+    this.initialExpanded = false,
+    this.collapsedItemCount = 3,
     super.key,
   });
 
+  @override
+  State<_InsightCard<T>> createState() => _InsightCardState<T>();
+}
+
+class _InsightCardState<T> extends State<_InsightCard<T>> {
+  bool _expanded = false;
+
   bool _isNum(dynamic v) => v is num;
+
+  num _sumValues() {
+    num total = 0;
+    for (var v in widget.values) {
+      if (_isNum(v)) total += (v as num);
+    }
+    return total;
+  }
+
+  String _prettyNum(num n) {
+    if (n.abs() >= 1000000) return '${(n / 1000000).toStringAsFixed(1)}M';
+    if (n.abs() >= 1000) return '${(n / 1000).toStringAsFixed(1)}K';
+    return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1);
+  }
+
+  Color _metricColor(int index) {
+    const palette = [
+      Color(0xFF8EA6FF), // indigo
+      Color(0xFF6FD6FF), // sky
+      Color(0xFF8FE388), // green
+      Color(0xFFFFC48B), // orange
+      Color(0xFFF6A6D7), // pink
+      Color(0xFFE5D1FF), // violet
+    ];
+    return palette[index % palette.length];
+  }
 
   @override
   Widget build(BuildContext context) {
-    final total = cols.length;
+    final totalCols = widget.cols.length;
+    final sum = _sumValues();
 
     return Card(
       color: Colors.white,
@@ -521,14 +597,14 @@ class _InsightCard<T> extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Simple, non-interactive header
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
+            // Header row
+            InkWell(
+              onTap: () => setState(() => _expanded = !_expanded),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      title,
+                      widget.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -538,75 +614,83 @@ class _InsightCard<T> extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Text(
-                      "100",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                    child: _SummaryChip(
+                      label: _prettyNum(sum),
+                      value: '',
+                      subtitle: '',
+                      color: Colors.blue,
                     ),
                   ),
+                  Icon(
+                    _expanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.grey[700],
+                  )
                 ],
               ),
             ),
-            const SizedBox(height: 8),
 
-            // Always render all items
-            _MetricsList(
-              count: total,
-              itemBuilder: (context, c) {
-                final label = cols[c];
-                final val = values[c];
-                final isNumeric = _isNum(val);
-                final display =
-                    isNumeric ? _prettyNum(val as num) : val.toString();
+            // Expanded content
+            if (_expanded) ...[
+              const SizedBox(height: 12),
+              _MetricsList(
+                count: totalCols,
+                itemBuilder: (context, c) {
+                  final label = widget.cols[c];
+                  final val = widget.values[c];
+                  final isNumeric = _isNum(val);
+                  final display =
+                      isNumeric ? _prettyNum(val as num) : val.toString();
 
-                double? pct;
-                if (isNumeric &&
-                    colMin[c] != null &&
-                    colMax[c] != null &&
-                    colMax[c] != colMin[c]) {
-                  final v = (val as num).toDouble();
-                  pct = ((v - colMin[c]!) / (colMax[c]! - colMin[c]!))
-                      .clamp(0.0, 1.0);
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: _MetricTile(
-                    color: _metricColor(c),
-                    label: label,
-                    value: display,
-                    progress: pct,
-                  ),
-                );
-              },
-            ),
+                  double? pct;
+                  if (widget.colMin.isNotEmpty && widget.colMax.isNotEmpty) {
+                    if (isNumeric &&
+                        widget.colMin[c] != null &&
+                        widget.colMax[c] != null &&
+                        widget.colMax[c] != widget.colMin[c]) {
+                      final v = (val as num).toDouble();
+                      pct = ((v - widget.colMin[c]!) /
+                              (widget.colMax[c]! - widget.colMin[c]!))
+                          .clamp(0.0, 1.0);
+                    }
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: _MetricTile(
+                      color: _metricColor(c),
+                      label: label,
+                      value: display,
+                      progress: pct,
+                    ),
+                  );
+                },
+              ),
+            ],
           ],
         ),
       ),
     );
   }
+}
 
-  String _prettyNum(num n) {
-    if (n.abs() >= 1000000) return '${(n / 1000000).toStringAsFixed(1)}M';
-    if (n.abs() >= 1000) return '${(n / 1000).toStringAsFixed(1)}K';
-    final isInt = n == n.roundToDouble();
-    return n.toStringAsFixed(isInt ? 0 : 1);
-  }
+String _prettyNum(num n) {
+  if (n.abs() >= 1000000) return '${(n / 1000000).toStringAsFixed(1)}M';
+  if (n.abs() >= 1000) return '${(n / 1000).toStringAsFixed(1)}K';
+  final isInt = n == n.roundToDouble();
+  return n.toStringAsFixed(isInt ? 0 : 1);
+}
 
-  Color _metricColor(int index) {
-    const palette = [
-      Color(0xFF8EA6FF),
-      Color(0xFF6FD6FF),
-      Color(0xFF8FE388),
-      Color(0xFFFFC48B),
-      Color(0xFFF6A6D7),
-      Color(0xFFE5D1FF),
-    ];
-    return palette[index % palette.length];
-  }
+Color _metricColor(int index) {
+  const palette = [
+    Color(0xFF8EA6FF),
+    Color(0xFF6FD6FF),
+    Color(0xFF8FE388),
+    Color(0xFFFFC48B),
+    Color(0xFFF6A6D7),
+    Color(0xFFE5D1FF),
+  ];
+  return palette[index % palette.length];
 }
 
 /// fixed-count, non-scroll list so the Card size animates naturally

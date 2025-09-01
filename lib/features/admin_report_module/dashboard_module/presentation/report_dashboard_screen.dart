@@ -1016,7 +1016,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
-                            MainAxisAlignment.spaceEvenly,
+                            MainAxisAlignment.spaceBetween,
                             children: [
                               dashboardItem(
                                 "assets/images/admin_report/death_report.png",
@@ -1034,6 +1034,40 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                                       "/DischargeReportScreen");
                                 },
                               ),
+
+                              dashboardItem(
+                                "assets/images/admin_report/opd.png",
+                                "Collection Report",
+                                onTap: () {
+                                  Navigator.pushNamed(context,
+                                      "/CollectionReportScreen");
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: AppDimensions.contentGap2),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: [
+                              dashboardItem(
+                                "assets/images/admin_report/death_report.png",
+                                "User wise Collection Report",
+                                onTap: () {
+                                  Navigator.pushNamed(context,
+                                      "/UserWiseCollectionReportScreen");
+                                },
+                              ),
+
+                              dashboardItem(
+                                "assets/images/admin_report/death_report.png",
+                                "Doctors Payout",
+                                onTap: () {
+                                  Navigator.pushNamed(context,
+                                      "/DoctorsPayoutScreen");
+                                },
+                              ),
+
                             ],
                           ),
                           SizedBox(height: AppDimensions.contentGap2),
@@ -1265,7 +1299,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
     return Bounceable(
       onTap: onTap,
       child: Container(
-        height: ScreenUtils().screenHeight(context) * 0.17,
+        height: ScreenUtils().screenHeight(context) * 0.18,
         width: ScreenUtils().screenWidth(context) * 0.27,
         decoration: BoxDecoration(
           color: AppColors.reportDashboardCategoryBg,

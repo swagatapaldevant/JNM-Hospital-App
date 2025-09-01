@@ -222,5 +222,20 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
     }
   }
 
+  @override
+  Future<Resource> getCollectionReportDetails({required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.collectionReport,
+        header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
 
 }

@@ -4,16 +4,19 @@ import 'package:jnm_hospital_app/core/utils/helper/app_fontSize.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_details_screen/presentations/billing_details_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/presentation/billing_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/presentation/birth_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/presentation/collection_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/presentation/death_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/presentation/dialysis_patients_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/presentation/discharge_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/doctors_payout_module/presentation/doctors_payout_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/edit_bill_report_module/presentation/edit_bill_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report_module/presentation/emg_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/presentation/ipd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/landscape_view_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/user_wise_collection_report_module/presentation/user_wise_collection_report_screen.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/ui/approval_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approved_list_screen/ui/approved_list_screen.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/auth/ui/approval_login_screen.dart';
@@ -64,12 +67,12 @@ class RouteGenerator{
 
 
 
-  static const kPatientButtonNavigation = "/PatientButtonNavigation";
-  static const kTopDoctorScreen = "/TopDoctorScreen";
-  static const kFindDoctorScreen = "/FindDoctorScreen";
-  static const kBookingHistoryScreen = "/BookingHistoryScreen";
-  //static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
-  static const kBookingPaymentScreen = "/BookingPaymentScreen";
+  // static const kPatientButtonNavigation = "/PatientButtonNavigation";
+  // static const kTopDoctorScreen = "/TopDoctorScreen";
+  // static const kFindDoctorScreen = "/FindDoctorScreen";
+  // static const kBookingHistoryScreen = "/BookingHistoryScreen";
+  // //static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
+  // static const kBookingPaymentScreen = "/BookingPaymentScreen";
 
 
 
@@ -84,6 +87,9 @@ class RouteGenerator{
   static const kDeathReportScreen = "/DeathReportScreen";
   static const kDischargeReportScreen = "/DischargeReportScreen";
   static const kEditBillReportScreen = "/EditBillReportScreen";
+  static const kCollectionReportScreen = "/CollectionReportScreen";
+  static const kUserWiseCollectionReportScreen = "/UserWiseCollectionReportScreen";
+  static const kDoctorsPayoutScreen = "/DoctorsPayoutScreen";
 
   static const kPatientDetailsScreen = "/PatientDetailsScreen";
   static const kPatientBillDetailsScreen = "/PatientBillDetailsScreen";
@@ -98,6 +104,8 @@ class RouteGenerator{
   static const kRateEnquiryScreen = "/RateEnquiryScreen";
   static const kInvestigationScreen = "/InvestigationScreen";
   static const kOPDRegistrationScreen = "/OPDRegistrationScreen";
+
+
   static const kApprovalLoginScreen = "/ApprovalLoginScreen";
   static const kApprovalDashboardScreen = "/ApprovalDashboardScreen";
   static const kApprovalDetailscreen = "/ApprovalDetailscreen";
@@ -162,18 +170,7 @@ class RouteGenerator{
         return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
       case kOPDRegistrationScreen:
         return _animatedPageRoute(OpdRegistration());
-      // case kPatientButtonNavigation:
-      //   return _animatedPageRoute(PatientButtonNavigation());
-      // case kTopDoctorScreen:
-      //   return _animatedPageRoute(TopDoctorScreen());
-      // case kFindDoctorScreen:
-      //   return _animatedPageRoute(FindDoctorScreen());
-      //   case kBookingHistoryScreen:
-      //   return _animatedPageRoute(BookingHistoryScreen());
-      //   case kDoctorDetailsScreen:
-      //   return _animatedPageRoute(DoctorDetailsScreen());
-      //   case kBookingPaymentScreen:
-      //   return _animatedPageRoute(BookingPaymentScreen());
+
 
 
 
@@ -204,6 +201,15 @@ class RouteGenerator{
         return _animatedPageRoute(DischargeReportScreen());
        case kEditBillReportScreen:
         return _animatedPageRoute(EditBillReportScreen());
+       case kCollectionReportScreen:
+        return _animatedPageRoute(CollectionReportScreen());
+       case kUserWiseCollectionReportScreen:
+        return _animatedPageRoute(UserWiseCollectionReportScreen());
+       case kDoctorsPayoutScreen:
+        return _animatedPageRoute(DoctorsPayoutScreen());
+
+
+
        case kPatientDetailsScreen:
         return _animatedPageRoute(PatientDetailsScreen());
       case kPatientOPDScreen:

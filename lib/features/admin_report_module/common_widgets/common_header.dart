@@ -8,7 +8,8 @@ class CommonHeaderForReportModule extends StatelessWidget {
   Function()? onSearchTap;
   Function()? filterTap;
   final bool? isVisibleFilter;
-  CommonHeaderForReportModule({super.key,this.isVisibleFilter, required this.headingName, this.onSearchTap, this.filterTap});
+  final bool? isVisibleSearch;
+  CommonHeaderForReportModule({super.key,this.isVisibleFilter,this.isVisibleSearch, required this.headingName, this.onSearchTap, this.filterTap});
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +78,12 @@ class CommonHeaderForReportModule extends StatelessWidget {
               Row(
                 spacing: 10,
                 children: [
-                  Bounceable(
-                      onTap: onSearchTap,
-                      child: Icon(Icons.search, color: AppColors.white,size: 30,)),
+                  Visibility(
+                    visible: isVisibleSearch??true,
+                    child: Bounceable(
+                        onTap: onSearchTap,
+                        child: Icon(Icons.search, color: AppColors.white,size: 30,)),
+                  ),
                   Visibility(
                     visible: isVisibleFilter?? true,
                     child: Bounceable(

@@ -29,8 +29,9 @@ class PatientItemData extends StatefulWidget {
   final VoidCallback? onTap;
 
   final bool initiallyExpanded;
+  bool? hideBtn = true;
 
-  const PatientItemData({
+  PatientItemData({
     super.key,
     this.index,
     this.patientName,
@@ -49,6 +50,7 @@ class PatientItemData extends StatefulWidget {
     required this.id,
     required this.info,
     required this.deptId,
+    this.hideBtn
   });
 
   @override
@@ -239,16 +241,17 @@ class _PatientItemDataState extends State<PatientItemData>
                                 ),
                               ),
                               const SizedBox(height: 8),
-                               SizedBox(
-                                width: 120,
-                                child: CommonButton(
-                                  buttonName: "View Details",
-                                  onTap: () {
-                                    Navigator.pushNamed(context,
-                                        RouteGenerator.kBillingDetailsScreen,
-                                        arguments: billingDetails);
-                                  }),
-                              )
+                              if(widget.hideBtn == null || widget.hideBtn == false)
+                                SizedBox(
+                                  width: 120,
+                                  child: CommonButton(
+                                    buttonName: "View Details",
+                                    onTap: () {
+                                      Navigator.pushNamed(context,
+                                          RouteGenerator.kBillingDetailsScreen,
+                                          arguments: billingDetails);
+                                    }),
+                                )
                               
                             ],
                           ),

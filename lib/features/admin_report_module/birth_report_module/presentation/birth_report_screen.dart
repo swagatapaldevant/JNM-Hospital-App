@@ -12,7 +12,6 @@ import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/male_female_pie_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
@@ -323,6 +322,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                                     ),
                                                     child: PatientItemData(
                                                         index: index,
+                                                        hideBtn: true,
                                                         patientName:
                                                             birthReportList[
                                                                     index]

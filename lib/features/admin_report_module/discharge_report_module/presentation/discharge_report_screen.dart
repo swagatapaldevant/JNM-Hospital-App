@@ -18,7 +18,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/cus
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/doctor_wise_patient_death_count_graph.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/widgets/discharge_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/widgets/discrage_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_graph_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_model.dart';
@@ -312,6 +311,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                                       ),
                                       child: PatientItemData(
                                         index: index,
+                                        hideBtn: true,
                                         id: dischargeReportList[index].billId.toString(),
                                         // WARNING_UHID: PatientId is being passed in place of UHID
                                         uhid: dischargeReportList[index].patientId.toString(),

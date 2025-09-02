@@ -290,6 +290,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                                                         0.02,
                                                   ),
                                                   child: PatientItemData(
+                                                    hideBtn: true,
                                                     index: index,
                                                     id: deathReportList[index]
                                                             .patientId

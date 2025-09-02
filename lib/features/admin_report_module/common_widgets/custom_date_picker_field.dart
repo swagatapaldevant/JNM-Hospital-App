@@ -196,8 +196,8 @@ class _CustomDatePickerFieldState extends State<CustomDatePickerField> {
   Widget build(BuildContext context) {
     return Container(
       width: ScreenUtils().screenWidth(context) * 0.44,
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenUtils().screenWidth(context) * 0.05,
+      padding: EdgeInsets.only(
+        left: ScreenUtils().screenWidth(context) * 0.05,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFFF5F5FA),

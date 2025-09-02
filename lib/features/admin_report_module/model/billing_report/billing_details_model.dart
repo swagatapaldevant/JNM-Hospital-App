@@ -6,6 +6,7 @@ class BillingDetailsModel {
         required this.refund,
         required this.reused,
         required this.section,
+        required this.patient
     });
 
     final Bill? bill;
@@ -14,6 +15,7 @@ class BillingDetailsModel {
     final List<dynamic> refund; /**TODO: Refund model */
     final List<dynamic> reused; /**TODO: Reused model */
     final String? section;
+    final Patient? patient;
 
     factory BillingDetailsModel.fromJson(Map<String, dynamic> json){ 
         return BillingDetailsModel(
@@ -23,6 +25,7 @@ class BillingDetailsModel {
             refund: json["refund"] == null ? [] : List<dynamic>.from(json["refund"]!.map((x) => x)),
             reused: json["reused"] == null ? [] : List<dynamic>.from(json["reused"]!.map((x) => x)),
             section: json["section"],
+            patient: json["patient_details"] == null ? null : Patient.fromJson(json["patient_details"])
         );
     }
 
@@ -409,5 +412,136 @@ class Payment {
     };
 
 }
+
+class Patient {
+  final int id;
+  final String name;
+  final String? guardianName;
+  final String? guardianContactNo;
+  final String? guardianRelation;
+  final String? maritalStatus;
+  final String? bloodGroup;
+  final String? gender;
+  final String? dateOfBirth;
+  final int? dobYear;
+  final int? dobMonth;
+  final int? dobDay;
+  final String? phone;
+  final String? alternativeNo;
+  final String? email;
+  final String? address;
+  final String? district;
+  final String? state;
+  final String? country;
+  final String? pinCode;
+  final String? identificationName;
+  final String? identificationNumber;
+  final String? remarks;
+  final bool? isActive;
+  final bool? isDelete;
+  final String? createdBy;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  Patient({
+    required this.id,
+    required this.name,
+    this.guardianName,
+    this.guardianContactNo,
+    this.guardianRelation,
+    this.maritalStatus,
+    this.bloodGroup,
+    this.gender,
+    this.dateOfBirth,
+    this.dobYear,
+    this.dobMonth,
+    this.dobDay,
+    this.phone,
+    this.alternativeNo,
+    this.email,
+    this.address,
+    this.district,
+    this.state,
+    this.country,
+    this.pinCode,
+    this.identificationName,
+    this.identificationNumber,
+    this.remarks,
+    this.isActive,
+    this.isDelete,
+    this.createdBy,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory Patient.fromJson(Map<String, dynamic> json) {
+    return Patient(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      guardianName: json['guardian_name'],
+      guardianContactNo: json['guardian_contact_no'],
+      guardianRelation: json['guardian_realation'],
+      maritalStatus: json['marital_status'],
+      bloodGroup: json['blood_group'],
+      gender: json['gender'],
+      dateOfBirth: json['date_of_birth'],
+      dobYear: json['dob_year'],
+      dobMonth: json['dob_month'],
+      dobDay: json['dob_day'],
+      phone: json['phone'],
+      alternativeNo: json['alternative_no'],
+      email: json['email'],
+      address: json['address'],
+      district: json['district'],
+      state: json['state'],
+      country: json['country'],
+      pinCode: json['pin_code'],
+      identificationName: json['identification_name'],
+      identificationNumber: json['identification_number'],
+      remarks: json['remarks'],
+      isActive: json['is_active'],
+      isDelete: json['is_delete'],
+      createdBy: json['created_by'],
+      createdAt:
+          json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
+      updatedAt:
+          json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'guardian_name': guardianName,
+      'guardian_contact_no': guardianContactNo,
+      'guardian_realation': guardianRelation,
+      'marital_status': maritalStatus,
+      'blood_group': bloodGroup,
+      'gender': gender,
+      'date_of_birth': dateOfBirth,
+      'dob_year': dobYear,
+      'dob_month': dobMonth,
+      'dob_day': dobDay,
+      'phone': phone,
+      'alternative_no': alternativeNo,
+      'email': email,
+      'address': address,
+      'district': district,
+      'state': state,
+      'country': country,
+      'pin_code': pinCode,
+      'identification_name': identificationName,
+      'identification_number': identificationNumber,
+      'remarks': remarks,
+      'is_active': isActive,
+      'is_delete': isDelete,
+      'created_by': createdBy,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+}
+
 
 /*TODO: Refund and Reuse models*/

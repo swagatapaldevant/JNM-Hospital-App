@@ -21,7 +21,7 @@ class BillingDetailsScreen extends StatefulWidget {
 class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   bool isLoading = false;
   BillingDetailsModel? billingDetails;
-
+  
   @override
   initState() {
     super.initState();
@@ -71,6 +71,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     final bill = billingDetails?.bill;
     final billInfo = billingDetails?.billInfo;
     final payments = billingDetails?.payments ?? [];
+    final patientDetails = billingDetails?.patient;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -111,7 +112,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                           height: 8,
                         ),
                         // Patient & Bill Info Section
-                        _buildPatientInfoSection(bill),
+                        _buildPatientInfoSection(patientDetails, bill?.doctorName),
                         // Services/Items Section
                         _buildServicesSection(billInfo ?? []),
                         // Bill Summary Section
@@ -249,7 +250,7 @@ Widget _buildHospitalHeader(Bill? bill) {
     required Widget body,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
@@ -317,8 +318,18 @@ Widget _buildHospitalHeader(Bill? bill) {
       return "Dr. $doc";
     }
   }
+  String  formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
+  if (dobDay == null || dobMonth == null || dobYear == null) {
+    return "N/A";
+  }
 
-  Widget _buildPatientInfoSection(Bill? bill) {
+  final day = dobDay.toString().padLeft(2, '0');
+  final month = dobMonth.toString().padLeft(2, '0');
+  final year = dobYear.toString();
+
+  return "$day-$month-$year";
+}
+  Widget _buildPatientInfoSection(Patient? patientDetails, String? doctor) {
     return _sectionWithHangingHeader(
       heading: Row(
         children: [
@@ -349,23 +360,23 @@ Widget _buildHospitalHeader(Bill? bill) {
                 spacing: 4,
                 children: [
                   _buildInfoItem(
-                    '${bill?.patientName ?? "N/A"} (${bill?.patientId ?? "N/A"})',
+                    '${patientDetails?.name ?? "N/A"} (${patientDetails?.id ?? "N/A"})',
                     Icons.person_outline,
                   ),
                   _buildInfoItem(
-                    formatDoctorName(bill?.doctorName),
+                    formatDoctorName(doctor),
                     Icons.medical_services_outlined,
                   ),
                   _buildInfoItem(
-                    bill?.age ?? "N/A",
+                    formattedDob(patientDetails?.dobDay, patientDetails?.dobMonth, patientDetails?.dobYear),
                     Icons.cake_outlined,
                   ),
                   _buildInfoItem(
-                    bill?.mobile ?? "N/A",
+                    patientDetails?.phone ?? "N/A",
                     Icons.call,
                   ),
                   _buildInfoItem(
-                    bill?.address ?? "N/A",
+                    patientDetails?.address ?? "N/A",
                     Icons.home_outlined,
                   ),
                 ],

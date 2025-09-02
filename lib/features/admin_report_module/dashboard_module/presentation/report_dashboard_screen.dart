@@ -1047,7 +1047,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(height: AppDimensions.contentGap2),
+                          SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,

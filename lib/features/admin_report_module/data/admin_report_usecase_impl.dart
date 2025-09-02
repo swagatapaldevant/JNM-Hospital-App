@@ -238,4 +238,37 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
     }
   }
 
+
+  @override
+  Future<Resource> getUserWiseCollectionReportDetails({required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.userWiseCollectionReport,
+        header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
+  @override
+  Future<Resource> getDoctorPayoutDetails({required Map<String, dynamic> requestData}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.doctorPayoutReport,
+        header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
 }

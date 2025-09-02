@@ -33,6 +33,8 @@ class ApiEndPoint{
   static const billingFilterData =  "$baseurl/get-filteration-data";
   static const dashboard =  "$baseurl/dashboard";
   static const collectionReport =  "$baseurl/collection-report";
+  static const userWiseCollectionReport =  "$baseurl/users-collection";
+  static const doctorPayoutReport =  "$baseurl/doctor-payout";
 
 
 

@@ -22,7 +22,7 @@ class BillingDetailsScreen extends StatefulWidget {
 class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   bool isLoading = false;
   BillingDetailsModel? billingDetails;
-
+  
   @override
   initState() {
     super.initState();

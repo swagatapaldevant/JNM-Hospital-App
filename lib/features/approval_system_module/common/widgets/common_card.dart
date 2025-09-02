@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 
 class ApprovalCard extends StatefulWidget {
@@ -204,7 +205,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
               const SizedBox(height: 14),
 
               // Footer
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
@@ -222,17 +223,50 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       ),
                     ],
                   ),
-                  widget.isApproved == true
-                      ? SizedBox.shrink()
-                      : ElevatedButton.icon(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    
+                    spacing: 4,
+                    children: [
+                      widget.isApproved == true
+                          ? SizedBox.shrink()
+                          : ElevatedButton.icon(
+                              onPressed: () {
+                                // handle approve action
+                                widget.onApprove(approvalData.id);
+                              },
+                              icon: const Icon(Icons.check_circle_outline,
+                                  size: 16, color: Colors.white),
+                              label: const Text(
+                                "Approve",
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF667eea),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                elevation: 0,
+                              ),
+                            ),
+                            ElevatedButton.icon(
                           onPressed: () {
                             // handle approve action
-                            widget.onApprove(approvalData.id);
+                            Navigator.pushNamed(context,
+                                        RouteGenerator.kBillingDetailsScreen,
+                                        arguments: {
+                                          "id": "102",
+                                          "deptId": "OPD"
+                                        });
                           },
                           icon: const Icon(Icons.check_circle_outline,
                               size: 16, color: Colors.white),
                           label: const Text(
-                            "Approve",
+                            "View Bill",
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -247,6 +281,10 @@ class _ApprovalCardState extends State<ApprovalCard> {
                             elevation: 0,
                           ),
                         )
+                    ],
+                  ),
+
+                  
                 ],
               ),
             ],

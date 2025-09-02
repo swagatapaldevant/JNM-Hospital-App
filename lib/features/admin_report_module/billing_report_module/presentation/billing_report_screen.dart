@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_bar_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_item_data.dart';
@@ -19,17 +20,14 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/com
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/widgets/dialysis_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/bar_chart_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/charges_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/section_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/users_list_model.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/department_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class BillingReportScreen extends StatefulWidget {
   const BillingReportScreen({super.key});
@@ -177,7 +175,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
-                              searchIconOnClick: (){
+                              searchIconOnClick: () {
                                 selectedFromDate = "";
                                 selectedToDate = "";
                                 billingList.clear();
@@ -350,23 +348,24 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                 )
                               : Column(
                                   children: [
-                                    TableStatsSwitcher(rows: type,
-                                    cols:  ["Total", "Discount", "Paid", "Due"],
-                                    isTransposeData: true,
-                                    headingText: "Billing Chart", 
-                                    data: [
-                                      total,
-                                      discount,
-                                      paid,
-                                      due
-                                    ],
-                                    graphWidget: BarChartDetails(
-                                        type: type,
-                                        total: total,
-                                        //grandTotal: grandTotal,
-                                        discount: discount,
-                                        paid: paid,
-                                        due: due)),
+                                    TableStatsSwitcher(
+                                        rows: type,
+                                        cols: [
+                                          "Total",
+                                          "Discount",
+                                          "Paid",
+                                          "Due"
+                                        ],
+                                        isTransposeData: true,
+                                        headingText: "Billing Chart",
+                                        data: [total, discount, paid, due],
+                                        graphWidget: BarChartDetails(
+                                            type: type,
+                                            total: total,
+                                            //grandTotal: grandTotal,
+                                            discount: discount,
+                                            paid: paid,
+                                            due: due)),
                                     ListView.builder(
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
@@ -392,62 +391,93 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: BillingReportItemData(
+                                                  child: PatientItemData(
                                                     index: index,
-                                                    patientName:
-                                                        billingList[index]
-                                                            .patientName
-                                                            .toString(),
-                                                    section: billingList[index]
-                                                        .section
+                                                    id: billingList[index]
+                                                        .id
                                                         .toString(),
                                                     /**WARNING_UHID */
                                                     uhid: billingList[index]
                                                         .patientId
                                                         .toString(),
-                                                    billId: billingList[index]
-                                                        .id
-                                                        .toString(),
-                                                    uid: billingList[index]
-                                                        .patientId
-                                                        .toString(),
-                                                    total: billingList[index]
-                                                        .total
-                                                        .toString(),
-                                                    mobile: billingList[index]
-                                                        .phone
-                                                        .toString(),
-                                                    grandTotal:
+                                                    patientName:
                                                         billingList[index]
-                                                            .grandTotal
-                                                            .toString(),
-                                                    billingTime:
-                                                        billingList[index]
-                                                            .billDate
-                                                            .toString(),
-                                                    appointmentTime:
-                                                        billingList[index]
-                                                            .creDate
+                                                            .patientName
                                                             .toString(),
                                                     doctor: billingList[index]
                                                         .doctorName
                                                         .toString(),
-                                                    discountAmount:
-                                                        billingList[index]
-                                                            .discountAmount
-                                                            .toString(),
-                                                    totalPayment:
-                                                        billingList[index]
-                                                            .totalPayment
-                                                            .toString(),
-                                                    refundAmount:
-                                                        billingList[index]
-                                                            .refundAmount
-                                                            .toString(),
-                                                    dueAmount:
-                                                        billingList[index]
-                                                            .dueAmount
-                                                            .toString(),
+                                                    deptId: billingList[index]
+                                                        .section
+                                                        .toString(),
+                                                    info: [
+                                                      {
+                                                        "billId":
+                                                            billingList[index]
+                                                                .id
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "uid":
+                                                            billingList[index]
+                                                                .patientId
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "total":
+                                                            billingList[index]
+                                                                .total
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "mobile":
+                                                            billingList[index]
+                                                                .phone
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "grandTotal":
+                                                            billingList[index]
+                                                                .grandTotal
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "billingTime":
+                                                            billingList[index]
+                                                                .billDate
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "appointmentTime":
+                                                            billingList[index]
+                                                                .creDate
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "discountAmount":
+                                                            billingList[index]
+                                                                .discountAmount
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "totalPayment":
+                                                            billingList[index]
+                                                                .totalPayment
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "refundAmount":
+                                                            billingList[index]
+                                                                .refundAmount
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "dueAmount":
+                                                            billingList[index]
+                                                                .dueAmount
+                                                                .toString()
+                                                      }
+                                                    ],
                                                   ),
                                                 ),
                                               ),
@@ -487,7 +517,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
       "page": currentPage,
       "user": selectedUserData,
       "doctor": selectedDoctor,
-      "search_data":_searchQuery,
+      "search_data": _searchQuery,
       "section": selectedSectionData,
       "referral": selectedReferral,
       "market_by": selectedMarketByData,

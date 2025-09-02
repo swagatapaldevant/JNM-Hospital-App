@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
-import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_report_model.dart';
 
 class PatientItemData extends StatefulWidget {
   final int? index;
@@ -65,37 +59,14 @@ class _PatientItemDataState extends State<PatientItemData>
     with SingleTickerProviderStateMixin {
   late bool _expanded;
   bool isLoading = false;
-  BillingDetailsModel? billingDetails;
+  Map<String, String> billingDetails = {};
 
-  final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
   @override
   void initState() {
     super.initState();
     _expanded = widget.initiallyExpanded;
-  }
-
-  Future<void> getBillingDetails(String deptId, int billId) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    Resource resource = await _adminReportUsecase.getBillingDetails(
-        deptId: deptId, billId: billId);
-
-    if (resource.status == STATUS.SUCCESS) {
-      // Handle successful response
-      print(resource.data);
-      setState(() {
-        isLoading = false;
-        billingDetails = BillingDetailsModel.fromJson(resource.data);
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      CommonUtils().flutterSnackBar(
-          context: context, mes: resource.message ?? "", messageType: 4);
-    }
+    billingDetails["id"] = widget.id!;
+    billingDetails["deptId"] = widget.deptId!;
   }
 
   @override
@@ -207,10 +178,10 @@ class _PatientItemDataState extends State<PatientItemData>
                                   items: [
                                     _has(widget.doctor)
                                         ? "DR. ${_val(widget.doctor?.toUpperCase())}"
-                                        : "Doctor —",
+                                        : "",
                                     _has(widget.department)
                                         ? _val(widget.department?.toUpperCase())
-                                        : "Department —",
+                                        : "",
                                   ],
                                   style: const TextStyle(
                                     fontSize: 12,
@@ -258,15 +229,27 @@ class _PatientItemDataState extends State<PatientItemData>
                                 child: Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
-                                  children: [_buildList(widget.info)],
+                                  children: [
+                                    _Badge(
+                                      text: "${widget.deptId} ${widget.id}",
+                                      icon: Icons.confirmation_number_outlined,
+                                    ),
+                                    _buildList(widget.info)
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              CommonButton(
+                               SizedBox(
+                                width: 120,
+                                child: CommonButton(
                                   buttonName: "View Details",
                                   onTap: () {
-                                    widget.onTap?.call();
-                                  })
+                                    Navigator.pushNamed(context,
+                                        RouteGenerator.kBillingDetailsScreen,
+                                        arguments: billingDetails);
+                                  }),
+                              )
+                              
                             ],
                           ),
                         ),
@@ -281,6 +264,40 @@ class _PatientItemDataState extends State<PatientItemData>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildList(List<Map<String, String>> info) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: info.expand((map) {
+        return map.entries.map((entry) {
+          final key = entry.key;
+          String label = entry.value;
+          Color color;
+          if (key == "gender") {
+            color = _genderColor(label);
+          } else {
+            color = kColorMap[key] ?? Colors.grey;
+          }
+
+          IconData icon;
+          if (key.toLowerCase().endsWith("date") ||
+              key.toLowerCase().endsWith("time")) {
+            icon = Icons.date_range;
+            label = formatDate(label);
+          } else {
+            icon = kIconMap[key] ?? Icons.label;
+          }
+
+          return _TagChip(
+            icon: icon,
+            label: label,
+            color: color,
+          );
+        });
+      }).toList(),
     );
   }
 
@@ -311,8 +328,12 @@ class _PatientItemDataState extends State<PatientItemData>
   }
 
   formatDate(String string) {
-    final DateTime date = DateTime.parse(string);
-    return "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year.toString().padLeft(4, '0')}";
+    try {
+      final DateTime date = DateTime.parse(string);
+      return "${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year.toString().padLeft(4, '0')}";
+    } catch (err) {
+      return string;
+    }
   }
 }
 
@@ -386,6 +407,11 @@ const Map<String, IconData> kIconMap = {
   "name": Icons.person,
   "phone": Icons.phone,
   "email": Icons.email,
+  "gender": Icons.person_rounded,
+  "dob": Icons.cake_rounded,
+  "age": Icons.cake_rounded,
+  "mobile": Icons.call_rounded,
+  "date": Icons.alarm
 };
 
 const Map<String, Color> kColorMap = {
@@ -393,25 +419,6 @@ const Map<String, Color> kColorMap = {
   "phone": Colors.green,
   "email": Colors.red,
 };
-
-Widget _buildList(List<Map<String, String>> info) {
-  return Wrap(
-    spacing: 8,
-    runSpacing: 8,
-    children: info.expand((map) {
-      return map.entries.map((entry) {
-        final key = entry.key; // e.g., "phone"
-        final label = entry.value; // e.g., "9876543210"
-
-        return _TagChip(
-          icon: kIconMap[key] ?? Icons.label, // fallback icon
-          label: label,
-          color: kColorMap[key] ?? Colors.grey,
-        );
-      });
-    }).toList(),
-  );
-}
 
 class _Chip extends StatelessWidget {
   final String label;

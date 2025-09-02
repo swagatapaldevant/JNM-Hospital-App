@@ -12,7 +12,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/PatientItemDataCard.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_modal.dart';
@@ -26,7 +26,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/opd_patient_report_data_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class OpdPatientReportScreen extends StatefulWidget {
   const OpdPatientReportScreen({super.key});
@@ -414,6 +413,13 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                         .id
                                                         .toString(),
                                                     deptId: "opd",
+                                                    doctor: patientList[index]
+                                                        .doctorName
+                                                        .toString(),
+                                                    visitType:
+                                                        patientList[index]
+                                                            .type
+                                                            .toString(),
                                                     info: [{
                                                       "gender": patientList[index]
                                                         .gender
@@ -424,21 +430,10 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                     "mobile": patientList[index]
                                                         .phone
                                                         .toString(),
-                                                    "visitType":
-                                                        patientList[index]
-                                                            .type
-                                                            .toString(),
-                                                    "appointmentDate":
-                                                        patientList[index]
-                                                            .creDate
-                                                            .toString(),
                                                     "appointmentTime":
                                                         patientList[index]
                                                             .appointmentDate
-                                                            .toString(),
-                                                    "doctor": patientList[index]
-                                                        .doctorName
-                                                        .toString()
+                                                            .toString()
 
                                                   }]
                                                     ,
@@ -451,7 +446,10 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                             context,
                                                             RouteGenerator
                                                                 .kBillingDetailsScreen,
-                                                            arguments: billingDetails);
+                                                            arguments: {
+                                                              "id": "102",
+                                                              "deptId": "opd"
+                                                            });
                                                     },
                                                   ),
                                                 ),

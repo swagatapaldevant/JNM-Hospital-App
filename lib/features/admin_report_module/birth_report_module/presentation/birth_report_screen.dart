@@ -10,6 +10,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/birth_report_modal_for_advanced_search.dart';
@@ -102,7 +103,8 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
 
               if (selectedData != null) {
                 selectedGenderType = selectedData["gender"]?.value.toString();
-                selectedDeliveryModeType = selectedData["deliveryMode"]?.key.toString();
+                selectedDeliveryModeType =
+                    selectedData["deliveryMode"]?.key.toString();
                 setState(() {
                   birthReportList.clear();
                   deliveryTypeList.clear();
@@ -132,7 +134,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
-                              searchIconOnClick: (){
+                              searchIconOnClick: () {
                                 selectedFromDate = "";
                                 selectedToDate = "";
                                 birthReportList.clear();
@@ -313,48 +315,88 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                                               child: FadeInAnimation(
                                                 curve: Curves.easeIn,
                                                 child: Padding(
-                                                  padding: EdgeInsets.only(
-                                                    bottom: ScreenUtils()
-                                                            .screenHeight(
-                                                                context) *
-                                                        0.02,
-                                                  ),
-                                                  child: BirthReportItem(
-                                                      index: index,
-                                                      name: birthReportList[index]
-                                                          .name,
-                                                      /**WARNING_UHID: Confirm if uhid is correct */
-                                                      uhid: birthReportList[index].id.toString(),
-                                                      //department: birthReportList[index].department,
-                                                      gender:
-                                                          birthReportList[index]
-                                                              .gender,
-                                                      address: birthReportList[index]
-                                                          .address,
-                                                      guardianName:
-                                                          birthReportList[index]
-                                                              .guardianName,
-                                                      doctorName:
-                                                          birthReportList[index]
-                                                              .doctorName,
-                                                      dob: birthReportList[index]
-                                                          .dateOfBirth,
-                                                      weight:
-                                                          birthReportList[index]
-                                                              .weight,
-                                                      diagnosis:
-                                                          birthReportList[index]
-                                                              .diagnosis,
-                                                      operation:
-                                                          birthReportList[index]
-                                                              .operation,
-                                                      deliveryMode:
-                                                          birthReportList[index]
-                                                              .deliveryMode,
-                                                      creDate:
-                                                          birthReportList[index]
-                                                              .creDate),
-                                                ),
+                                                    padding: EdgeInsets.only(
+                                                      bottom: ScreenUtils()
+                                                              .screenHeight(
+                                                                  context) *
+                                                          0.02,
+                                                    ),
+                                                    child: PatientItemData(
+                                                        index: index,
+                                                        patientName:
+                                                            birthReportList[
+                                                                    index]
+                                                                .name,
+                                                        /**WARNING_UHID: Confirm if uhid is correct */
+                                                        uhid: birthReportList[
+                                                                index]
+                                                            .id
+                                                            .toString(),
+                                                        doctor: birthReportList[
+                                                                index]
+                                                            .doctorName,
+                                                        id: birthReportList[
+                                                                index]
+                                                            .id
+                                                            .toString(),
+                                                        deptId: "birth-report",
+                                                        info: [
+                                                          {
+                                                            "gender":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .gender ??
+                                                                    "Gender -"
+                                                          },
+                                                          {
+                                                            "address":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .address ??
+                                                                    "Address -"
+                                                          },
+                                                          {
+                                                            "guardianName":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .guardianName ??
+                                                                    "gurdian name -"
+                                                          },
+                                                          {
+                                                            "dob": birthReportList[
+                                                                        index]
+                                                                    .dateOfBirth ??
+                                                                "dob -"
+                                                          },
+                                                          {
+                                                            "weight":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .weight ??
+                                                                    "weight -"
+                                                          },
+                                                          {
+                                                            "diagnosis":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .diagnosis ??
+                                                                    "Dia -"
+                                                          },
+                                                          {
+                                                            "operation":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .operation ??
+                                                                    "op -"
+                                                          },
+                                                          {
+                                                            "deliveryMode":
+                                                                birthReportList[
+                                                                            index]
+                                                                        .deliveryMode ??
+                                                                    "Mode -"
+                                                          },
+                                                        ])),
                                               ),
                                             ),
                                           );
@@ -390,9 +432,13 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
 
     Map<String, dynamic> requestData = {
       "page": currentPage,
-      "search_data":_searchQuery,
-      "gender":selectedGenderType,
-      "delivery_mode": selectedDeliveryModeType == "1" ?"LUCS":selectedDeliveryModeType =="2" ?"NORMAL": "",
+      "search_data": _searchQuery,
+      "gender": selectedGenderType,
+      "delivery_mode": selectedDeliveryModeType == "1"
+          ? "LUCS"
+          : selectedDeliveryModeType == "2"
+              ? "NORMAL"
+              : "",
       "from_date": selectedFromDate,
       "to_date": selectedToDate
     };

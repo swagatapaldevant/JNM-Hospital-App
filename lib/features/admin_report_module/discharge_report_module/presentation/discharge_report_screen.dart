@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -22,7 +23,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_m
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_graph_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class DischargeReportScreen extends StatefulWidget {
   const DischargeReportScreen({super.key});
@@ -310,18 +310,21 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                                             context) *
                                             0.02,
                                       ),
-                                      child:DischargeReportItem(
+                                      child: PatientItemData(
                                         index: index,
-                                        patientId: dischargeReportList[index].patientId.toString(),
-                                        billId:dischargeReportList[index].billId.toString(),
-                                        patientName: dischargeReportList[index].patientName.toString(),
+                                        id: dischargeReportList[index].billId.toString(),
                                         // WARNING_UHID: PatientId is being passed in place of UHID
-                                        uhid: dischargeReportList[index].patientId.toString(), 
-                                        gender: dischargeReportList[index].gender.toString(),
-                                        admDate: dischargeReportList[index].admDate.toString(),
-                                        disChargeDate: dischargeReportList[index].disDate.toString(),
-                                        billLink: dischargeReportList[index].billLink.toString(),
-                                        dischargeType: dischargeReportList[index].dischargeType.toString(),
+                                        uhid: dischargeReportList[index].patientId.toString(),
+                                        deptId: "discharge-report",
+                                        patientName: dischargeReportList[index].patientName.toString(),
+                                        info: [
+                                          {"gender": dischargeReportList[index].gender.toString()},
+                                          {"admDate": dischargeReportList[index].admDate.toString()},
+                                          {"disChargeDate": dischargeReportList[index].disDate.toString()},
+                                          {"billLink": dischargeReportList[index].billLink.toString()},
+                                          {"dischargeType": dischargeReportList[index].dischargeType.toString()},
+                                        ], 
+                                        
                                       ),
                                     ),
                                   ),

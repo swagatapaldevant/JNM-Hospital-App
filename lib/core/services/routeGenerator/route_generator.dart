@@ -236,7 +236,7 @@ class RouteGenerator{
       case kBillingDetailsScreen:
         final args = settings.arguments;
         return _animatedPageRoute(BillingDetailsScreen(
-          billingDetails: args as BillingDetailsModel,
+          billIdDept: args as Map<String, String>,
         ));
 
       default:

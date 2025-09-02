@@ -83,6 +83,12 @@ class Bill {
         required this.doctorName,
         required this.createdName,
         required this.enquiryId,
+        required this.patientName,
+        required this.address,
+        required this.age,
+        required this.consultantDoctor,
+        required this.gender,
+        required  this.mobile
     });
 
     final int? id;
@@ -129,6 +135,13 @@ class Bill {
     final String? doctorName;
     final String? createdName;
     final int? enquiryId;
+    final String? patientName;
+    final String? gender;
+    final String? age;
+    final String? address;
+    final String? consultantDoctor;
+    final String? mobile;
+
 
     factory Bill.fromJson(Map<String, dynamic> json){ 
         return Bill(
@@ -176,6 +189,13 @@ class Bill {
             doctorName: json["doctor_name"],
             createdName: json["created_name"],
             enquiryId: json["enquiry_id"],
+            patientName: json["patient_name"],
+            gender: json["gender"],
+            age: json["age"],
+            address: json["address"],
+            consultantDoctor: json["consultantDoctor"],
+            mobile: json["mobile"]
+
         );
     }
 

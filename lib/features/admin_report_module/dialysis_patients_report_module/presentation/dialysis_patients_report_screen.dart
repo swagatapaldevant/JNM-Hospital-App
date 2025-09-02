@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -18,7 +19,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/w
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/death_report_modal_for_death_gender_distribution.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/widgets/dialysis_modal_for_advanced_search.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/widgets/dialysis_patient_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/dialysis_report/dialysis_patient_report_graph_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/dialysis_report/dialysis_patient_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/charge_list_model.dart';
@@ -193,7 +193,7 @@ class _DialysisPatientsReportScreenState
                           SizedBox(height: AppDimensions.contentGap3),
                           if (isVisible) ...[
                             CommonSearchBar(
-                              searchIconOnClick: (){
+                              searchIconOnClick: () {
                                 selectedFromDate = "";
                                 selectedToDate = "";
                                 dialysisReportList.clear();
@@ -365,18 +365,17 @@ class _DialysisPatientsReportScreenState
                                       data: [
                                         newCount
                                             .map((e) =>
-                                                int.tryParse(
-                                                    e.y.toString()) ??
+                                                int.tryParse(e.y.toString()) ??
                                                 0)
                                             .toList(),
                                         oldCount
                                             .map((e) =>
-                                                int.tryParse(
-                                                    e.y.toString()) ??
+                                                int.tryParse(e.y.toString()) ??
                                                 0)
                                             .toList(),
                                       ],
-                                      headingText: "Department wise Dialysis Patient",
+                                      headingText:
+                                          "Department wise Dialysis Patient",
                                       graphWidget: DepartmentWiseOpdReport(
                                         graphTitle:
                                             "Department wise Dialysis Patient",
@@ -401,7 +400,8 @@ class _DialysisPatientsReportScreenState
                                         onTapPieChart: () {
                                           showCommonModalForDeathGenderDistribution(
                                               context,
-                                              double.parse(maleCount.toString()),
+                                              double.parse(
+                                                  maleCount.toString()),
                                               double.parse(
                                                   femaleCount.toString()));
                                         },
@@ -432,55 +432,84 @@ class _DialysisPatientsReportScreenState
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: DialysisPatientItem(
+                                                  child: PatientItemData(
                                                     index: index,
+                                                    id: dialysisReportList[
+                                                            index]
+                                                        .id
+                                                        .toString(),
+                                                    deptId: "dialysis",
                                                     patientName:
                                                         dialysisReportList[
                                                                 index]
                                                             .patientName
                                                             .toString(),
+                                                    doctor: dialysisReportList[
+                                                            index]
+                                                        .doctorName,
                                                     department:
                                                         dialysisReportList[
                                                                 index]
                                                             .departmentName
                                                             .toString(),
-                                                    admissionType:
-                                                        dialysisReportList[
-                                                                index]
-                                                            .type
-                                                            .toString(),
-                                                    gender: dialysisReportList[
-                                                            index]
-                                                        .gender
-                                                        .toString(),
-                                                    age: dialysisReportList[
-                                                            index]
-                                                        .dobYear
-                                                        .toString(),
-                                                    mobile: dialysisReportList[
-                                                            index]
-                                                        .phone
-                                                        .toString(),
-                                                    appointmentDate:
-                                                        dialysisReportList[
-                                                                index]
-                                                            .admissionDate
-                                                            .toString(),
-                                                    wardName:
-                                                        dialysisReportList[
-                                                                index]
-                                                            .wardName
-                                                            .toString(),
-                                                    bedName: dialysisReportList[
-                                                            index]
-                                                        .bedName
-                                                        .toString(),
-                                                    tpaName: dialysisReportList[
-                                                            index]
-                                                        .tpaName,
-                                                    doctor: dialysisReportList[
-                                                            index]
-                                                        .doctorName,
+                                                    info: [
+                                                      {
+                                                        "admissionType":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .type
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "gender":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .gender
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "age":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .dobYear
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "mobile":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .phone
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "appointmentDate":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .admissionDate
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "wardName":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .wardName
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "bedName":
+                                                            dialysisReportList[
+                                                                    index]
+                                                                .bedName
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "tpaName":
+                                                            dialysisReportList[
+                                                                        index]
+                                                                    .tpaName ??
+                                                                ""
+                                                      },
+                                                    ],
                                                   ),
                                                 ),
                                               ),
@@ -520,7 +549,7 @@ class _DialysisPatientsReportScreenState
       "page": currentPage,
       "visit_type": selectedVisitType,
       "department": selectedDepartment,
-      "search_data":_searchQuery,
+      "search_data": _searchQuery,
       "doctor": selectedDoctor,
       "referral": selectedReferral,
       "market_by": selectedMarketByData,

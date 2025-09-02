@@ -1,230 +1,32 @@
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
-// import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
-
-// class BillingDetailsScreen extends StatelessWidget {
-//   final BillingDetailsModel billingDetails;
-
-//   const BillingDetailsScreen({super.key, required this.billingDetails});
-
-//   String formatDate(String? date) {
-//     if (date == null || date.isEmpty) return "";
-//     return DateFormat("dd MMM yyyy, hh:mm a").format(DateTime.parse(date));
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final bill = billingDetails.bill;
-//     final billInfo = billingDetails.billInfo;
-//     final payments = billingDetails.payments;
-
-//     return Scaffold(
-//       body: SingleChildScrollView(
-
-//         //padding: const EdgeInsets.all(16),
-//         child: Column(
-//           children: [
-//             CommonHeaderForReportModule(headingName: "Billing Details"),
-//             Card(
-//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-//               elevation: 4,
-//               child: Padding(
-//                 padding: const EdgeInsets.all(16),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     // Header
-//                     Center(
-//                       child: Column(
-//                         children: [
-//                           const Text(
-//                             "🏥 JNM Hospital",
-//                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//                           ),
-//                           const SizedBox(height: 4),
-//                           Text(
-//                             "Bill ID: #${bill?.id}   |   ${formatDate(bill?.billDate.toString())}",
-//                             style: const TextStyle(fontSize: 14),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     const Divider(height: 30, thickness: 1),
-
-//                     // Patient & Doctor Info
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         _infoTile("Patient ID", "${bill?.patientId}"),
-//                         _infoTile("Doctor", bill?.doctorName ?? "N/A"),
-//                       ],
-//                     ),
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         _infoTile("Created By", bill?.createdName ?? ""),
-//                         _infoTile("Status", bill?.status ?? ""),
-//                       ],
-//                     ),
-
-//                     const Divider(height: 30, thickness: 1),
-
-//                     // Bill Items
-//                     const Text(
-//                       "Bill Items",
-//                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                     ),
-//                     const SizedBox(height: 8),
-//                     Table(
-//                       border: TableBorder.all(color: Colors.grey.shade300),
-//                       columnWidths: const {
-//                         0: FlexColumnWidth(3),
-//                         1: FlexColumnWidth(1),
-//                         2: FlexColumnWidth(2),
-//                       },
-//                       children: [
-//                         TableRow(
-//                           decoration: BoxDecoration(color: Colors.grey.shade200),
-//                           children:  [
-//                             _tableHeader("Item"),
-//                             _tableHeader("Qty"),
-//                             _tableHeader("Amount"),
-//                           ],
-//                         ),
-//                         ...billInfo.map((item) {
-//                           return TableRow(
-//                             children: [
-//                               _tableCell(item.chargeName ?? ""),
-//                               _tableCell("${item.qty}"),
-//                               _tableCell("₹${item.amount}"),
-//                             ],
-//                           );
-//                         }),
-//                       ],
-//                     ),
-
-//                     const SizedBox(height: 20),
-
-//                     // Payments
-//                     if (payments.isNotEmpty) ...[
-//                       const Text(
-//                         "Payments",
-//                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                       ),
-//                       const SizedBox(height: 8),
-//                       Column(
-//                         children: payments.map((p) {
-//                           return ListTile(
-//                             dense: true,
-//                             contentPadding: EdgeInsets.zero,
-//                             leading: const Icon(Icons.payments, color: Colors.green),
-//                             title: Text("₹${p.paymentAmount} - ${p.paymentMode}"),
-//                             subtitle: Text("By ${p.createdName} on ${formatDate(p.paymentDate.toString())}"),
-//                           );
-//                         }).toList(),
-//                       ),
-//                       const Divider(height: 30, thickness: 1),
-//                     ],
-
-//                     // Totals
-//                     Align(
-//                       alignment: Alignment.centerRight,
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.end,
-//                         children: [
-//                           _totalRow("Subtotal", bill?.subTotal),
-//                           _totalRow("Discount", bill?.discountAmount),
-//                           _totalRow("Miscellaneous", bill?.miscellaneousAmount),
-//                           const Divider(),
-//                           _totalRow("Grand Total", bill?.grandTotal, isBold: true),
-//                           _totalRow("Paid", bill?.totalPayment, isBold: true),
-//                           _totalRow("Due", bill?.dueAmount, isBold: true, color: Colors.red),
-//                         ],
-//                       ),
-//                     ),
-
-//                     const SizedBox(height: 20),
-
-//                     // Footer
-//                     Center(
-//                       child: Text(
-//                         "Thank you for visiting!",
-//                         style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey.shade700),
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _infoTile(String label, String value) {
-//     return Expanded(
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-//           Text(value, style: const TextStyle(fontSize: 14)),
-//         ],
-//       ),
-//     );
-//   }
-
-//   static Widget _tableHeader(String text) {
-//     return Padding(
-//       padding: EdgeInsets.all(8.0),
-//       child: Text(
-//         text,
-//         style: const TextStyle(fontWeight: FontWeight.bold),
-//         textAlign: TextAlign.center,
-//       ),
-//     );
-//   }
-
-//   static Widget _tableCell(String text) {
-//     return Padding(
-//       padding: EdgeInsets.all(8.0),
-//       child: Text(text, textAlign: TextAlign.center),
-//     );
-//   }
-
-//   Widget _totalRow(String label, dynamic value, {bool isBold = false, Color? color}) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 2),
-//       child: Row(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Text(
-//             "$label: ",
-//             style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-//           ),
-//           Text(
-//             "₹$value",
-//             style: TextStyle(
-//               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-//               color: color,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/billing_report/billing_details_model.dart';
 
-class BillingDetailsScreen extends StatelessWidget {
-  final BillingDetailsModel billingDetails;
+class BillingDetailsScreen extends StatefulWidget {
+  final Map<String, String> billIdDept;
 
-  const BillingDetailsScreen({super.key, required this.billingDetails});
+  const BillingDetailsScreen({super.key, required this.billIdDept});
+
+  @override
+  State<BillingDetailsScreen> createState() => _BillingDetailsScreenState();
+}
+
+class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
+  bool isLoading = false;
+  BillingDetailsModel? billingDetails;
+
+  @override
+  initState() {
+    super.initState();
+    print("Init state");
+    getBillingDetails();
+  }
 
   String formatDate(String? date) {
     if (date == null || date.isEmpty) return "";
@@ -236,57 +38,92 @@ class BillingDetailsScreen extends StatelessWidget {
     return DateFormat("dd MMM yyyy").format(DateTime.parse(date));
   }
 
+  Future<void> getBillingDetails() async {
+    final billId = widget.billIdDept["id"];
+    final deptId = widget.billIdDept["deptId"];
+
+    setState(() {
+      isLoading = true;
+    });
+    final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
+    Resource resource = await _adminReportUsecase.getBillingDetails(
+        deptId: deptId!, billId: int.parse(billId!));
+
+    if (resource.status == STATUS.SUCCESS) {
+      // Handle successful response
+      print(resource.data);
+      setState(() {
+        isLoading = false;
+        billingDetails = BillingDetailsModel.fromJson(resource.data);
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      CommonUtils().flutterSnackBar(
+          context: context, mes: resource.message ?? "", messageType: 4);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bill = billingDetails.bill;
-    final billInfo = billingDetails.billInfo;
-    final payments = billingDetails.payments;
+    final bill = billingDetails?.bill;
+    final billInfo = billingDetails?.billInfo;
+    final payments = billingDetails?.payments ?? [];
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            CommonHeaderForReportModule(headingName: "Billing Details"),
-            // Main Bill Container
-            Container(
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  CommonHeaderForReportModule(
+                    headingName: "Billing Details",
+                    isVisibleFilter: false,
+                    isVisibleSearch: false,
+                  ),
+                  // Main Bill Container
+                  Container(
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Hospital Header Section
+                        _buildHospitalHeader(bill),
+
+                        // Patient & Bill Info Section
+                        _buildPatientInfoSection(bill),
+
+                        // Services/Items Section
+                        _buildServicesSection(billInfo ?? []),
+
+                        // Bill Summary Section
+                        _buildBillSummary(bill),
+
+                        // Receipt History Section
+                        if (payments.isNotEmpty) _buildPaymentSection(payments),
+
+                        // Footer
+                        //_buildFooter(),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  // Hospital Header Section
-                  _buildHospitalHeader(bill),
-
-                  // Patient & Bill Info Section
-                  _buildPatientInfoSection(bill),
-
-                  // Services/Items Section
-                  _buildServicesSection(billInfo),                 
-
-                  // Bill Summary Section
-                  _buildBillSummary(bill),
-
-                  // Receipt History Section
-                  if (payments.isNotEmpty) _buildPaymentSection(payments),
-
-                  // Footer
-                  _buildFooter(),
-                ],
-              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -330,14 +167,16 @@ class BillingDetailsScreen extends StatelessWidget {
                       "#${bill?.id}",
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
                 ),
-                _Chip(label: billingDetails.section!, 
-                bgColor: const Color.fromARGB(255, 255, 133, 19)!, color: Colors.white),
+                _Chip(
+                    label: billingDetails?.section! ?? "",
+                    bgColor: const Color.fromARGB(255, 255, 133, 19)!,
+                    color: Colors.white),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -354,7 +193,7 @@ class BillingDetailsScreen extends StatelessWidget {
                       formatDateShort(bill?.billDate.toString()),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -367,7 +206,6 @@ class BillingDetailsScreen extends StatelessWidget {
       ),
     );
   }
-  
 
   Widget _buildPatientInfoSection(Bill? bill) {
     return Padding(
@@ -389,27 +227,56 @@ class BillingDetailsScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Column(
-              children: [
-              
-                _buildInfoItem(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildInfoItem(
                     "Name",
-                    '${bill?.createdName}(${bill?.patientId})',
-                    Icons.person_outline),
-                  SizedBox(height: 4,),
-                _buildInfoItem("Doctor", bill?.doctorName ?? "N/A",
-                    Icons.medical_services_outlined),
-              ],
-            ),
-          ),
+                    '${bill?.patientName ?? "N/A"} (${bill?.patientId ?? "N/A"})',
+                    Icons.person_outline,
+                  ),
+                  const SizedBox(height: 4),
+                  _buildInfoItem(
+                    "Doctor",
+                    bill?.doctorName ?? "N/A",
+                    Icons.medical_services_outlined,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildInfoItem(
+                          "Gender",
+                          bill?.gender ?? "N/A",
+                          Icons.person,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildInfoItem(
+                          "Mobile",
+                          bill?.mobile ?? "N/A",
+                          Icons.call,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  _buildInfoItem(
+                    "Address",
+                    bill?.address ?? "N/A",
+                    Icons.home_outlined,
+                  ),
+                ],
+              )),
         ],
       ),
     );
@@ -437,7 +304,7 @@ class BillingDetailsScreen extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: statusColor ?? Colors.black87,
                 ),
@@ -472,7 +339,7 @@ class BillingDetailsScreen extends StatelessWidget {
             children: [
               Icon(Icons.receipt_long_outlined,
                   color: Colors.grey[600], size: 20),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               const Text(
                 "Services & Charges",
                 style: TextStyle(
@@ -483,7 +350,7 @@ class BillingDetailsScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -544,14 +411,14 @@ class BillingDetailsScreen extends StatelessWidget {
                           child: Text(
                             item.chargeName ?? "",
                             style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500),
+                                fontSize: 12, fontWeight: FontWeight.w500),
                           ),
                         ),
                         Expanded(
                           flex: 1,
                           child: Text(
-                            "${item.date}",
-                            style: const TextStyle(fontSize: 14),
+                            formatDateShort(item.date.toString()),
+                            style: const TextStyle(fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -560,7 +427,7 @@ class BillingDetailsScreen extends StatelessWidget {
                           child: Text(
                             "₹${item.amount}",
                             style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
+                                fontSize: 12, fontWeight: FontWeight.w600),
                             textAlign: TextAlign.right,
                           ),
                         ),
@@ -578,18 +445,18 @@ class BillingDetailsScreen extends StatelessWidget {
 
   Widget _buildPaymentSection(List<dynamic> payments) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(Icons.payment_outlined, color: Colors.grey[600], size: 20),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               const Text(
                 "Receipt List",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -629,7 +496,7 @@ class BillingDetailsScreen extends StatelessWidget {
                                 Text(
                                   "₹${payment.paymentAmount}",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green[700],
                                   ),
@@ -696,7 +563,7 @@ class BillingDetailsScreen extends StatelessWidget {
               const Text(
                 "Bill Summary",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -705,32 +572,31 @@ class BillingDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _buildSummaryRow("Subtotal", bill?.subTotal),
-          if(bill?.miscellaneousAmount != null)
+          if (bill?.miscellaneousAmount != null)
             _buildSummaryRow("Miscellaneous", bill?.miscellaneousAmount),
-          if(bill?.discountAmount != null)
-             _buildSummaryRow("Discount", bill?.discountAmount),
+          if (bill?.discountAmount != null)
+            _buildSummaryRow("Discount", bill?.discountAmount),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: Divider(thickness: 1),
           ),
-
           _buildSummaryRow("Payable", bill?.grandTotal,
-              isBold: true, fontSize: 16),
+              isBold: true, fontSize: 14),
           _buildSummaryRow("Total", bill?.totalPayment,
               color: Colors.green[600], isBold: true),
-          if(bill?.dueAmount != null)
+          if (bill?.dueAmount != null)
             _buildSummaryRow("Due Amount", bill?.dueAmount,
-              color: Colors.red[600], isBold: true),
-          if(bill?.craditAmount != null)
+                color: Colors.red[600], isBold: true),
+          if (bill?.craditAmount != null)
             _buildSummaryRow("Credit Amount", bill?.craditAmount,
-              color: Colors.blue[600], isBold: true),
+                color: Colors.blue[600], isBold: true),
         ],
       ),
     );
   }
 
   Widget _buildSummaryRow(String label, dynamic value,
-      {bool isBold = false, Color? color, double fontSize = 14}) {
+      {bool isBold = false, Color? color, double fontSize = 12}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

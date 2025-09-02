@@ -11,6 +11,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_modal.dart';
@@ -385,7 +386,11 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: OpdPatientItemData(
+                                                  child: PatientItemData(
+                                                    id: patientList[index]
+                                                        .id
+                                                        .toString(),
+                                                    deptId: "emg",
                                                     index: index,
                                                     patientName:
                                                         patientList[index]
@@ -398,33 +403,36 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                                                     uhid: patientList[index]
                                                         .patientId
                                                         .toString(),
-                                                    opdId: patientList[index]
-                                                        .id
-                                                        .toString(),
-                                                    gender: patientList[index]
-                                                        .gender
-                                                        .toString(),
-                                                    age: patientList[index]
-                                                        .dobYear
-                                                        .toString(),
-                                                    mobile: patientList[index]
-                                                        .phone
-                                                        .toString(),
                                                     visitType:
                                                         patientList[index]
                                                             .type
                                                             .toString(),
-                                                    appointmentDate:
-                                                        patientList[index]
-                                                            .creDate
-                                                            .toString(),
-                                                    appointmentTime:
-                                                        patientList[index]
-                                                            .appointmentDate
-                                                            .toString(),
-                                                    doctor: patientList[index]
+                                                      doctor: patientList[index]
                                                         .doctorName
                                                         .toString(),
+                                                   info: [
+                                                    { "gender": patientList[index]
+                                                        .gender
+                                                        .toString()},
+                                                    {"age": patientList[index]
+                                                        .dobYear
+                                                        .toString()},
+                                                   { "mobile": patientList[index]
+                                                        .phone
+                                                        .toString()},
+                                                    
+                                                   { "appointmentDate":
+                                                        patientList[index]
+                                                            .creDate
+                                                            .toString()},
+                                                    {"appointmentTime":
+                                                        patientList[index]
+                                                            .appointmentDate
+                                                            .toString()},
+
+                                                   ], 
+                                                   
+                                                    
                                                     onTap: () {
                                                       
                                                     },

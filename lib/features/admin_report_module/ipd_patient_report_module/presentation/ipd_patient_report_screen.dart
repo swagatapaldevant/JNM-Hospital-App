@@ -12,6 +12,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -30,7 +31,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class IpdPatientReportScreen extends StatefulWidget {
   const IpdPatientReportScreen({super.key});
@@ -381,7 +381,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                   children: [
                                     TableStatsSwitcher(
                                       rows: departmentName,
-                                      cols:  ["New", "Old"],
+                                      cols: ["New", "Old"],
                                       isTransposeData: true,
                                       data: [
                                         graphData
@@ -455,52 +455,78 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: IpdPatientItemData(
-                                                    index: index,
-                                                    visitType:
-                                                        ipdReportList[index]
-                                                            .type
-                                                            .toString(),
-                                                    patientName:
-                                                        ipdReportList[index]
-                                                            .patientName
-                                                            .toString(),
-                                                    department:
-                                                        ipdReportList[index]
-                                                            .departmentName
-                                                            .toString(),
-                                                    admissionType:
-                                                        ipdReportList[index]
-                                                            .admissionType
-                                                            .toString(),
-                                                    gender: ipdReportList[index]
-                                                        .gender
-                                                        .toString(),
-                                                    age: ipdReportList[index]
-                                                        .dobYear
-                                                        .toString(),
-                                                    mobile: ipdReportList[index]
-                                                        .phone
-                                                        .toString(),
-                                                    appointmentDate:
-                                                        formatAnyTimestampString(
-                                                            ipdReportList[index]
-                                                                .admissionDate
-                                                                .toString()),
-                                                    wardName:
-                                                        ipdReportList[index]
-                                                            .wardName
-                                                            .toString(),
-                                                    bedName:
-                                                        ipdReportList[index]
-                                                            .bedName
-                                                            .toString(),
-                                                    tpaName:
-                                                        ipdReportList[index]
-                                                            .tpaName,
-                                                    doctor: ipdReportList[index]
-                                                        .doctorName,
-                                                  ),
+                                                  child: PatientItemData(
+                                                      index: index,
+                                                      id: ipdReportList[index]
+                                                          .id
+                                                          .toString(),
+                                                      visitType:
+                                                          ipdReportList[index]
+                                                              .type
+                                                              .toString(),
+                                                      patientName:
+                                                          ipdReportList[index]
+                                                              .patientName
+                                                              .toString(),
+                                                      department:
+                                                          ipdReportList[index]
+                                                              .departmentName
+                                                              .toString(),
+                                                      doctor:
+                                                          ipdReportList[index]
+                                                              .doctorName,
+                                                      deptId: "ipd",
+                                                      info: [
+                                                        {
+                                                          "gender":
+                                                              ipdReportList[
+                                                                      index]
+                                                                  .gender
+                                                                  .toString(),
+                                                        },
+                                                        {
+                                                          "age": ipdReportList[
+                                                                  index]
+                                                              .dobYear
+                                                              .toString(),
+                                                        },
+                                                        {
+                                                          "mobile":
+                                                              ipdReportList[
+                                                                      index]
+                                                                  .phone
+                                                                  .toString(),
+                                                        },
+                                                        {
+                                                          "appointmentDate":
+                                                              formatAnyTimestampString(
+                                                                  ipdReportList[
+                                                                          index]
+                                                                      .admissionDate
+                                                                      .toString()),
+                                                        },
+                                                        {
+                                                          "wardName":
+                                                              ipdReportList[
+                                                                      index]
+                                                                  .wardName
+                                                                  .toString(),
+                                                        },
+                                                        {
+                                                          "bedName":
+                                                              ipdReportList[
+                                                                      index]
+                                                                  .bedName
+                                                                  .toString()
+                                                        },
+                                                        {
+                                                          "tpaName":
+                                                              ipdReportList[
+                                                                          index]
+                                                                      .tpaName ??
+                                                                  ""
+                                                        },
+                                                      ]),
                                                 ),
                                               ),
                                             ),

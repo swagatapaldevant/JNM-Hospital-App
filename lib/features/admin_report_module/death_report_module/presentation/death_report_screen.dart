@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,8 +10,8 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/birth_report_module/widgets/male_female_pie_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
@@ -21,7 +20,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/death_report_modul
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/patient_death_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/doctor_by_death_count_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/patient_death_report_model.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
 
 class DeathReportScreen extends StatefulWidget {
   const DeathReportScreen({super.key});
@@ -291,32 +289,39 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                                                                 context) *
                                                         0.02,
                                                   ),
-                                                  child: DeathReportItem(
+                                                  child: PatientItemData(
                                                     index: index,
-                                                    patientId:
+                                                    id: deathReportList[index]
+                                                            .patientId
+                                                            .toString(),
+                                                    deptId: "death-report",
+                                                    uhid:
                                                         deathReportList[index]
                                                             .patientId
+                                                            .toString(),
+                                                     doctor:
+                                                        deathReportList[index]
+                                                            .doctorName
                                                             .toString(),
                                                     patientName:
                                                         deathReportList[index]
                                                             .patientName
                                                             .toString(),
-                                                    gender:
+                                                    info: [
+                                                      {"gender":
                                                         deathReportList[index]
                                                             .gender
-                                                            .toString(),
-                                                    doctorName:
-                                                        deathReportList[index]
-                                                            .doctorName
-                                                            .toString(),
-                                                    admDate:
+                                                            .toString()},
+                                                   { "admDate":
                                                         deathReportList[index]
                                                             .admDate
-                                                            .toString(),
-                                                    disChargeDate:
+                                                            .toString()},
+                                                    {"disChargeDate":
                                                         deathReportList[index]
                                                             .disDate
-                                                            .toString(),
+                                                            .toString()},
+                                                    ],
+                                                    
                                                   ),
                                                 ),
                                               ),

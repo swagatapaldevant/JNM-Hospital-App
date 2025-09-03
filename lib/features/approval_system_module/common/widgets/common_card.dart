@@ -259,8 +259,8 @@ class _ApprovalCardState extends State<ApprovalCard> {
                             Navigator.pushNamed(context,
                                         RouteGenerator.kBillingDetailsScreen,
                                         arguments: {
-                                          "id": "102",
-                                          "deptId": "OPD"
+                                          "id": approvalData.id.toString(),
+                                          "deptId": approvalData.section ?? ""
                                         });
                           },
                           icon: const Icon(Icons.check_circle_outline,

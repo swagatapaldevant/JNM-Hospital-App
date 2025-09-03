@@ -175,7 +175,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
               itemBuilder: (context, index) {
                 final bill = _bills[index];
                 return ApprovalCard(
-                  approvalData: bill,
+                  approvalData: bill, 
                   onApprove: approveData,
                 );
               },
@@ -200,7 +200,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Center(
                     child: Text(
-                      "You’ve reached the end",
+                      "You've reached the end",
                       style: TextStyle(color: Colors.black54),
                     ),
                   ),

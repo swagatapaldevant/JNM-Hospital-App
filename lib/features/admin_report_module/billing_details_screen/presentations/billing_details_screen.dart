@@ -21,7 +21,7 @@ class BillingDetailsScreen extends StatefulWidget {
 class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   bool isLoading = false;
   BillingDetailsModel? billingDetails;
-  
+
   @override
   initState() {
     super.initState();
@@ -32,6 +32,11 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   String formatDate(String? date) {
     if (date == null || date.isEmpty) return "";
     return DateFormat("dd MMM yyyy, hh:mm a").format(DateTime.parse(date));
+  }
+
+  String formatDateTimeShort(String? date) {
+    if (date == null || date.isEmpty) return "";
+    return DateFormat("dd/MM/yyyy, hh:mma").format(DateTime.parse(date));
   }
 
   String formatDateShort(String? date) {
@@ -112,7 +117,8 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                           height: 8,
                         ),
                         // Patient & Bill Info Section
-                        _buildPatientInfoSection(patientDetails, bill?.doctorName),
+                        _buildPatientInfoSection(
+                            patientDetails, bill?.doctorName, "Dummy dept."),
                         // Services/Items Section
                         _buildServicesSection(billInfo ?? []),
                         // Bill Summary Section
@@ -131,119 +137,118 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     );
   }
 
-Widget _buildHospitalHeader(Bill? bill) {
-  return Stack(
-    clipBehavior: Clip.none,
-    children: [
-      // Background Header
-      Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.indigo.shade700, Colors.indigo.shade500],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Bill ID
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "BILL ID",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "#${bill?.id ?? "N/A"}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-
-            // Date
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "Date & Time",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  formatDate(bill?.billDate.toString()),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-
-      // Floating Section Chip
-      Positioned(
-        top: -14,
-        left: ScreenUtils().screenWidth(context) / 2 - 50,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+  Widget _buildHospitalHeader(Bill? bill) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Background Header
+        Container(
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFFF8513),
-            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [Colors.indigo.shade700, Colors.indigo.shade500],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Text(
-            billingDetails?.section ?? "N/A",
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-              letterSpacing: 0.3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Bill ID
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "BILL ID",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    "#${bill?.id ?? "N/A"}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              // Date
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Date & Time",
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    formatDate(bill?.billDate.toString()),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Floating Section Chip
+        Positioned(
+          top: -14,
+          left: ScreenUtils().screenWidth(context) / 2 - 50,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF8513),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              billingDetails?.section?.toUpperCase() ?? "N/A",
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                letterSpacing: 0.3,
+              ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
-
+      ],
+    );
+  }
 
   Widget _sectionWithHangingHeader({
     required Widget heading,
@@ -253,7 +258,7 @@ Widget _buildHospitalHeader(Bill? bill) {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: Stack(
         clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
+        alignment: Alignment.topLeft,
         children: [
           // Card body
           Container(
@@ -318,27 +323,80 @@ Widget _buildHospitalHeader(Bill? bill) {
       return "Dr. $doc";
     }
   }
-  String  formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
+//   String  formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
+//   if (dobDay == null || dobMonth == null || dobYear == null) {
+//     return "N/A";
+//   }
+
+//   final day = dobDay.toString().padLeft(2, '0');
+//   final month = dobMonth.toString().padLeft(2, '0');
+//   final year = dobYear.toString();
+
+//   return "$day-$month-$year";
+// }
+
+String formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
   if (dobDay == null || dobMonth == null || dobYear == null) {
     return "N/A";
   }
 
-  final day = dobDay.toString().padLeft(2, '0');
-  final month = dobMonth.toString().padLeft(2, '0');
-  final year = dobYear.toString();
+  try {
+    // Handle 2-digit year conversion
+    int fullYear = dobYear;
+    if (dobYear < 100) {
+      // If year is 2-digit, convert to 4-digit
+      // Assume years 00-30 are 2000-2030, and 31-99 are 1931-1999
+      if (dobYear <= 30) {
+        fullYear = 2000 + dobYear;
+      } else {
+        fullYear = 1900 + dobYear;
+      }
+    }
+    
+    // Validate year range (reasonable birth year range)
+    if (fullYear < 1900 || fullYear > DateTime.now().year) {
+      return "N/A";
+    }
 
-  return "$day-$month-$year";
+    // Validate month and day ranges
+    if (dobMonth < 1 || dobMonth > 12) return "N/A";
+    if (dobDay < 1 || dobDay > 31) return "N/A";
+
+    final dob = DateTime(fullYear, dobMonth, dobDay);
+    final today = DateTime.now();
+
+    // Prevent invalid future DOBs
+    if (dob.isAfter(today)) return "N/A";
+
+    // Calculate age
+    int age = today.year - dob.year;
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
+      age--;
+    }
+
+    final day = dob.day.toString().padLeft(2, '0');
+    final month = dob.month.toString().padLeft(2, '0');
+    final year = dob.year.toString();
+
+    return "$day-$month-$year (${age}YRS)";
+  } catch (e) {
+    print('Error formatting DOB: $e'); // Debug print
+    return "N/A";
+  }
 }
-  Widget _buildPatientInfoSection(Patient? patientDetails, String? doctor) {
+
+Widget _buildPatientInfoSection(
+      Patient? patientDetails, String? doctor, String? department) {
     return _sectionWithHangingHeader(
       heading: Row(
         children: [
-          Icon(Icons.person_outline, color: Colors.white, size: 20),
+          const Icon(Icons.person_outline, color: Colors.white, size: 18),
           const SizedBox(width: 8),
           const Text(
             "Patient Information",
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -348,39 +406,40 @@ Widget _buildHospitalHeader(Bill? bill) {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+          _buildInfoItem(
+            '${patientDetails?.name ?? "N/A"} (${patientDetails?.id ?? "N/A"})',
+            Icons.person_outline,
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _buildInfoItem(
+                  formattedDob(patientDetails?.dobDay,
+                      patientDetails?.dobMonth, patientDetails?.dobYear),
+                  Icons.child_care,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 4,
-                children: [
-                  _buildInfoItem(
-                    '${patientDetails?.name ?? "N/A"} (${patientDetails?.id ?? "N/A"})',
-                    Icons.person_outline,
-                  ),
-                  _buildInfoItem(
-                    formatDoctorName(doctor),
-                    Icons.medical_services_outlined,
-                  ),
-                  _buildInfoItem(
-                    formattedDob(patientDetails?.dobDay, patientDetails?.dobMonth, patientDetails?.dobYear),
-                    Icons.cake_outlined,
-                  ),
-                  _buildInfoItem(
-                    patientDetails?.phone ?? "N/A",
-                    Icons.call,
-                  ),
-                  _buildInfoItem(
-                    patientDetails?.address ?? "N/A",
-                    Icons.home_outlined,
-                  ),
-                ],
-              )),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildInfoItem(
+                  patientDetails?.phone ?? "N/A",
+                  Icons.call,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          _buildInfoItem(
+            patientDetails?.address ?? "N/A",
+            Icons.home_outlined,
+          ),
+          const SizedBox(height: 4),
+          _buildInfoItem(
+            '${formatDoctorName(doctor)} (${department ?? "N/A"})',
+            Icons.medical_services_outlined,
+          ),
         ],
       ),
     );
@@ -428,12 +487,12 @@ Widget _buildHospitalHeader(Bill? bill) {
     return _sectionWithHangingHeader(
       heading: Row(
         children: [
-          Icon(Icons.receipt_long_outlined, color: Colors.white, size: 20),
+          Icon(Icons.receipt_long_outlined, color: Colors.white, size: 18),
           const SizedBox(width: 4),
           const Text(
             "Services & Charges",
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -475,7 +534,7 @@ Widget _buildHospitalHeader(Bill? bill) {
                             item.chargeName ?? "",
                             style: const TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -488,19 +547,19 @@ Widget _buildHospitalHeader(Bill? bill) {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "Date",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
+                                    // Text(
+                                    //   "Date",
+                                    //   style: TextStyle(
+                                    //     fontSize: 11,
+                                    //     fontWeight: FontWeight.w500,
+                                    //     color: Colors.grey[600],
+                                    //   ),
+                                    // ),
                                     const SizedBox(height: 2),
                                     Text(
                                       formatDateShort(item.date.toString()),
                                       style: const TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -511,19 +570,19 @@ Widget _buildHospitalHeader(Bill? bill) {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text(
-                                      "Amount",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
+                                    // Text(
+                                    //   "Amount",
+                                    //   style: TextStyle(
+                                    //     fontSize: 11,
+                                    //     fontWeight: FontWeight.w500,
+                                    //     color: Colors.grey[600],
+                                    //   ),
+                                    // ),
                                     const SizedBox(height: 2),
                                     Text(
                                       "₹${item.amount}",
                                       style: const TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -545,16 +604,96 @@ Widget _buildHospitalHeader(Bill? bill) {
     );
   }
 
+  // Widget _buildPaymentSection(List<dynamic> payments) {
+  //   return _sectionWithHangingHeader(
+  //     heading: Row(
+  //       children: [
+  //         Icon(Icons.payment_outlined, color: Colors.white, size: 18),
+  //         const SizedBox(width: 4),
+  //         const Text(
+  //           "Receipt List",
+  //           style: TextStyle(
+  //             fontSize: 12,
+  //             fontWeight: FontWeight.w600,
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     body: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Column(
+  //           children: payments.map((payment) {
+  //             return Container(
+  //               padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+  //               child: Row(
+  //                 children: [
+  //                   Icon(Icons.check_circle_outline,
+  //                       color: Colors.green[700], size: 16),
+  //                   const SizedBox(width: 4),
+  //                   Expanded(
+  //                     child: Column(
+  //                       crossAxisAlignment: CrossAxisAlignment.start,
+  //                       children: [
+  //                         Row(
+  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                           children: [
+  //                             Text(
+  //                               "₹${payment.paymentAmount}",
+  //                               style: TextStyle(
+  //                                 fontSize: 12,
+  //                                 fontWeight: FontWeight.bold,
+  //                                 color: Colors.green[700],
+  //                               ),
+  //                             ),
+  //                             Container(
+  //                               padding: const EdgeInsets.symmetric(
+  //                                   horizontal: 8, vertical: 2),
+  //                               decoration: BoxDecoration(
+  //                                 color: Colors.green[100],
+  //                                 borderRadius: BorderRadius.circular(8),
+  //                               ),
+  //                               child: Text(
+  //                                 payment.paymentMode ?? "",
+  //                                 style: TextStyle(
+  //                                   fontSize: 11,
+  //                                   fontWeight: FontWeight.w500,
+  //                                   color: Colors.green[700],
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         Text(
+  //                           "${payment.createdName} • ${formatDate(payment.paymentDate.toString())}",
+  //                           style: TextStyle(
+  //                             fontSize: 11,
+  //                             color: Colors.grey[600],
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           }).toList(),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _buildPaymentSection(List<dynamic> payments) {
     return _sectionWithHangingHeader(
       heading: Row(
         children: [
-          Icon(Icons.payment_outlined, color: Colors.white, size: 20),
+          Icon(Icons.payment_outlined, color: Colors.white, size: 18),
           const SizedBox(width: 4),
           const Text(
             "Receipt List",
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -562,80 +701,76 @@ Widget _buildHospitalHeader(Bill? bill) {
         ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green[200]!),
-            ),
+        children: payments.map((payment) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Column(
-              children: payments.map((payment) {
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.green[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(Icons.check_circle_outline,
-                            color: Colors.green[700], size: 16),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "₹${payment.paymentAmount}",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green[700],
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[100],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    payment.paymentMode ?? "",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.green[700],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              "Received by ${payment.createdName} • ${formatDate(payment.paymentDate.toString())}",
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // First line: Name + Date
+                Row(
+                  children: [
+                    Icon(Icons.check_circle_outline,
+                        color: Colors.green[700], size: 16),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        "${payment.createdName}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[700],
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                    ),
+                    Text(
+                      formatDate(payment.paymentDate.toString()),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Second line: Amount + Mode (right aligned)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "₹${payment.paymentAmount}",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: Colors.green[100],
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        payment.paymentMode ?? "",
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -644,12 +779,12 @@ Widget _buildHospitalHeader(Bill? bill) {
     return _sectionWithHangingHeader(
       heading: Row(
         children: [
-          const Icon(Icons.receipt_outlined, color: Colors.white, size: 20),
+          const Icon(Icons.receipt_outlined, color: Colors.white, size: 18),
           const SizedBox(width: 8),
           const Text(
             "Bill Summary",
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -678,9 +813,9 @@ Widget _buildHospitalHeader(Bill? bill) {
             const Divider(thickness: 1),
             _buildSummaryRow("Net Amount", bill?.total,
                 isBold: true, fontSize: 13),
-            if((bill?.discountAmount ?? 0) > 0)
+            if ((bill?.discountAmount ?? 0) > 0)
               _buildSummaryRow("Discount", bill?.discountAmount,
-                isBold: true, fontSize: 13),
+                  isBold: true, fontSize: 13),
             _buildSummaryRow("Total Payable Amount", bill?.grandTotal,
                 isBold: true, fontSize: 14),
             _buildSummaryRow("Total Paid Amount", bill?.totalPayment,
@@ -692,7 +827,7 @@ Widget _buildHospitalHeader(Bill? bill) {
               _buildSummaryRow("Due Amount", bill?.dueAmount,
                   color: Colors.red[700], isBold: true, fontSize: 13),
             if ((bill?.craditAmount ?? 0) > 0)
-              _buildSummaryRow("Due Amount", bill?.craditAmount,
+              _buildSummaryRow("Credit Amount", bill?.craditAmount,
                   color: const Color.fromARGB(255, 53, 253, 46),
                   isBold: true,
                   fontSize: 13),

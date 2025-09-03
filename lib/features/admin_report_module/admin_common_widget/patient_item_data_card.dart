@@ -287,7 +287,7 @@ class _PatientItemDataState extends State<PatientItemData>
 
           IconData icon;
           if (key.toLowerCase().endsWith("date") ||
-              key.toLowerCase().endsWith("time")) {
+              key.toLowerCase().endsWith("time") || key.toLowerCase() == "dob") {
             icon = Icons.date_range;
             label = formatDate(label);
           } else {

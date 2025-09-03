@@ -29,10 +29,12 @@ class TableStatsSwitcher<T> extends StatefulWidget {
 class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
   // 0 = Cards, 1 = Graph
   int _segment = 1;
+  late List<List<T>> transposedData;
+  @override
   void initState() {
     super.initState();
     if (widget.isTransposeData) {
-      widget.data = transpose(widget.data);
+      transposedData = transpose(widget.data); 
     }
   }
 
@@ -94,7 +96,7 @@ class _TableStatsSwitcherState<T> extends State<TableStatsSwitcher<T>> {
                   key: const ValueKey('cards'),
                   rows: widget.rows,
                   cols: widget.cols,
-                  data: widget.data,
+                  data: transposedData,
                 ),
         ),
       ],

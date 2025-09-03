@@ -321,7 +321,6 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                                           {"gender": dischargeReportList[index].gender.toString()},
                                           {"admDate": dischargeReportList[index].admDate.toString()},
                                           {"disChargeDate": dischargeReportList[index].disDate.toString()},
-                                          {"billLink": dischargeReportList[index].billLink.toString()},
                                           {"dischargeType": dischargeReportList[index].dischargeType.toString()},
                                         ], 
                                         

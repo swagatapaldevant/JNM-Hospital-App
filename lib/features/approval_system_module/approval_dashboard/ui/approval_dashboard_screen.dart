@@ -193,7 +193,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                     parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   SliverPersistentHeader(
-                    pinned: true,
                     delegate: _ApprovalDashboardHeaderDelegate(() {}),
                   ),
 
@@ -250,47 +249,76 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: Center(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 24),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF007AFF), // iOS blue
-                              Color(0xFF8E44AD), // purple
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, RouteGenerator.kApprovedListScreen);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF4CAF50),
+                                Color(0xFF2E7D32)
+                              ], // green success
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
                             ],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
                           ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 14, horizontal: 24),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, RouteGenerator.kApprovedListScreen);
-                          },
-                          child: const Text(
-                            "Approved List",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          padding: const EdgeInsets.all(18),
+                          child: Row(
+                            children: [
+                              // Icon
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white24,
+                                ),
+                                child: const Icon(Icons.check_circle_rounded,
+                                    color: Colors.white, size: 28),
+                              ),
+                              const SizedBox(width: 16),
+
+                              // Text
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      "Approved List",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "See all requests you’ve already approved",
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const Icon(Icons.arrow_forward_ios_rounded,
+                                  color: Colors.white, size: 18),
+                            ],
                           ),
                         ),
                       ),
@@ -361,7 +389,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       crossAxisCount = 4;
     }
 
-    final aspect = contentW < 380 ? 0.8 : 1.1;
+    final aspect = contentW < 380 ? 0.95 : 1.2;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),
@@ -497,37 +525,27 @@ class _ApprovalDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          color: Color.lerp(
-            Colors.transparent,
-            Colors.white.withOpacity(0.6), //  frosted glass look
-            progress,
-          ),
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Approval Dashboard',
-                  style: TextStyle(
-                    // color: ,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                  ),
-                ),
+    return Container(
+      color: Colors.transparent,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+      child: Row(
+        children: [
+          const Expanded(
+            child: Text(
+              'Approval Dashboard',
+              style: TextStyle(
+                // color: ,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.2,
               ),
-              _roundIconButton(
-                icon: Icons.notifications_none_rounded,
-                onTap: onNotificationTap,
-              ),
-            ],
+            ),
           ),
-        ),
+          _roundIconButton(
+            icon: Icons.notifications_none_rounded,
+            onTap: onNotificationTap,
+          ),
+        ],
       ),
     );
   }

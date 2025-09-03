@@ -89,19 +89,6 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Expanded(
-                        //   child: CustomDatePickerFieldForCollectionModule(
-                        //     selectedDate: selectedFromDate,
-                        //     disallowFutureDates: true,
-                        //     onDateChanged: (String value) {
-                        //       setState(() {
-                        //         selectedFromDate = value;
-                        //       });
-                        //     },
-                        //     placeholderText: 'From date',
-                        //   ),
-                        // ),
-                        // SizedBox(width: 10),
                         Expanded(
                           child: CustomDatePickerFieldForCollectionModule(
                             selectedDate: selectedToDate,
@@ -270,8 +257,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
     setState(() => isLoading = true);
 
     final requestData = {
-      "date": selectedToDate,
-      // "to_date": selectedToDate,
+      "from_date": selectedToDate,
     };
 
     final resource = await _adminReportUsecase.getDoctorPayoutDetails(

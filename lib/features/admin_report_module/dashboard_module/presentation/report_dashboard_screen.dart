@@ -11,10 +11,7 @@ import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/customer_pie_chart.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/dashboard_tabular_data.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/statistical_graph.dart';
-// import 'package:jnm_hospital_app/features/admin_report_module/model/dashboard/dashboard_opd_data_model.dart';
-import 'package:jnm_hospital_app/features/auth_module/model/patient_statistics_model.dart';
 
 class ReportDashboardScreen extends StatefulWidget {
   const ReportDashboardScreen({super.key});

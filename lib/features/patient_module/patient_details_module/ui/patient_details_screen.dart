@@ -154,76 +154,81 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
                       parent: AlwaysScrollableScrollPhysics()),
                   slivers: [
                     // ===== Header (centered) =====
-                    _sectionWrap(
-                      Container(
-                        margin: const EdgeInsets.only(top: 16, bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white.withOpacity(0.9),
-                              Colors.white.withOpacity(0.7),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            // Gradient circle back button
-                            InkWell(
-                              onTap: () => Navigator.pop(context),
-                              borderRadius: BorderRadius.circular(999),
-                              child: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      _PatientDetailsScreenState.opdAccent,
-                                      _PatientDetailsScreenState.opticalAccent,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                ),
-                                child: const Icon(Icons.arrow_back_ios_new_rounded,
-                                    color: Colors.white, size: 18),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
+                    // _sectionWrap(
+                    //   Container(
+                    //     margin: const EdgeInsets.only(top: 16, bottom: 10),
+                    //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.circular(18),
+                    //       gradient: LinearGradient(
+                    //         colors: [
+                    //           Colors.white.withOpacity(0.9),
+                    //           Colors.white.withOpacity(0.7),
+                    //         ],
+                    //         begin: Alignment.topLeft,
+                    //         end: Alignment.bottomRight,
+                    //       ),
+                    //       boxShadow: [
+                    //         BoxShadow(
+                    //           color: Colors.black.withOpacity(0.05),
+                    //           blurRadius: 12,
+                    //           offset: const Offset(0, 6),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     child: Row(
+                    //       children: [
+                    //         // Gradient circle back button
+                    //         InkWell(
+                    //           onTap: () => Navigator.pop(context),
+                    //           borderRadius: BorderRadius.circular(999),
+                    //           child: Container(
+                    //             width: 44,
+                    //             height: 44,
+                    //             decoration: const BoxDecoration(
+                    //               shape: BoxShape.circle,
+                    //               gradient: LinearGradient(
+                    //                 colors: [
+                    //                   _PatientDetailsScreenState.opdAccent,
+                    //                   _PatientDetailsScreenState.opticalAccent,
+                    //                 ],
+                    //                 begin: Alignment.topLeft,
+                    //                 end: Alignment.bottomRight,
+                    //               ),
+                    //             ),
+                    //             child: const Icon(Icons.arrow_back_ios_new_rounded,
+                    //                 color: Colors.white, size: 18),
+                    //           ),
+                    //         ),
+                    //         const SizedBox(width: 16),
 
-                            // Name + subtitle
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Patient Profile",
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: _PatientDetailsScreenState.textPrimary,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    //         // Name + subtitle
+                    //         Expanded(
+                    //           child: Column(
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: [
+                    //               Text(
+                    //                 "Patient Profile",
+                    //                 overflow: TextOverflow.ellipsis,
+                    //                 style: const TextStyle(
+                    //                   color: _PatientDetailsScreenState.textPrimary,
+                    //                   fontSize: 20,
+                    //                   fontWeight: FontWeight.w800,
+                    //                   letterSpacing: 0.2,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    SliverPersistentHeader(
+                      pinned: true, 
+                      delegate: _FancyHeaderDelegate(),
                     ),
+                  
                     // === Patient Identity Card (modern & glassy, centered) ===
                     _sectionWrap(
                       Padding(
@@ -1154,4 +1159,99 @@ class _NoGlowBehavior extends ScrollBehavior {
   Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
     return child;
   }
+}
+
+class _FancyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  @override
+  double get minExtent => 90.0;
+  
+  @override
+  double get maxExtent => 90.0;
+  
+   static const double _maxContentWidth = 720.0;
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.9),
+                  Colors.white.withOpacity(0.7),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Gradient circle back button
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  borderRadius: BorderRadius.circular(999),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          _PatientDetailsScreenState.opdAccent,
+                          _PatientDetailsScreenState.opticalAccent,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Name + subtitle
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Patient Profile",
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: _PatientDetailsScreenState.textPrimary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  
+  @override
+  bool shouldRebuild(_FancyHeaderDelegate oldDelegate) => false;
 }

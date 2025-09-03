@@ -45,7 +45,6 @@ class _ApprovalSystemLayoutState extends State<ApprovalSystemLayout>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [

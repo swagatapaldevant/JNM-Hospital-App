@@ -66,11 +66,11 @@ class _CommonHeaderDelegate extends SliverPersistentHeaderDelegate {
 
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 👈 blur effect
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), //  blur effect
         child: Container(
           color: Color.lerp(
             Colors.transparent,
-            Colors.white.withOpacity(0.6), // 👈 frosted glass look
+            Colors.white.withOpacity(0.6), 
             progress,
           ),
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),

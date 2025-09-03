@@ -16,6 +16,8 @@ import 'package:jnm_hospital_app/features/patient_module/patient_details_module/
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/data/patient_opd_usecases_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../patient_details_module/ui/common_header.dart';
+
 class AppointmentFormScreen extends StatelessWidget {
   const AppointmentFormScreen({super.key});
 
@@ -24,30 +26,7 @@ class AppointmentFormScreen extends StatelessWidget {
     return PatientDetailsScreenLayout(
       slivers: [
         // Header
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Row(
-              children: [
-                _roundIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "OPD Registration",
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        CommonHeader(title: "OPD Registration"),
         const _AppointmentForm()
       ],
     );

@@ -89,19 +89,19 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: CustomDatePickerFieldForCollectionModule(
-                            selectedDate: selectedFromDate,
-                            disallowFutureDates: true,
-                            onDateChanged: (String value) {
-                              setState(() {
-                                selectedFromDate = value;
-                              });
-                            },
-                            placeholderText: 'From date',
-                          ),
-                        ),
-                        SizedBox(width: 10),
+                        // Expanded(
+                        //   child: CustomDatePickerFieldForCollectionModule(
+                        //     selectedDate: selectedFromDate,
+                        //     disallowFutureDates: true,
+                        //     onDateChanged: (String value) {
+                        //       setState(() {
+                        //         selectedFromDate = value;
+                        //       });
+                        //     },
+                        //     placeholderText: 'From date',
+                        //   ),
+                        // ),
+                        // SizedBox(width: 10),
                         Expanded(
                           child: CustomDatePickerFieldForCollectionModule(
                             selectedDate: selectedToDate,
@@ -111,7 +111,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                                 selectedToDate = value;
                               });
                             },
-                            placeholderText: 'To date',
+                            placeholderText: 'date',
                           ),
                         ),
                         SizedBox(width: 10),
@@ -138,6 +138,33 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                                 color: Colors.white,
                                 size: 30,
                               )),
+                        ),
+                        SizedBox(width: 10),
+                        Bounceable(
+                          onTap: () {
+                            final today = _todayYMD();
+                            selectedToDate = today;
+                            getDoctorsPayoutWiseData();
+                          },
+                          child: Container(
+                              padding: EdgeInsets.all(9),
+                              decoration: BoxDecoration(
+                                color: AppColors.arrowBackground,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 0,
+                                    spreadRadius: 1,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.restart_alt,
+                                color: Colors.white,
+                                size: 30,
+                              )),
                         )
                       ],
                     ),
@@ -145,7 +172,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                     // === Switchable Chart ===
                     if (!isLoading && _doctors.isNotEmpty) ...[
                       Container(
-                        padding: const EdgeInsets.only(left:12, top: 12, right: 12, bottom: 0),
+                        padding: const EdgeInsets.only(left:12, top: 12, right: 12, bottom: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF6F7FB),
                           borderRadius: BorderRadius.circular(14),
@@ -167,20 +194,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                                 onChanged: (m) => setState(() => _mode = m),
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            // Subtitle (range)
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "$selectedFromDate → $selectedToDate",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 14),
                             // Chart
                             if (_mode == _ChartMode.docPaid)
                               DocPaidBarChart(doctors: _doctors)
@@ -189,7 +203,6 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 12),
                     ],
 
                     if (isLoading) ...[
@@ -252,8 +265,8 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
     setState(() => isLoading = true);
 
     final requestData = {
-      "from_date": selectedFromDate,
-      "to_date": selectedToDate,
+      "date": selectedToDate,
+      // "to_date": selectedToDate,
     };
 
     final resource = await _adminReportUsecase.getDoctorPayoutDetails(
@@ -389,7 +402,8 @@ class DocPaidBarChart extends StatelessWidget {
 
     const barH = 22.0;
     const gap = 12.0;
-    final chartHeight = entries.length * (barH + gap) + 24;
+    //final chartHeight = entries.length * (barH + gap) + 24;
+    final chartHeight = entries.length * (barH + gap) + 35;
 
     return SizedBox(
       width: double.infinity,
@@ -421,7 +435,7 @@ class OldNewPatientsBarChart extends StatelessWidget {
     required this.doctors,
     this.barH = 20.0,
     this.rowGap = 10.0,
-    this.innerGap = 4.0,
+    this.innerGap = 3.0,
     this.maxChartBodyHeight = 320.0,
   });
 
@@ -545,14 +559,14 @@ class _LegendDotForChart extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-              width: 10,
-              height: 10,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 8),
           Text(label,
               style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
                 color: Colors.black87,
               )),
         ],
@@ -583,7 +597,7 @@ class _SingleSeriesHBarPainter extends CustomPainter {
     const minLeftPad = 80.0;
 
     final labelStyle = const TextStyle(
-        fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87);
+        fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87);
     final valueStyle = const TextStyle(
         fontSize: 11, fontWeight: FontWeight.w700, color: Colors.black54);
 

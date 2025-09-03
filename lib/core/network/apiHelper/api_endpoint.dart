@@ -53,11 +53,18 @@ class ApiEndPoint{
   static const approvalSystemOPD =  "$baseurl/approvalsystem/opd";
   static const approvalSystemIPD =  "$baseurl/approvalsystem/ipd";
   static const approvalSystemInvestigation =  "$baseurl/approvalsystem/investigation";
-  static const approvalSystemEMR =  "$baseurl/approvalsystem/emg";
+  static const approvalSystemEMG =  "$baseurl/approvalsystem/emg";
   static const approvalSystemDialysis =  "$baseurl/approvalsystem/dialysis";
+  static const approvalSystemOP = "$baseurl/approvalList/op";
+  static const approvalSystemOT = "$baseurl/approvalList/ot";
+
   static const approveData =  "$baseurl/approvalsystem/approve";
   static const approvalDeptWiseCount =  "$baseurl/approval-list-count";
   static const approvalList =  "$baseurl/approvalList";
+  
+
+  
   static const billingDetails =  "$baseurl/billing-details";
+  
 
 }

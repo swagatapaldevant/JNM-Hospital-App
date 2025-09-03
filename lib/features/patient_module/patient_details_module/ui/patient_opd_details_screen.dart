@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
 import 'common_layout.dart';
 
 class PatientOpdDetailsScreen extends StatefulWidget {
@@ -51,30 +52,32 @@ class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
        
         slivers: [
           
-          SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-            child: Row(
-              children: [
-                _roundIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "OPD Visits",
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        //   SliverToBoxAdapter(
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        //     child: Row(
+        //       children: [
+        //         _roundIconButton(
+        //             icon: Icons.arrow_back_ios_new_rounded,
+        //             onTap: () => Navigator.pop(context)),
+        //         const SizedBox(width: 12),
+        //         Expanded(
+        //           child: Text(
+        //             "OPD Visits",
+        //             style: TextStyle(
+        //               color: Colors.black87,
+        //               fontSize: 20,
+        //               fontWeight: FontWeight.w700,
+        //               letterSpacing: 0.2,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        
+        CommonHeader(title: "OPD Visits"),
 
           SliverList(
           delegate: SliverChildListDelegate.fixed([

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
 import 'common_layout.dart';
 
 class PatientEmrDetailsScreen extends StatefulWidget {
@@ -63,30 +64,31 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
       body: PatientDetailsScreenLayout(
         
         slivers:[ 
-          SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-            child: Row(
-              children: [
-                _roundIconButton(
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "EMR Records",
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        //   SliverToBoxAdapter(
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        //     child: Row(
+        //       children: [
+        //         _roundIconButton(
+        //             icon: Icons.arrow_back_ios_new_rounded,
+        //             onTap: () => Navigator.pop(context)),
+        //         const SizedBox(width: 12),
+        //         Expanded(
+        //           child: Text(
+        //             "EMR Records",
+        //             style: TextStyle(
+        //               color: Colors.black87,
+        //               fontSize: 20,
+        //               fontWeight: FontWeight.w700,
+        //               letterSpacing: 0.2,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        CommonHeader(title: "Emergency (EMR)"),
           SliverList(
           delegate: SliverChildListDelegate.fixed([
             const SizedBox(height: 16),

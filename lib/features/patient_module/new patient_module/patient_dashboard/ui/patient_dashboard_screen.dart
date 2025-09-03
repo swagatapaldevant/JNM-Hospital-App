@@ -171,34 +171,40 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                     parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   // Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
-                      child: Row(
-                        children: [
-                          _roundIconButton(
-                            icon: Icons.menu_rounded,
-                            onTap: () =>
-                                _scaffoldKey.currentState?.openDrawer(),
-                          ),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Text(
-                              'Dashboard',
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                          _roundIconButton(
-                              icon: Icons.notifications_none_rounded,
-                              onTap: () {}),
-                        ],
-                      ),
-                    ),
+                  // SliverToBoxAdapter(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
+                  //     child: Row(
+                  //       children: [
+                  //         _roundIconButton(
+                  //           icon: Icons.menu_rounded,
+                  //           onTap: () =>
+                  //               _scaffoldKey.currentState?.openDrawer(),
+                  //         ),
+                  //         const SizedBox(width: 12),
+                  //         const Expanded(
+                  //           child: Text(
+                  //             'Dashboard',
+                  //             style: TextStyle(
+                  //               color: textPrimary,
+                  //               fontSize: 22,
+                  //               fontWeight: FontWeight.w800,
+                  //               letterSpacing: 0.2,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         _roundIconButton(
+                  //             icon: Icons.notifications_none_rounded,
+                  //             onTap: () {}),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate:
+                        DashboardHeader(scaffoldKey: _scaffoldKey, hPad: _hPad),
                   ),
 
                   // Date
@@ -252,8 +258,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: opdAccent,
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kOPDRegistrationScreen);
+                                    Navigator.pushNamed(context,
+                                        RouteGenerator.kOPDRegistrationScreen);
                                   },
                                 ),
                                 _QuickActionChip(
@@ -284,8 +290,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: const Color(0xFF20C997),
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kRateEnquiryScreen);
+                                    Navigator.pushNamed(context,
+                                        RouteGenerator.kRateEnquiryScreen);
                                   },
                                 ),
                                 _QuickActionChip(
@@ -294,8 +300,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: opdAccent,
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(
-                                        context, RouteGenerator.kInvestigationScreen);
+                                    Navigator.pushNamed(context,
+                                        RouteGenerator.kInvestigationScreen);
                                   },
                                 ),
                               ],
@@ -321,12 +327,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                       padding: const EdgeInsets.symmetric(horizontal: _hPad),
                       sliver: SliverList.separated(
                         itemCount: 1,
-                        itemBuilder: (_, __) =>
-                            const _DoctorCardSkeleton(),
+                        itemBuilder: (_, __) => const _DoctorCardSkeleton(),
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
                       ),
                     )
-                  else if(_doctorsToday.isEmpty)
+                  else if (_doctorsToday.isEmpty)
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: _hPad),
@@ -338,25 +343,29 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                       ),
                     )
                   else
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 156,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _doctorsToday.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemBuilder: (context, i) => _DoctorCard(
-                          doctor: _doctorsToday[i],
-                          accent: _getCardColor(_doctorsToday[i].color ?? ""),
-                          onTap: () {
-                            Navigator.pushNamed(context, "/DoctorDetailsScreen", arguments:_doctorsToday[i]);
-                          }
+                    SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 156,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: _hPad),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: _doctorsToday.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, i) => _DoctorCard(
+                              doctor: _doctorsToday[i],
+                              accent:
+                                  _getCardColor(_doctorsToday[i].color ?? ""),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, "/DoctorDetailsScreen",
+                                    arguments: _doctorsToday[i]);
+                              }),
                         ),
                       ),
                     ),
-                  ),
 
                   // OPD Upcoming (separate list)
                   SliverToBoxAdapter(
@@ -483,10 +492,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.cyan, width: 2)
-        ),
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.cyan, width: 2)),
         child: Icon(icon, color: textPrimary),
       ),
     );
@@ -728,7 +736,7 @@ class _DoctorCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      
+
                       Wrap(
                         spacing: 10,
                         runSpacing: 6,
@@ -782,7 +790,7 @@ class _DoctorCard extends StatelessWidget {
     if (availableTime == null || availableTime.isEmpty) {
       return "No timing info";
     }
-    List<String>time = availableTime.split('--').map((e) => e.trim()).toList();
+    List<String> time = availableTime.split('--').map((e) => e.trim()).toList();
     String formattedTime = '${time[0]} to ${time[1]}';
 
     return formattedTime;
@@ -1065,7 +1073,8 @@ class _DoctorCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenW = MediaQuery.of(context).size.width;
-    final double cardWidth = screenW < 360 ? screenW - 40 : 248; // matches real card
+    final double cardWidth =
+        screenW < 360 ? screenW - 40 : 248; // matches real card
 
     return Container(
       width: cardWidth,
@@ -1246,5 +1255,89 @@ class _EmptyStateCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class DashboardHeader extends SliverPersistentHeaderDelegate {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final double hPad;
+
+  DashboardHeader({
+    required this.scaffoldKey,
+    this.hPad = 20,
+  });
+
+  Widget _roundIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkResponse(
+      onTap: onTap,
+      radius: 28,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2),
+        ),
+        child: Icon(icon, color: Colors.black87),
+      ),
+    );
+  }
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: Color.lerp(
+            Colors.transparent,
+            Colors.white.withOpacity(0.6),
+            progress,
+          ),
+          padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 10),
+          child: Row(
+            children: [
+              _roundIconButton(
+                icon: Icons.menu_rounded,
+                onTap: () => scaffoldKey.currentState?.openDrawer(),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Dashboard',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              _roundIconButton(
+                icon: Icons.notifications_none_rounded,
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 70;
+
+  @override
+  double get minExtent => 70;
+
+  @override
+  bool shouldRebuild(covariant DashboardHeader oldDelegate) {
+    return oldDelegate.hPad != hPad || oldDelegate.scaffoldKey != scaffoldKey;
   }
 }

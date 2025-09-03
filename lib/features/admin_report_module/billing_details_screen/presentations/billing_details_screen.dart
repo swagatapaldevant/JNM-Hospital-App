@@ -81,63 +81,70 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   AppDimensions.init(context);
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  CommonHeaderForReportModule(
-                    headingName: "Billing Details",
-                    isVisibleFilter: false,
-                    isVisibleSearch: false,
-                  ),
-                  // Main Bill Container
-                  Container(
-                    //margin: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                     // color: Colors.white,
-                     // borderRadius: BorderRadius.circular(20),
-                    //   boxShadow: [
-                    //     BoxShadow(
-                    //       color: Colors.black.withOpacity(0.08),
-                    //       blurRadius: 20,
-                    //       offset: const Offset(0, 4),
-                    //     ),
-                    //   ],
-                     ),
-                    child: Padding(
-                      padding:  EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 20,
-                          ),
-                          // Hospital Header Section
-                          _buildHospitalHeader(bill),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          // Patient & Bill Info Section
-                          _buildPatientInfoSection(
-                              patientDetails, bill?.doctorName, "Dummy dept."),
-                          // Services/Items Section
-                          _buildServicesSection(billInfo ?? []),
-                          // Bill Summary Section
-                          _buildBillSummary(bill),
-                          // Receipt History Section
-                          if (payments.isNotEmpty) _buildPaymentSection(payments),
+      body: Column(
+        children: [
+          CommonHeaderForReportModule(
+            headingName: "Billing Details",
+            isVisibleFilter: false,
+            isVisibleSearch: false,
+          ),
+          Expanded(
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // Main Bill Container
+                        Container(
+                          margin: const EdgeInsets.all(2),
+                          // decoration: BoxDecoration(
+                          //   color: Colors.white,
+                          //   borderRadius: BorderRadius.circular(20),
+                          //   boxShadow: [
+                          //     BoxShadow(
+                          //       color: Colors.black.withOpacity(0.08),
+                          //       blurRadius: 20,
+                          //       offset: const Offset(0, 4),
+                          //     ),
+                          //   ],
+                          // ),
+                          child: Padding(
+                            padding:  EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
+                            child: Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              // Hospital Header Section
+                              _buildHospitalHeader(bill),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              // Patient & Bill Info Section
+                              _buildPatientInfoSection(patientDetails,
+                                  bill?.doctorName, "Dummy dept."),
+                              // Services/Items Section
+                              _buildServicesSection(billInfo ?? []),
+                              // Bill Summary Section
+                              _buildBillSummary(bill),
+                              // Receipt History Section
+                              if (payments.isNotEmpty)
+                                _buildPaymentSection(payments),
 
-                          // Footer
-                          //_buildFooter(),
-                        ],
-                      ),
+                              // Footer
+                              //_buildFooter(),
+                            ],
+                          ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -339,58 +346,58 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
 //   return "$day-$month-$year";
 // }
 
-String formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
-  if (dobDay == null || dobMonth == null || dobYear == null) {
-    return "N/A";
-  }
-
-  try {
-    // Handle 2-digit year conversion
-    int fullYear = dobYear;
-    if (dobYear < 100) {
-      // If year is 2-digit, convert to 4-digit
-      // Assume years 00-30 are 2000-2030, and 31-99 are 1931-1999
-      if (dobYear <= 30) {
-        fullYear = 2000 + dobYear;
-      } else {
-        fullYear = 1900 + dobYear;
-      }
-    }
-    
-    // Validate year range (reasonable birth year range)
-    if (fullYear < 1900 || fullYear > DateTime.now().year) {
+  String formattedDob(int? dobDay, int? dobMonth, int? dobYear) {
+    if (dobDay == null || dobMonth == null || dobYear == null) {
       return "N/A";
     }
 
-    // Validate month and day ranges
-    if (dobMonth < 1 || dobMonth > 12) return "N/A";
-    if (dobDay < 1 || dobDay > 31) return "N/A";
+    try {
+      // Handle 2-digit year conversion
+      int fullYear = dobYear;
+      if (dobYear < 100) {
+        // If year is 2-digit, convert to 4-digit
+        // Assume years 00-30 are 2000-2030, and 31-99 are 1931-1999
+        if (dobYear <= 30) {
+          fullYear = 2000 + dobYear;
+        } else {
+          fullYear = 1900 + dobYear;
+        }
+      }
 
-    final dob = DateTime(fullYear, dobMonth, dobDay);
-    final today = DateTime.now();
+      // Validate year range (reasonable birth year range)
+      if (fullYear < 1900 || fullYear > DateTime.now().year) {
+        return "N/A";
+      }
 
-    // Prevent invalid future DOBs
-    if (dob.isAfter(today)) return "N/A";
+      // Validate month and day ranges
+      if (dobMonth < 1 || dobMonth > 12) return "N/A";
+      if (dobDay < 1 || dobDay > 31) return "N/A";
 
-    // Calculate age
-    int age = today.year - dob.year;
-    if (today.month < dob.month ||
-        (today.month == dob.month && today.day < dob.day)) {
-      age--;
+      final dob = DateTime(fullYear, dobMonth, dobDay);
+      final today = DateTime.now();
+
+      // Prevent invalid future DOBs
+      if (dob.isAfter(today)) return "N/A";
+
+      // Calculate age
+      int age = today.year - dob.year;
+      if (today.month < dob.month ||
+          (today.month == dob.month && today.day < dob.day)) {
+        age--;
+      }
+
+      final day = dob.day.toString().padLeft(2, '0');
+      final month = dob.month.toString().padLeft(2, '0');
+      final year = dob.year.toString();
+
+      return "$day-$month-$year (${age}YRS)";
+    } catch (e) {
+      print('Error formatting DOB: $e'); // Debug print
+      return "N/A";
     }
-
-    final day = dob.day.toString().padLeft(2, '0');
-    final month = dob.month.toString().padLeft(2, '0');
-    final year = dob.year.toString();
-
-    return "$day-$month-$year (${age}YRS)";
-  } catch (e) {
-    print('Error formatting DOB: $e'); // Debug print
-    return "N/A";
   }
-}
 
-Widget _buildPatientInfoSection(
+  Widget _buildPatientInfoSection(
       Patient? patientDetails, String? doctor, String? department) {
     return _sectionWithHangingHeader(
       heading: Row(
@@ -420,8 +427,8 @@ Widget _buildPatientInfoSection(
             children: [
               Expanded(
                 child: _buildInfoItem(
-                  formattedDob(patientDetails?.dobDay,
-                      patientDetails?.dobMonth, patientDetails?.dobYear),
+                  formattedDob(patientDetails?.dobDay, patientDetails?.dobMonth,
+                      patientDetails?.dobYear),
                   Icons.child_care,
                 ),
               ),

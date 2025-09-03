@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/investigation_report/investigation_report_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 
 class InvestigationScreen extends StatefulWidget {
@@ -111,32 +112,32 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
     return PatientDetailsScreenLayout(
       slivers: [
         // Header
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-            child: Row(
-              children: [
-                _roundIconButton(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  onTap: () => Navigator.pop(context),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    "Ready Reports",
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
+        // SliverToBoxAdapter(
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        //     child: Row(
+        //       children: [
+        //         _roundIconButton(
+        //           icon: Icons.arrow_back_ios_new_rounded,
+        //           onTap: () => Navigator.pop(context),
+        //         ),
+        //         const SizedBox(width: 12),
+        //         const Expanded(
+        //           child: Text(
+        //             "Ready Reports",
+        //             style: TextStyle(
+        //               color: Colors.black87,
+        //               fontSize: 20,
+        //               fontWeight: FontWeight.w700,
+        //               letterSpacing: 0.2,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        CommonHeader(title: "Ready Reports"),
         // Filters (NO search field)
         SliverToBoxAdapter(
           child: _ExpandableFilterCard(

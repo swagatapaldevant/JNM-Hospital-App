@@ -6,6 +6,8 @@ import 'package:jnm_hospital_app/features/patient_module/model/rate_enquiry/rate
 import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/data/rate_enquiry_usecases_impl.dart';
 
+import '../patient_details_module/ui/common_header.dart';
+
 class RateEnquiryScreen extends StatefulWidget {
   const RateEnquiryScreen({super.key});
 
@@ -131,43 +133,7 @@ class _RateEnquiryScreenState extends State<RateEnquiryScreen> {
   Widget build(BuildContext context) {
     return PatientDetailsScreenLayout(
       slivers: [
-        // Header
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-            child: Row(
-              children: [
-                _roundIconButton(
-                  icon: Icons.arrow_back_ios_new_rounded,
-                  onTap: () => Navigator.pop(context),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    "Rate Enquiry",
-                    style: TextStyle(
-                      color: textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (_selectedItems.isNotEmpty)
-                  TextButton.icon(
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      setState(() => _selectedItems.clear());
-                    },
-                    icon: const Icon(Icons.restart_alt_rounded, size: 18),
-                    label: const Text("Reset"),
-                  ),
-              ],
-            ),
-          ),
-        ),
-
+        CommonHeader(title: "Rate Enquiry"),
         // Sticky summary
         SliverPersistentHeader(
           pinned: true,

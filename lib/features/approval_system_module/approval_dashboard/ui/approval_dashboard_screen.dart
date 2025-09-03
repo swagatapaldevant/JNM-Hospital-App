@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/data/approval_dashboard_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/glasscard.dart';
 import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
@@ -29,22 +30,92 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   static const Color opticalAccent = Color(0xFF7F5AF0); // violet
   static const double _hPad = 20;
 
-  bool _loading = true;
-  Map<String, int> _pendingCount = {};
+  bool _loading = true; // for refersh bar loading
+
+  bool isLoading = true;
+
+  final Map<String, int> _pendingCount = {};
 
   Future<void> getPendingCount() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final resource = await ApprovalDashboardUseCasesImpl().getPendingCount();
+
     if (resource.status == STATUS.SUCCESS) {
-      print(resource.data);
-      List<dynamic> data = resource.data as List;
+      final data = resource.data as List;
       setState(() {
-        data.forEach((item) {
+        _pendingCount.clear();
+        for (var item in data) {
           _pendingCount[item['section']] = item['total_count'];
-        });
+        }
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        CommonUtils().flutterSnackBar(
+            context: context,
+            mes: resource.message ?? "Failed to get Approval List Count",
+            messageType: 4);
+        isLoading = false;
       });
     }
+
     print(_pendingCount);
   }
+
+  final Map<String, Map<String, dynamic>> approvalConfig = {
+    "OPD": {
+      "icon": Icons.local_hospital,
+      "label": "OPD",
+      "api": ApiEndPoint.approvalSystemOPD,
+      "title": "OPD Approval",
+      "other_ids": []
+    },
+    "IPD": {
+      "icon": Icons.bed,
+      "label": "IPD/Daycare",
+      "api": ApiEndPoint.approvalSystemIPD,
+      "title": "IPD/Daycare Approval",
+      "other_ids": ["DAYCARE"]
+    },
+    "OT": {
+      "icon": Icons.history,
+      "label": "OT",
+      "api": ApiEndPoint.approvalSystemOT,
+      "title": "OT Approval",
+      "other_ids": []
+    },
+    "EMG": {
+      "icon": Icons.history,
+      "label": "EMG",
+      "api": ApiEndPoint.approvalSystemEMG,
+      "title": "EMG Approval",
+      "other_ids": []
+    },
+    "OP": {
+      "icon": Icons.receipt_long,
+      "label": "OP",
+      "api": ApiEndPoint.approvalSystemOP,
+      "title": "OP Approval",
+      "other_ids": []
+    },
+    "DIALYSIS": {
+      "icon": Icons.receipt_long,
+      "label": "OP",
+      "api": ApiEndPoint.approvalSystemDialysis,
+      "title": "Dialysis Approval",
+      "other_ids": []
+    },
+    "INVESTIGATION": {
+      "icon": Icons.payments,
+      "label": "INVESTIGATION",
+      "api": ApiEndPoint.approvalSystemInvestigation,
+      "title": "Investigation Approval",
+      "other_ids": []
+    },
+  };
 
   @override
   void initState() {
@@ -121,34 +192,9 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                 physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
-                  // Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
-                      child: Row(
-                        children: [
-                          // _roundIconButton(
-                          //   icon: Icons.menu_rounded,
-                          //   onTap: () =>
-                          //       _scaffoldKey.currentState?.openDrawer(),
-                          // ),
-                          const Expanded(
-                            child: Text(
-                              'Approval Dashboard',
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                          ),
-                          _roundIconButton(
-                              icon: Icons.notifications_none_rounded,
-                              onTap: () {}),
-                        ],
-                      ),
-                    ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _ApprovalDashboardHeaderDelegate(() {}),
                   ),
 
                   // Date
@@ -185,7 +231,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Wishing you a healthy day! Here’s what’s lined up for you.',
+                              "Wishing you a healthy day! Heres what's lined up for you.",
                               style: TextStyle(
                                   color: Colors.black.withOpacity(0.70),
                                   fontSize: 14.5,
@@ -265,80 +311,43 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   }
 
   Widget buildPatientDetailsGrid(BuildContext context) {
-    final tiles = <Widget>[];
+    final tiles = approvalConfig.entries
+        .map((entry) {
+          final key = entry.key;
+          final config = entry.value;
+          int count = 0;
 
-    tiles.add(GlassTile(
-      icon: Icons.local_hospital,
-      label: "OPD",
-      pendingCount: _pendingCount['OPD'].toString(),
-      onTap: () {
-        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
-            arguments: {
-              'apiEndpoint': ApiEndPoint.approvalSystemOPD,
-              'title': 'OPD Approval'
-            });
-      },
-    ));
+          count += _pendingCount[key] ?? 0;
 
-    tiles.add(GlassTile(
-      icon: Icons.bed,
-      label: "IPD/Daycare",
-      pendingCount: _pendingCount['IPD'].toString(),
-      onTap: () {
-        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
-            arguments: {
-              'apiEndpoint': ApiEndPoint.approvalSystemIPD,
-              'title': 'IPD/Daycare Approval'
-            });
-      },
-    ));
+          config["other_ids"].forEach((id) {
+            count += _pendingCount[id] ?? 0;
+          });
 
-    tiles.add(GlassTile(
-      icon: Icons.history,
-      label: "EMR",
-      pendingCount: _pendingCount['OT'].toString(),
-      onTap: () {
-        Navigator.pushNamed(context, RouteGenerator.kApprovalDetailscreen,
-            arguments: {
-              'apiEndpoint': ApiEndPoint.approvalSystemEMR,
-              'title': 'EMR Approval'
-            });
-      },
-    ));
+          if (count == 0) {
+            print("Skipping Department $key as it has $count");
+            return null;
+          }
 
-    tiles.add(GlassTile(
-      icon: Icons.receipt_long,
-      label: "DIALYSIS",
-      pendingCount: _pendingCount['OP'].toString(),
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouteGenerator.kApprovalDetailscreen,
-          arguments: {
-            'apiEndpoint': ApiEndPoint.approvalSystemDialysis,
-            'title': 'Dialysis Approval'
-          },
-        );
-      },
-    ));
+          return GlassTile(
+            icon: config["icon"] as IconData,
+            label: config["label"],
+            pendingCount: _pendingCount[key]?.toString() ?? "0",
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                RouteGenerator.kApprovalDetailscreen,
+                arguments: {
+                  'apiEndpoint': config["api"],
+                  'title': config["title"],
+                },
+              );
+            },
+          );
+        })
+        .whereType<Widget>()
+        .toList();
 
-    tiles.add(GlassTile(
-      icon: Icons.payments,
-      label: "INVESTIGATION",
-      pendingCount: _pendingCount['INVESTIGATION'].toString(),
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouteGenerator.kApprovalDetailscreen,
-          arguments: {
-            'apiEndpoint': ApiEndPoint.approvalSystemInvestigation,
-            'title': 'Investigation Approval'
-          },
-        );
-      },
-    ));
-
-    if (tiles.isEmpty) return const SizedBox.shrink();
+    //if (tiles.isEmpty) return const SizedBox.shrink();
     const double _maxContentWidth = 720.0;
     final screenW = MediaQuery.of(context).size.width;
     final contentW = screenW < _maxContentWidth ? screenW : _maxContentWidth;
@@ -379,15 +388,30 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
               ),
             ),
           ),
-          GridView.count(
-            crossAxisCount: crossAxisCount,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 14,
-            crossAxisSpacing: 14,
-            childAspectRatio: aspect,
-            children: tiles,
-          ),
+          isLoading
+              ? GridView.count(
+                  crossAxisCount: crossAxisCount,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 14,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: aspect,
+                  children: List.generate(
+                    6,
+                    (index) => _PulseSkeleton(),
+                  ),
+                )
+              : tiles.isEmpty
+                  ? const SizedBox.shrink()
+                  : GridView.count(
+                      crossAxisCount: crossAxisCount,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 14,
+                      crossAxisSpacing: 14,
+                      childAspectRatio: aspect,
+                      children: tiles,
+                    ),
         ],
       ),
     );
@@ -410,54 +434,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       ),
     );
   }
-
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
-    return InkResponse(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
-      radius: 28,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)),
-        child: Icon(icon, color: textPrimary),
-      ),
-    );
-  }
-}
-
-// ===== Models =====
-class _Doctor {
-  final String name;
-  final String specialization;
-  final String time;
-  const _Doctor(
-      {required this.name, required this.specialization, required this.time});
-}
-
-class _Appointment {
-  final String typeLabel; // 'OPD' or 'Optical'
-  final String doctor;
-  final String specialization;
-  final String when;
-  final String token;
-  final String location;
-  final Color accent;
-  const _Appointment({
-    required this.typeLabel,
-    required this.doctor,
-    required this.specialization,
-    required this.when,
-    required this.token,
-    required this.location,
-    required this.accent,
-  });
 }
 
 // ===== Reusable UI =====
@@ -513,38 +489,175 @@ class _GlassCard extends StatelessWidget {
   }
 }
 
-// ===== Skeleton Loaders (Pulsing) =====
+class _ApprovalDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final VoidCallback onNotificationTap;
 
-class _Pulse extends StatefulWidget {
-  final Widget child;
-  const _Pulse({required this.child});
+  _ApprovalDashboardHeaderDelegate(this.onNotificationTap);
 
   @override
-  State<_Pulse> createState() => _PulseState();
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: Color.lerp(
+            Colors.transparent,
+            Colors.white.withOpacity(0.6), //  frosted glass look
+            progress,
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Approval Dashboard',
+                  style: TextStyle(
+                    // color: ,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ),
+              _roundIconButton(
+                icon: Icons.notifications_none_rounded,
+                onTap: onNotificationTap,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _roundIconButton(
+      {required IconData icon, required VoidCallback onTap}) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 28,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.cyan, width: 2)),
+        child: Icon(icon),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 70;
+
+  @override
+  double get minExtent => 70;
+
+  @override
+  bool shouldRebuild(covariant _ApprovalDashboardHeaderDelegate oldDelegate) {
+    return oldDelegate.onNotificationTap != onNotificationTap;
+  }
 }
 
-class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1200),
-  )..repeat(reverse: true);
+class _PulseSkeleton extends StatefulWidget {
+  @override
+  State<_PulseSkeleton> createState() => _PulseSkeletonState();
+}
+
+class _PulseSkeletonState extends State<_PulseSkeleton>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late AnimationController _shimmerController;
+  late Animation<double> _pulseAnimation;
+  late Animation<double> _shimmerAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Pulse animation for opacity
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+
+    _pulseAnimation =
+        Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Shimmer animation for gradient movement
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
+
+    _shimmerAnimation = Tween<double>(
+      begin: -2.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOutSine,
+    ));
+  }
 
   @override
   void dispose() {
-    _c.dispose();
+    _pulseController.dispose();
+    _shimmerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnimatedBuilder(
-      animation: _c,
-      builder: (_, child) {
-        final t = Tween<double>(begin: 0.5, end: 1.0).transform(
-            CurvedAnimation(parent: _c, curve: Curves.easeInOut).value);
-        return Opacity(opacity: t, child: child);
+      animation: Listenable.merge([_pulseAnimation, _shimmerAnimation]),
+      builder: (context, child) {
+        return FadeTransition(
+          opacity: _pulseAnimation,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+                end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+                colors: isDark
+                    ? [
+                        Colors.grey.shade800,
+                        Colors.grey.shade700,
+                        Colors.grey.shade600,
+                        Colors.grey.shade700,
+                        Colors.grey.shade800,
+                      ]
+                    : [
+                        Colors.grey.shade200,
+                        Colors.grey.shade100,
+                        Colors.white,
+                        Colors.grey.shade100,
+                        Colors.grey.shade200,
+                      ],
+                stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: (isDark ? Colors.black : Colors.grey.shade300)
+                      .withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+          ),
+        );
       },
-      child: widget.child,
     );
   }
 }

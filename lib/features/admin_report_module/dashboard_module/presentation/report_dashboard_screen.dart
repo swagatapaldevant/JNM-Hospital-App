@@ -162,7 +162,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            MainAxisAlignment.spaceAround,
                             children: [
                               dashboardItem(
                                 "assets/images/admin_report/opd.png",

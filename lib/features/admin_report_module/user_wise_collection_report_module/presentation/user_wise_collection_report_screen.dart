@@ -67,7 +67,7 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
       body: Column(
         children: [
           CommonHeaderForReportModule(
-            headingName: 'COLLECTION REPORT',
+            headingName: 'USER WISE COLLECTION REPORT',
             onSearchTap: () {
               setState(() {
                 isVisible = true;

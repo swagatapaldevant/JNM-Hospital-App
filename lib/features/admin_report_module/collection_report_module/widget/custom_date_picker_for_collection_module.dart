@@ -85,7 +85,7 @@ class _CustomDatePickerFieldForCollectionModuleState extends State<CustomDatePic
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: ScreenUtils().screenWidth(context) * 0.32,
+      width: ScreenUtils().screenWidth(context) * 0.33,
       padding: EdgeInsets.only(
         left: ScreenUtils().screenWidth(context) * 0.03,
       ),
@@ -107,7 +107,7 @@ class _CustomDatePickerFieldForCollectionModuleState extends State<CustomDatePic
         textAlignVertical: TextAlignVertical.center,
         style: TextStyle(
           color: AppColors.colorBlack,
-          fontSize: ScreenUtils().screenWidth(context) * 0.03,
+          fontSize: 10,
           fontFamily: "Poppins",
           fontWeight: FontWeight.w500,
         ),
@@ -116,7 +116,7 @@ class _CustomDatePickerFieldForCollectionModuleState extends State<CustomDatePic
           hintStyle: TextStyle(
             color: AppColors.colorPrimaryText,
             fontFamily: "Poppins",
-            fontSize: ScreenUtils().screenWidth(context) * 0.03,
+            fontSize: 10,
             fontWeight: FontWeight.w500,
           ),
           border: InputBorder.none,

@@ -24,5 +24,6 @@ abstract class AdminReportUsecase {
   Future<Resource> getCollectionReportDetails({required Map<String, dynamic> requestData});
   Future<Resource> getUserWiseCollectionReportDetails({required Map<String, dynamic> requestData});
   Future<Resource> getDoctorPayoutDetails({required Map<String, dynamic> requestData});
+  Future<Resource> getDoctorPayoutDetailsData({required Map<String, dynamic> requestData, required String id, required String date});
 
 }

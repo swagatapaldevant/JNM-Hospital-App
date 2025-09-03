@@ -172,7 +172,8 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                     // === Switchable Chart ===
                     if (!isLoading && _doctors.isNotEmpty) ...[
                       Container(
-                        padding: const EdgeInsets.only(left:12, top: 12, right: 12, bottom: 4),
+                        padding: const EdgeInsets.only(
+                            left: 12, top: 12, right: 12, bottom: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF6F7FB),
                           borderRadius: BorderRadius.circular(14),
@@ -234,8 +235,12 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                           return DoctorCollectionCard(
                             data: d,
                             onTap: () {
-                              // TODO: navigate to doctor detail if needed
-                              // Navigator.push(...);
+                              Navigator.pushNamed(
+                                  context, "/DoctorPayoutDetailsScreen",
+                                  arguments: {
+                                    "id": d.chargeId.toString(),
+                                    "date": selectedToDate.toString()
+                                  });
                             },
                           );
                         },
@@ -295,6 +300,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                 ))
             .toList();
 
+        _doctors.clear();
         setState(() {
           _doctors = parsed;
           isLoading = false;
@@ -385,6 +391,7 @@ class _ChartToggle extends StatelessWidget {
 /// =====================
 class DocPaidBarChart extends StatelessWidget {
   final List<DoctorCollectionData> doctors;
+
   const DocPaidBarChart({super.key, required this.doctors});
 
   @override
@@ -424,6 +431,7 @@ class DocPaidBarChart extends StatelessWidget {
 /// =====================
 class OldNewPatientsBarChart extends StatelessWidget {
   final List<DoctorCollectionData> doctors;
+
   // Tunables
   final double barH;
   final double rowGap;
@@ -443,10 +451,10 @@ class OldNewPatientsBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final entries = doctors
         .map((d) => _GroupEntry(
-      label: d.docName,
-      oldVal: math.max(0, d.patients - d.newlyRegistered).toDouble(),
-      newVal: d.newlyRegistered.toDouble(),
-    ))
+              label: d.docName,
+              oldVal: math.max(0, d.patients - d.newlyRegistered).toDouble(),
+              newVal: d.newlyRegistered.toDouble(),
+            ))
         .toList()
       ..sort((a, b) => (b.oldVal + b.newVal).compareTo(a.oldVal + a.newVal));
 
@@ -460,13 +468,16 @@ class OldNewPatientsBarChart extends StatelessWidget {
     }
 
     // total painter height needed
-    final double painterHeight = entries.length * (barH + rowGap) + 24; // + top pad allowance inside painter
+    final double painterHeight = entries.length * (barH + rowGap) +
+        24; // + top pad allowance inside painter
 
     // Build the painter once
     final painter = _GroupedHBarPainter(
       entries: entries,
-      oldColor: const Color(0xFF3B82F6), // blue
-      newColor: const Color(0xFFF59E0B), // amber
+      oldColor: const Color(0xFF3B82F6),
+      // blue
+      newColor: const Color(0xFFF59E0B),
+      // amber
       barH: barH,
       rowGap: rowGap,
       innerGap: innerGap,
@@ -695,9 +706,9 @@ class _GroupedHBarPainter extends CustomPainter {
   final Color newColor;
 
   // unified sizing
-  final double barH;        // total row height
-  final double rowGap;      // gap between rows
-  final double innerGap;    // gap between old/new bars inside a row
+  final double barH; // total row height
+  final double rowGap; // gap between rows
+  final double innerGap; // gap between old/new bars inside a row
   final double rightPad;
   final double topPad;
   final double minLeftPad;
@@ -736,7 +747,7 @@ class _GroupedHBarPainter extends CustomPainter {
       maxLabelW = math.max(maxLabelW, tp.width);
     }
     final leftPad =
-    math.min(size.width * 0.45, math.max(minLeftPad, maxLabelW + 16));
+        math.min(size.width * 0.45, math.max(minLeftPad, maxLabelW + 16));
     final chartW = math.max(0, size.width - leftPad - rightPad);
 
     // scale by max of series
@@ -806,7 +817,8 @@ class _GroupedHBarPainter extends CustomPainter {
         );
         valueTP.layout();
       }
-      valueTP.paint(canvas, Offset(xOld, rowTop + (barHeight - valueTP.height) / 2));
+      valueTP.paint(
+          canvas, Offset(xOld, rowTop + (barHeight - valueTP.height) / 2));
 
       valueTP = TextPainter(
         text: TextSpan(text: e.newVal.toStringAsFixed(0), style: valueStyle),
@@ -821,7 +833,14 @@ class _GroupedHBarPainter extends CustomPainter {
         );
         valueTP.layout();
       }
-      valueTP.paint(canvas, Offset(xNew, rowTop + barHeight + innerGap + (barHeight - valueTP.height) / 2));
+      valueTP.paint(
+          canvas,
+          Offset(
+              xNew,
+              rowTop +
+                  barHeight +
+                  innerGap +
+                  (barHeight - valueTP.height) / 2));
     }
   }
 

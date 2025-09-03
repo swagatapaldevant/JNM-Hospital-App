@@ -170,21 +170,7 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
 
     if (resource.status == STATUS.SUCCESS) {
       try {
-        // final List<dynamic> rawList = resource.data is String
-        //     ? jsonDecode(resource.data as String) as List<dynamic>
-        //     : resource.data as List<dynamic>;
-        //
-        // final cards = buildCollectionCardsVM(
-        //   rawList,
-        //   subtractRefundFromTotal:
-        //   true, // flip to false if you want gross header totals
-        // );
 
-        // setState(() {
-        //   _cards = cards;
-        //   _deptTotals = _aggregateDepartmentTotals(cards);
-        //   isLoading = false;
-        // });
       } catch (e) {
         setState(() => isLoading = false);
         CommonUtils().flutterSnackBar(

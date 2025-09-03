@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
@@ -77,7 +78,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     final billInfo = billingDetails?.billInfo;
     final payments = billingDetails?.payments ?? [];
     final patientDetails = billingDetails?.patient;
-
+  AppDimensions.init(context);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: isLoading
@@ -94,41 +95,44 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                   ),
                   // Main Bill Container
                   Container(
-                    margin: const EdgeInsets.all(2),
+                    //margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        // Hospital Header Section
-                        _buildHospitalHeader(bill),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        // Patient & Bill Info Section
-                        _buildPatientInfoSection(
-                            patientDetails, bill?.doctorName, "Dummy dept."),
-                        // Services/Items Section
-                        _buildServicesSection(billInfo ?? []),
-                        // Bill Summary Section
-                        _buildBillSummary(bill),
-                        // Receipt History Section
-                        if (payments.isNotEmpty) _buildPaymentSection(payments),
+                     // color: Colors.white,
+                     // borderRadius: BorderRadius.circular(20),
+                    //   boxShadow: [
+                    //     BoxShadow(
+                    //       color: Colors.black.withOpacity(0.08),
+                    //       blurRadius: 20,
+                    //       offset: const Offset(0, 4),
+                    //     ),
+                    //   ],
+                     ),
+                    child: Padding(
+                      padding:  EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          // Hospital Header Section
+                          _buildHospitalHeader(bill),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          // Patient & Bill Info Section
+                          _buildPatientInfoSection(
+                              patientDetails, bill?.doctorName, "Dummy dept."),
+                          // Services/Items Section
+                          _buildServicesSection(billInfo ?? []),
+                          // Bill Summary Section
+                          _buildBillSummary(bill),
+                          // Receipt History Section
+                          if (payments.isNotEmpty) _buildPaymentSection(payments),
 
-                        // Footer
-                        //_buildFooter(),
-                      ],
+                          // Footer
+                          //_buildFooter(),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -255,7 +259,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     required Widget body,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 10,),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topLeft,

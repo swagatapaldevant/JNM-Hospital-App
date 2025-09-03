@@ -11,7 +11,7 @@ class ApiEndPoint{
 
   //static const baseurl = "http://192.168.29.243:8001/api";
   static const baseurl = "https://devanthims.in/rainbow/api";
- //static const baseurl = "https://devanttest.in/kgh-demo/api";
+   //static const baseurl = "https://devanttest.in/kgh-demo/api";
    //static const baseurl = "https://devanttest.in/kgh-demo/api";
  // static const baseurl = "https://jmnmedicalcollege.com/api";
 
@@ -35,6 +35,7 @@ class ApiEndPoint{
   static const collectionReport =  "$baseurl/collection-report";
   static const userWiseCollectionReport =  "$baseurl/users-collection";
   static const doctorPayoutReport =  "$baseurl/doctor-payout";
+  static const doctorPayoutDetails =  "$baseurl/doctor-payout-details";
 
 
 

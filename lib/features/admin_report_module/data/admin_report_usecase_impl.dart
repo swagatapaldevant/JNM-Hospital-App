@@ -271,4 +271,22 @@ class AdminReportUsecaseImplementation extends AdminReportUsecase {
     }
   }
 
+
+  @override
+  Future<Resource> getDoctorPayoutDetailsData({
+    required Map<String, dynamic> requestData, required String id, required String date}) async {
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    Resource resource = await _apiClient.postRequest(
+        url: "${ApiEndPoint.doctorPayoutDetails}/${int.parse(id)}/$date",
+        header: header, requestData: requestData);
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
+
 }

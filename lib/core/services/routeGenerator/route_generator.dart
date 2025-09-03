@@ -9,6 +9,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/p
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/presentation/death_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dialysis_patients_report_module/presentation/dialysis_patients_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_module/presentation/discharge_report_screen.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/doctors_payout_module/presentation/doctor_payout_details_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/doctors_payout_module/presentation/doctors_payout_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/edit_bill_report_module/presentation/edit_bill_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/emg_patient_report_module/presentation/emg_patient_report_screen.dart';
@@ -90,6 +91,7 @@ class RouteGenerator{
   static const kCollectionReportScreen = "/CollectionReportScreen";
   static const kUserWiseCollectionReportScreen = "/UserWiseCollectionReportScreen";
   static const kDoctorsPayoutScreen = "/DoctorsPayoutScreen";
+  static const kDoctorPayoutDetailsScreen = "/DoctorPayoutDetailsScreen";
 
   static const kPatientDetailsScreen = "/PatientDetailsScreen";
   static const kPatientBillDetailsScreen = "/PatientBillDetailsScreen";
@@ -207,6 +209,13 @@ class RouteGenerator{
         return _animatedPageRoute(UserWiseCollectionReportScreen());
        case kDoctorsPayoutScreen:
         return _animatedPageRoute(DoctorsPayoutScreen());
+       case kDoctorPayoutDetailsScreen:
+         final args = settings.arguments as Map<String, dynamic>;
+         return _animatedPageRoute(
+            DoctorPayoutDetailsScreen(
+          id: args['id'] as String? ?? '',
+          selectedDate:args['date'] as String? ?? '' ,
+        ));
 
 
 

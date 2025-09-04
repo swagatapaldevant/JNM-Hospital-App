@@ -5,7 +5,6 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
-import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
@@ -25,7 +24,7 @@ class CollectionReportScreen extends StatefulWidget {
 
 class _CollectionReportScreenState extends State<CollectionReportScreen> {
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
-  final SharedPref _pref = getIt<SharedPref>();
+  //final SharedPref _pref = getIt<SharedPref>();
   bool isLoading = false;
   bool isVisible = false;
   String selectedFromDate = "";
@@ -362,7 +361,7 @@ bool _isCash(String mode) {
 }
 
 bool _isBankLike(String mode) {
-  final m = mode.toLowerCase();
+  //final m = mode.toLowerCase();
   if (_isCash(mode)) return false;
   return true;
 }

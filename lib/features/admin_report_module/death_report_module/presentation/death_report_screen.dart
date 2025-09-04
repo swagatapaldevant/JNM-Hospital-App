@@ -17,7 +17,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/cus
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/search_bar.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/doctor_wise_patient_death_count_graph.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/patient_death_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/doctor_by_death_count_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/patient_death_report_model.dart';
 

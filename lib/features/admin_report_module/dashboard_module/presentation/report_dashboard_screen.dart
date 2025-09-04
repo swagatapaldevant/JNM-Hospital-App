@@ -193,7 +193,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            MainAxisAlignment.spaceAround,
                             children: [
                               dashboardItem(
                                 "assets/images/admin_report/dialysis.png",
@@ -224,7 +224,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            MainAxisAlignment.spaceAround,
                             children: [
                               dashboardItem(
                                 "assets/images/admin_report/death_report.png",
@@ -256,7 +256,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                           SizedBox(height: AppDimensions.contentGap3),
                           Row(
                             mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                            MainAxisAlignment.spaceAround,
                             children: [
                               dashboardItem(
                                 "assets/images/admin_report/death_report.png",

@@ -14,7 +14,6 @@ import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/patient_item_data_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_bar_chart.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_item_data.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/billing_report_module/widgets/billing_report_modal_for_advanced_search.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/custom_date_picker_field.dart';
@@ -411,20 +410,9 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                                         .section
                                                         .toString(),
                                                     info: [
+                                                                                        
                                                       {
-                                                        "billId":
-                                                            billingList[index]
-                                                                .id
-                                                                .toString()
-                                                      },
-                                                      {
-                                                        "uid":
-                                                            billingList[index]
-                                                                .patientId
-                                                                .toString()
-                                                      },
-                                                      {
-                                                        "total":
+                                                        "Total":
                                                             billingList[index]
                                                                 .total
                                                                 .toString()
@@ -436,46 +424,50 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                                                                 .toString()
                                                       },
                                                       {
-                                                        "grandTotal":
+                                                        "Grand Total":
                                                             billingList[index]
                                                                 .grandTotal
                                                                 .toString()
                                                       },
                                                       {
-                                                        "billingTime":
+                                                        "Billing Time":
                                                             billingList[index]
                                                                 .billDate
                                                                 .toString()
                                                       },
                                                       {
-                                                        "appointmentTime":
+                                                        "Appointment Time":
                                                             billingList[index]
                                                                 .creDate
                                                                 .toString()
                                                       },
                                                       {
-                                                        "discountAmount":
+                                                        "Discount":
                                                             billingList[index]
                                                                 .discountAmount
-                                                                .toString()
+                                                                .toString(),
+                                                          
                                                       },
                                                       {
-                                                        "totalPayment":
+                                                        "Total":
                                                             billingList[index]
                                                                 .totalPayment
-                                                                .toString()
+                                                                .toString(),
+                                                         
                                                       },
                                                       {
-                                                        "refundAmount":
+                                                        "Refund":
                                                             billingList[index]
                                                                 .refundAmount
-                                                                .toString()
+                                                                .toString(),
+                                                         
                                                       },
                                                       {
-                                                        "dueAmount":
+                                                        "Due":
                                                             billingList[index]
                                                                 .dueAmount
-                                                                .toString()
+                                                                .toString(),
+                                                       
                                                       }
                                                     ],
                                                   ),

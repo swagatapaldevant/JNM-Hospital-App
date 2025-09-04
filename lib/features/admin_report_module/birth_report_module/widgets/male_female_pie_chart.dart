@@ -40,7 +40,7 @@ class _GenderPieChartState extends State<GenderPieChart> {
 
     return Container(
       width: ScreenUtils().screenWidth(context),
-      height: ScreenUtils().screenHeight(context) * 0.33,
+      height: ScreenUtils().screenHeight(context) * 0.38,
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(8),
@@ -177,86 +177,41 @@ class _GenderPieChartState extends State<GenderPieChart> {
                     ),
                   ),
                   // Legend
-                  Wrap(
-                    spacing: 0,
-                    runSpacing: 0,
-                    children: List.generate(widget.labels.length, (index) {
-                      final value = widget.lucsCounts[index];
-                      final percentage =
-                          (value / total * 100).toStringAsFixed(1);
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                              backgroundColor: colors[index], radius: 5),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${widget.labels[index]} ($percentage %)",
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: AppColors.colorBlack,
-                                fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      );
-                    }),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 0,
+                          runSpacing: 0,
+                          children: List.generate(widget.labels.length, (index) {
+                            final value = widget.lucsCounts[index];
+                            final percentage =
+                                (value / total * 100).toStringAsFixed(1);
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                    backgroundColor: colors[index], radius: 5),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    "${widget.labels[index]} ($percentage %)",
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColors.colorBlack,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
                   ),
-                  // AspectRatio(
-                  //   aspectRatio: 1,
-                  //   child: BarChart(
-                  //     BarChartData(
-                  //       barGroups: _buildBarGroups(),
-                  //       gridData: FlGridData(show: false),
-                  //       titlesData: FlTitlesData(
-                  //         leftTitles: AxisTitles(
-                  //             sideTitles: SideTitles(showTitles: false)),
-                  //         topTitles: AxisTitles(
-                  //             sideTitles: SideTitles(showTitles: false)),
-                  //         rightTitles: AxisTitles(
-                  //             sideTitles: SideTitles(showTitles: false)),
-                  //         bottomTitles: AxisTitles(
-                  //           sideTitles: SideTitles(
-                  //             showTitles: true,
-                  //             getTitlesWidget: (value, _) {
-                  //               int index = value.toInt();
-                  //               if (index >= 0 && index < widget.labels.length) {
-                  //                 return Transform.rotate(
-                  //                   angle: 45 * 3.1415926535 / 180,
-                  //                   child: Text(
-                  //                     widget.labels[index],
-                  //                     style: const TextStyle(fontSize: 10),
-                  //                   ),
-                  //                 );
-                  //               }
-                  //               return const SizedBox.shrink();
-                  //             },
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       borderData: FlBorderData(
-                  //         show: true,
-                  //         border: const Border(
-                  //             bottom: BorderSide(color: Colors.black12)),
-                  //       ),
-                  //       barTouchData: BarTouchData(
-                  //         enabled: true,
-                  //         touchTooltipData: BarTouchTooltipData(
-                  //           getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                  //             return BarTooltipItem(
-                  //               rod.toY.toStringAsFixed(0),
-                  //               const TextStyle(
-                  //                 color: Colors.white,
-                  //                 fontFamily: "Poppins",
-                  //                 fontWeight: FontWeight.bold,
-                  //               ),
-                  //             );
-                  //           },
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  //SizedBox(height: ScreenUtils().screenHeight(context) * 0.01),
+                  
                 ],
               ),
             ),

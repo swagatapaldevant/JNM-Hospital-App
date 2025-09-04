@@ -278,19 +278,32 @@ class _PatientItemDataState extends State<PatientItemData>
         return map.entries.map((entry) {
           final key = entry.key;
           String label = entry.value;
+          
           Color color;
-          if (key == "gender") {
+          if (key.toLowerCase() == "gender") {
             color = _genderColor(label);
           } else {
-            color = kColorMap[key] ?? Colors.grey;
+            color = kColorMap[key] ?? const Color.fromARGB(255, 37, 37, 37);
           }
 
           IconData icon;
           if (key.toLowerCase().endsWith("date") ||
               key.toLowerCase().endsWith("time") || key.toLowerCase() == "dob") {
             icon = Icons.date_range;
-            label = formatDate(label);
-          } else {
+            label = '$key ${formatDate(label)}';
+          } else if(key.toLowerCase().endsWith("total") || key.toLowerCase().endsWith("amount")
+                    || key.toLowerCase().endsWith("discount") || key.toLowerCase().endsWith("due")
+                     || key.toLowerCase().endsWith("refund")
+          ) {
+            
+            double val = double.parse(label);
+            if(val == 0) {
+              return null;
+            }
+            icon = Icons.currency_rupee;
+            label = "$key $val";
+          } 
+          else {
             icon = kIconMap[key] ?? Icons.label;
           }
 
@@ -300,7 +313,7 @@ class _PatientItemDataState extends State<PatientItemData>
             color: color,
           );
         });
-      }).toList(),
+      }).whereType<Widget>().toList(),
     );
   }
 
@@ -385,7 +398,7 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? Colors.blueGrey;
+    final c = color ?? const Color.fromARGB(255, 14, 18, 20);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -393,15 +406,26 @@ class _TagChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: c.withOpacity(.5)),
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: c),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w600, color: c, height: 1.0),
-        ),
-      ]),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: c),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: c,
+                height: 1.0,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -414,7 +438,17 @@ const Map<String, IconData> kIconMap = {
   "dob": Icons.cake_rounded,
   "age": Icons.cake_rounded,
   "mobile": Icons.call_rounded,
-  "date": Icons.alarm
+  "date": Icons.alarm,
+  "wardName": Icons.meeting_room,
+  "bedName": Icons.bed,
+  "tpaName": Icons.verified_user,
+  "address": Icons.location_city,
+  "guardianName": Icons.supervised_user_circle,
+  "diagnosis": Icons.medical_information,
+  "operation": Icons.medical_information,
+  "deliveryMode": Icons.biotech,
+  "weight": Icons.monitor_weight,
+  "dischargeType": Icons.supervised_user_circle
 };
 
 const Map<String, Color> kColorMap = {

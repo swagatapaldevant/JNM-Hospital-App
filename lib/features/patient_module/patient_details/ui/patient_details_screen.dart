@@ -331,25 +331,32 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
         },
       ));
     }
-    if (patientDetailsData.ipdDetails.isNotEmpty) {
-      tiles.add(const GlassTile(
-        icon: Icons.bed,
-        label: "IPD",
-      ));
-    }
-    if (patientDetailsData.daycareDetails.isNotEmpty) {
+    if (patientDetailsData.ipdDetails.isNotEmpty || patientDetailsData.daycareDetails.isNotEmpty) {
       tiles.add(GlassTile(
-        icon: Icons.healing,
-        label: "Daycare",
+        icon: Icons.bed,
+        label: "Daycare/IPD",
         onTap: () {
           Navigator.pushNamed(
             context,
             RouteGenerator.kPatientDaycareDetailsScreen,
             arguments: patientDetailsData.daycareDetails,
           );
-        },
+        }
       ));
     }
+    // if (patientDetailsData.daycareDetails.isNotEmpty) {
+    //   tiles.add(GlassTile(
+    //     icon: Icons.healing,
+    //     label: "Daycare",
+    //     onTap: () {
+    //       Navigator.pushNamed(
+    //         context,
+    //         RouteGenerator.kPatientDaycareDetailsScreen,
+    //         arguments: patientDetailsData.daycareDetails,
+    //       );
+    //     },
+    //   ));
+    // }
     if (patientDetailsData.emgDetails.isNotEmpty) {
       tiles.add(GlassTile(
         icon: Icons.emergency,

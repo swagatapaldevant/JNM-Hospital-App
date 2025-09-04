@@ -253,6 +253,7 @@ class _ReceiptTile extends StatelessWidget {
     final amount = (receipt.paymentAmount ?? 0).toDouble();
     final mode = (receipt.paymentMode ?? '—').trim();
     final modeStyle = _modeStyle(mode);
+    final secColor = _secStyle(section);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),
@@ -263,7 +264,7 @@ class _ReceiptTile extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            color: Colors.white, // 👈 pure white background
+            color: Colors.white, 
             border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
             boxShadow: [
               BoxShadow(
@@ -318,42 +319,72 @@ class _ReceiptTile extends StatelessWidget {
                     // Section + Mode
                     Row(
                       children: [
-                        Expanded(
-                          child: Text(
-                            section,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15.5,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black87,
+                        // Expanded(
+                        //   child: Text(
+                        //     section,
+                        //     maxLines: 1,
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: const TextStyle(
+                        //       fontSize: 15.5,
+                        //       fontWeight: FontWeight.w800,
+                        //       color: Colors.black87,
+                        //     ),
+                        //   ),
+                        // ),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 10, vertical: 6),
+                        //   decoration: BoxDecoration(
+                        //     color: modeStyle.color.withOpacity(0.12),
+                        //     borderRadius: BorderRadius.circular(999),
+                        //     border: Border.all(
+                        //         color: modeStyle.color.withOpacity(0.45)),
+                        //   ),
+                        //   child: Row(
+                        //     mainAxisSize: MainAxisSize.min,
+                        //     children: [
+                        //       Icon(modeStyle.icon,
+                        //           size: 14, color: modeStyle.color),
+                        //       const SizedBox(width: 6),
+                        //       Text(
+                        //         modeStyle.label,
+                        //         style: TextStyle(
+                        //           fontSize: 11.5,
+                        //           fontWeight: FontWeight.w800,
+                        //           color: modeStyle.color,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        Align(
+                          alignment: Alignment.topRight, 
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: secColor.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                  color: secColor.withValues(alpha: 0.45)),
                             ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: modeStyle.color.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                                color: modeStyle.color.withOpacity(0.45)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(modeStyle.icon,
-                                  size: 14, color: modeStyle.color),
-                              const SizedBox(width: 6),
-                              Text(
-                                modeStyle.label,
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w800,
-                                  color: modeStyle.color,
+                            child: Row(
+                              
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.local_hospital,
+                                    size: 14, color: secColor),
+                                const SizedBox(width: 6),
+                                Text(
+                                  section,
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: secColor,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -422,8 +453,8 @@ class _ReceiptTile extends StatelessWidget {
     final onlyDigits = RegExp(r'\d+').allMatches(id).map((m) => m.group(0)!).join();
     if (onlyDigits.isEmpty) return 'RCT';
     return onlyDigits.length <= 3
-        ? onlyDigits
-        : onlyDigits.substring(onlyDigits.length - 3);
+        ? "#$onlyDigits"
+        : "#${onlyDigits.substring(onlyDigits.length - 3)}";
   }
 
   static String _formatDate(dynamic iso) {
@@ -496,6 +527,17 @@ class _ReceiptTile extends StatelessWidget {
       default:
         return _ModeStyle(label: mode.isEmpty ? 'Other' : mode, color: Colors.blueGrey, icon: Icons.payment);
     }
+  }
+  
+ Color _secStyle(String section) {
+    final Map<String, Color> secColors = {
+        "OPD": Colors.blue,       
+        "IPD": Colors.green,      
+        "INVESTIGATION": Colors.orange, 
+        "EMR": Colors.purple,     
+        "BILLS": Colors.redAccent,
+      };
+    return secColors[section] ?? Colors.blue;
   }
 }
 

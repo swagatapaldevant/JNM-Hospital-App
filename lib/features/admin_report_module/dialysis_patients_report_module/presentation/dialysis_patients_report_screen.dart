@@ -52,7 +52,7 @@ class _DialysisPatientsReportScreenState
   int? femaleCount;
 
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
-  final SharedPref _pref = getIt<SharedPref>();
+  //final SharedPref _pref = getIt<SharedPref>();
 
   List<DialysisPatientReportData> dialysisReportList = [];
   final ScrollController _scrollController = ScrollController();
@@ -107,7 +107,6 @@ class _DialysisPatientsReportScreenState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
@@ -452,14 +451,12 @@ class _DialysisPatientsReportScreenState
                                                                 index]
                                                             .departmentName
                                                             .toString(),
+                                                    visitType:
+                                                        dialysisReportList[
+                                                                index]
+                                                            .type
+                                                            .toString(),
                                                     info: [
-                                                      {
-                                                        "admissionType":
-                                                            dialysisReportList[
-                                                                    index]
-                                                                .type
-                                                                .toString()
-                                                      },
                                                       {
                                                         "gender":
                                                             dialysisReportList[
@@ -482,7 +479,7 @@ class _DialysisPatientsReportScreenState
                                                                 .toString()
                                                       },
                                                       {
-                                                        "appointmentDate":
+                                                        "App. Date":
                                                             dialysisReportList[
                                                                     index]
                                                                 .admissionDate

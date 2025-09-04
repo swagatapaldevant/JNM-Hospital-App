@@ -430,7 +430,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                     "mobile": patientList[index]
                                                         .phone
                                                         .toString(),
-                                                    "appointmentTime":
+                                                    "App. Date":
                                                         patientList[index]
                                                             .appointmentDate
                                                             .toString()

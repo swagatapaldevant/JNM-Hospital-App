@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
-import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -20,7 +19,6 @@ import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/w
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/death_report_modal_for_death_gender_distribution.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/widgets/ipd_modal_for_advanced_search.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/ipd_patient_report_module/widgets/ipd_patient_report_item.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/charge_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/ipd_patient_report_graph.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/ipd_report/ipd_patient_report_model.dart';
@@ -52,7 +50,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
   int? femaleCount;
 
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
-  final SharedPref _pref = getIt<SharedPref>();
+  //final SharedPref _pref = getIt<SharedPref>();
 
   List<IpdPatientReportData> ipdReportList = [];
   final ScrollController _scrollController = ScrollController();
@@ -498,7 +496,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                                                   .toString(),
                                                         },
                                                         {
-                                                          "appointmentDate":
+                                                          "App. Date":
                                                               formatAnyTimestampString(
                                                                   ipdReportList[
                                                                           index]

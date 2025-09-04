@@ -399,23 +399,21 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
             
             List<T> colSumConverted = _convertSumToType(colSum);
             
-            return Expanded(
-              child: selectedRow == null
-                  ? _InsightCard<T>(
-                      title: "All",
-                      cols: cols,
-                      values: colSumConverted,
-                      colMin: colMin, 
-                      colMax: colMax, 
-                    )
-                  : _InsightCard<T>(
-                      title: rows[filteredIndexes.first],
-                      cols: cols,
-                      values: data[filteredIndexes.first],
-                      colMin: rowMin,
-                      colMax: rowMax,
-                    ),
-            );
+            return selectedRow == null
+                ? _InsightCard<T>(
+                    title: "All",
+                    cols: cols,
+                    values: colSumConverted,
+                    colMin: colMin, 
+                    colMax: colMax, 
+                  )
+                : _InsightCard<T>(
+                    title: rows[filteredIndexes.first],
+                    cols: cols,
+                    values: data[filteredIndexes.first],
+                    colMin: rowMin,
+                    colMax: rowMax,
+                  );
           },
         ),
       ],

@@ -321,21 +321,22 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                                   children: [
                                     TableStatsSwitcher(
                                       rows: departmentName,
-                                      cols:  ["New", "Old"],
+                                      cols: ["New", "Old"],
                                       isTransposeData: true,
                                       data: [
-                                      graphData
-                                          .map((e) =>
-                                              int.tryParse(
-                                                  e.newCount.toString()) ??
-                                              0)
-                                          .toList(),
-                                       graphData
-                                          .map((e) =>
-                                              int.tryParse(
-                                                  e.oldCount.toString()) ??
-                                              0)
-                                          .toList()],
+                                        graphData
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.newCount.toString()) ??
+                                                0)
+                                            .toList(),
+                                        graphData
+                                            .map((e) =>
+                                                int.tryParse(
+                                                    e.oldCount.toString()) ??
+                                                0)
+                                            .toList()
+                                      ],
                                       headingText: "Department Wise OPD Report",
                                       graphWidget: DepartmentWiseOpdReport(
                                         isVisible: false,
@@ -407,35 +408,36 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                                                         patientList[index]
                                                             .type
                                                             .toString(),
-                                                      doctor: patientList[index]
+                                                    doctor: patientList[index]
                                                         .doctorName
                                                         .toString(),
-                                                   info: [
-                                                    { "gender": patientList[index]
-                                                        .gender
-                                                        .toString()},
-                                                    {"age": patientList[index]
-                                                        .dobYear
-                                                        .toString()},
-                                                   { "mobile": patientList[index]
-                                                        .phone
-                                                        .toString()},
-                                                    
-                                                   { "appointmentDate":
-                                                        patientList[index]
-                                                            .creDate
-                                                            .toString()},
-                                                    {"appointmentTime":
-                                                        patientList[index]
-                                                            .appointmentDate
-                                                            .toString()},
-
-                                                   ], 
-                                                   
-                                                    
-                                                    onTap: () {
-                                                      
-                                                    },
+                                                    info: [
+                                                      {
+                                                        "gender":
+                                                            patientList[index]
+                                                                .gender
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "age":
+                                                            patientList[index]
+                                                                .dobYear
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "mobile":
+                                                            patientList[index]
+                                                                .phone
+                                                                .toString()
+                                                      },
+                                                      {
+                                                        "App. Date":
+                                                            patientList[index]
+                                                                .creDate
+                                                                .toString()
+                                                      },
+                                                    ],
+                                                    onTap: () {},
                                                   ),
                                                 ),
                                               ),

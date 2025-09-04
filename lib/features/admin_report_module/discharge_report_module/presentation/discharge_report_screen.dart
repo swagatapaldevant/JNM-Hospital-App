@@ -1,4 +1,3 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -319,8 +318,8 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
                                         patientName: dischargeReportList[index].patientName.toString(),
                                         info: [
                                           {"gender": dischargeReportList[index].gender.toString()},
-                                          {"admDate": dischargeReportList[index].admDate.toString()},
-                                          {"disChargeDate": dischargeReportList[index].disDate.toString()},
+                                          {"Adm. Date": dischargeReportList[index].admDate.toString()},
+                                          {"Dis. Date": dischargeReportList[index].disDate.toString()},
                                           {"dischargeType": dischargeReportList[index].dischargeType.toString()},
                                         ], 
                                         

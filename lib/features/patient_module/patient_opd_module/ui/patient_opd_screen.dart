@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_layout.dart';
 
 class PatientOPDScreen extends StatefulWidget {
   const PatientOPDScreen({super.key});

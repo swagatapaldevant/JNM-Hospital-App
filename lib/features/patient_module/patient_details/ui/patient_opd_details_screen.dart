@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_header.dart';
 import 'common_layout.dart';
 
-class PatientEmgDetailsScreen extends StatefulWidget {
-  final List<EmgDetailsModel> emgList;
-  const PatientEmgDetailsScreen({super.key, required this.emgList});
+class PatientOpdDetailsScreen extends StatefulWidget {
+  final List<OpdDetailsModel> opdList;
+  const PatientOpdDetailsScreen({super.key, required this.opdList});
 
   @override
-  State<PatientEmgDetailsScreen> createState() =>
-      _PatientEmgDetailsScreenState();
+  State<PatientOpdDetailsScreen> createState() => _PatientOpdDetailsScreenState();
 }
 
-class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
+class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
   final TextEditingController _search = TextEditingController();
 
   // Filters
   String _statusFilter = 'All'; // All | Paid | Pending
-  String _typeFilter = 'All'; // All | New | Old
-  String _dateFilter = 'All'; // All | Today | Upcoming | Past
+  String _typeFilter = 'All';   // All | New | Old
+  String _dateFilter = 'All';   // All | Today | Upcoming | Past
 
-  late List<EmgDetailsModel> _sorted;
+  late List<OpdDetailsModel> _sorted;
 
   bool _filtersExpanded = false;
+
 
   @override
   void initState() {
     super.initState();
-    _sorted = [...widget.emgList]..sort((a, b) {
-        final ad = _safeDate(_getAppointmentIso(a));
-        final bd = _safeDate(_getAppointmentIso(b));
-        return bd.compareTo(ad); // newest first
-      });
+    _sorted = [...widget.opdList]..sort((a, b) {
+      final ad = _safeDate(_getAppointmentIso(a));
+      final bd = _safeDate(_getAppointmentIso(b));
+      return bd.compareTo(ad); // newest first
+    });
   }
 
   @override
@@ -43,126 +43,147 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _applyFilters(
-        _sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
+    // keep your existing state/helpers: _sorted, _applyFilters, _summaryStats, etc.
+    final filtered = _applyFilters(_sorted, _search.text, _statusFilter, _typeFilter, _dateFilter);
     final summary = _summaryStats(filtered);
 
     return Scaffold(
       body: PatientDetailsScreenLayout(
+       
         slivers: [
-          // SliverToBoxAdapter(
-          //   child: Padding(
-          //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          //     child: Row(
-          //       children: [
-          //         _roundIconButton(
-          //             icon: Icons.arrow_back_ios_new_rounded,
-          //             onTap: () => Navigator.pop(context)),
-          //         const SizedBox(width: 12),
-          //         Expanded(
-          //           child: Text(
-          //             "Emergency (EMG)",
-          //             style: TextStyle(
-          //               color: Colors.black87,
-          //               fontSize: 20,
-          //               fontWeight: FontWeight.w700,
-          //               letterSpacing: 0.2,
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          CommonHeader(title: "Emergency (EMG)"),
+          
+        //   SliverToBoxAdapter(
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+        //     child: Row(
+        //       children: [
+        //         _roundIconButton(
+        //             icon: Icons.arrow_back_ios_new_rounded,
+        //             onTap: () => Navigator.pop(context)),
+        //         const SizedBox(width: 12),
+        //         Expanded(
+        //           child: Text(
+        //             "OPD Visits",
+        //             style: TextStyle(
+        //               color: Colors.black87,
+        //               fontSize: 20,
+        //               fontWeight: FontWeight.w700,
+        //               letterSpacing: 0.2,
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+        
+        CommonHeader(title: "OPD Visits"),
+
           SliverList(
-            delegate: SliverChildListDelegate.fixed([
-              const SizedBox(height: 16),
+          delegate: SliverChildListDelegate.fixed([
+            const SizedBox(height: 16),
 
-              // ===== Summary =====
-              _WhiteCard(
-                child: Row(
-                  children: [
-                    _summaryTile(
-                      icon: Icons.emergency_outlined,
-                      label: 'EMG Visits',
-                      value: '${filtered.length}',
-                      color: Colors.indigo,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _summaryTile(
-                        icon: Icons.account_balance_wallet_outlined,
-                        label: 'Total Due',
-                        value: _inr(summary.totalDue),
-                        color: Colors.deepOrange,
-                        alignEnd: true,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // ===== Search & Filters =====
-              // ===== Search & Filters (expandable) =====
-              _ExpandableFilterCard(
-                expanded: _filtersExpanded,
-                onToggle: () =>
-                    setState(() => _filtersExpanded = !_filtersExpanded),
-                title: 'Search & Filters',
-                searchField: _SearchField(
-                  controller: _search,
-                  hint: 'Search doctor, department, UID, billing id…',
-                  onChanged: (_) => setState(() {}),
-                ),
-                filters: _FilterBar(
-                  status: _statusFilter,
-                  onStatusChanged: (v) => setState(() => _statusFilter = v),
-                  type: _typeFilter,
-                  onTypeChanged: (v) => setState(() => _typeFilter = v),
-                  date: _dateFilter,
-                  onDateChanged: (v) => setState(() => _dateFilter = v),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // ===== Empty =====
-              if (filtered.isEmpty)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                  child: const _EmptyState(
-                    title: 'No EMG records',
-                    subtitle:
-                        'Try clearing filters or searching with a different term.',
+            // ---- Summary (solid white card) ----
+            _WhiteCard(
+              child: Row(
+                children: [
+                  _summaryTile(
+                    icon: Icons.local_hospital,
+                    label: 'Visits',
+                    value: '${filtered.length}',
+                    color: Colors.indigo,
                   ),
-                ),
-
-              // ===== List =====
-              ...filtered.map((e) => Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: _EmgTile(
-                      emg: e,
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        // Navigate to a detailed EMG view if you add one:
-                        // Navigator.pushNamed(context, RouteGenerator.kEmgDetail, arguments: e);
-                      },
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _summaryTile(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: 'Total Due',
+                      value: _inr(summary.totalDue),
+                      color: Colors.deepOrange,
+                      alignEnd: true,
                     ),
-                  )),
+                  ),
+                ],
+              ),
+            ),
 
-              const SizedBox(height: 28),
-            ]),
-          )
-        ],
+            const SizedBox(height: 12),
+
+            // ---- Search & Filters (solid white card) ----
+            // ---- Search & Filters (expandable) ----
+            _ExpandableFilterCard(
+              expanded: _filtersExpanded,
+              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
+              searchField: _SearchField(
+                controller: _search,
+                hint: 'Search doctor, department, ticket, UID…',
+                onChanged: (_) => setState(() {}),
+              ),
+              filters: _FilterBar(
+                status: _statusFilter,
+                onStatusChanged: (v) => setState(() => _statusFilter = v),
+                type: _typeFilter,
+                onTypeChanged: (v) => setState(() => _typeFilter = v),
+                date: _dateFilter,
+                onDateChanged: (v) => setState(() => _dateFilter = v),
+              ),
+            ),
+
+
+            const SizedBox(height: 12),
+
+            // ---- Empty state ----
+            if (filtered.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                child: const _EmptyState(
+                  title: 'No OPD visits found',
+                  subtitle: 'Try clearing filters or searching with a different term.',
+                ),
+              ),
+
+            // ---- OPD list ----
+            ...filtered.map((opd) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              child: _OpdTile(
+                opd: opd,
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  // Navigator.pushNamed(context, RouteGenerator.kSomeDetail, arguments: opd);
+                },
+              ),
+            )),
+
+            const SizedBox(height: 28),
+          ]),
+        )],
       ),
     );
   }
 
-  // ---------------- Helpers & accessors ----------------
+  // ---------------- Helpers & Mappers ----------------
+  
+  Widget _roundIconButton(
+      {required IconData icon, required VoidCallback onTap}) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 28,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2)
+        ),
+        child: Icon(icon, color: Colors.black87),
+      ),
+    );
+  }
+
 
   DateTime _safeDate(dynamic iso) {
     if (iso == null) return DateTime.fromMillisecondsSinceEpoch(0);
@@ -170,83 +191,82 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
     return d ?? DateTime.fromMillisecondsSinceEpoch(0);
   }
 
-  String? _getAppointmentIso(EmgDetailsModel m) {
-    final v = (m as dynamic).appointmentDate ?? (m as dynamic).appointment_date;
-    return v?.toString();
+  String? _getAppointmentIso(OpdDetailsModel m) {
+    // handle both snake_case and camelCase from model
+    // ignore: unnecessary_cast
+    final dynamic dateVal =
+    (m.appointmentDate ?? (m as dynamic).appointment_date) as dynamic;
+    return dateVal?.toString();
   }
 
-  String _doctor(EmgDetailsModel m) {
-    final v = (m as dynamic).doctorName ?? (m as dynamic).doctor_name;
-    return (v?.toString().trim().isNotEmpty ?? false)
-        ? v.toString()
-        : 'Unknown Doctor';
+  String _doctorName(OpdDetailsModel m) {
+    final dn = m.doctorName ?? (m as dynamic).doctor_name;
+    return (dn?.toString().trim().isNotEmpty ?? false) ? dn.toString() : 'Unknown Doctor';
   }
 
-  String _department(EmgDetailsModel m) {
-    final v = (m as dynamic).departmentName ?? (m as dynamic).department_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
+  String _departmentName(OpdDetailsModel m) {
+    final dd = m.departmentName ?? (m as dynamic).department_name;
+    return (dd?.toString().trim().isNotEmpty ?? false) ? dd.toString() : '—';
   }
 
-  String _type(EmgDetailsModel m) {
-    final v = (m as dynamic).type;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-  }
-
-  String _uid(EmgDetailsModel m) {
-    final v = (m as dynamic).uid;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-  }
-
-  double _due(EmgDetailsModel m) {
-    final v = (m as dynamic).dueAmount ?? (m as dynamic).due_amount;
-    if (v is num) return v.toDouble();
-    if (v is String) return double.tryParse(v) ?? 0.0;
-    return 0.0;
-  }
-
-  int _billStatus(EmgDetailsModel m) {
-    final v = (m as dynamic).billStatus ?? (m as dynamic).bill_status;
-    if (v is int) return v;
-    if (v is String) return int.tryParse(v) ?? 0;
-    if (v is num) return v.toInt();
+  int _billStatus(OpdDetailsModel m) {
+    final bs = m.billStatus ?? (m as dynamic).bill_status;
+    if (bs is int) return bs;
+    if (bs is String) return int.tryParse(bs) ?? 0;
     return 0;
   }
 
-  List<EmgDetailsModel> _applyFilters(
-    List<EmgDetailsModel> list,
-    String q,
-    String status,
-    String type,
-    String dateFilter,
-  ) {
+  String _type(OpdDetailsModel m) {
+    final t = m.type ?? (m as dynamic).type;
+    return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
+  }
+
+  double _due(OpdDetailsModel m) {
+    final d = m.dueAmount ?? (m as dynamic).due_amount;
+    if (d is num) return d.toDouble();
+    if (d is String) return double.tryParse(d) ?? 0.0;
+    return 0.0;
+  }
+
+  String _uid(OpdDetailsModel m) {
+    final u = m.uid ?? (m as dynamic).uid;
+    return (u?.toString().trim().isNotEmpty ?? false) ? u.toString() : '—';
+  }
+
+  int _ticket(OpdDetailsModel m) {
+    final t = m.ticketNo ?? (m as dynamic).ticket_no;
+    if (t is int) return t;
+    if (t is String) return int.tryParse(t) ?? 0;
+    return 0;
+  }
+
+  List<OpdDetailsModel> _applyFilters(
+      List<OpdDetailsModel> list,
+      String q,
+      String status,
+      String type,
+      String dateFilter,
+      ) {
     final now = DateTime.now();
-    Iterable<EmgDetailsModel> res = list;
+    Iterable<OpdDetailsModel> res = list;
     final query = q.trim().toLowerCase();
 
     if (query.isNotEmpty) {
       res = res.where((m) {
-        final doctor = _doctor(m).toLowerCase();
-        final dept = _department(m).toLowerCase();
+        final doctor = _doctorName(m).toLowerCase();
+        final dept = _departmentName(m).toLowerCase();
+        final ticket = _ticket(m).toString();
         final uid = _uid(m).toLowerCase();
-        final billingId =
-            ((m as dynamic).billingId ?? (m as dynamic).billing_id)
-                    ?.toString()
-                    .toLowerCase() ??
-                '';
-        final id = ((m as dynamic).id)?.toString().toLowerCase() ?? '';
-        final t = _type(m).toLowerCase();
         return doctor.contains(query) ||
             dept.contains(query) ||
-            uid.contains(query) ||
-            billingId.contains(query) ||
-            id.contains(query) ||
-            t.contains(query);
+            ticket.contains(query) ||
+            uid.contains(query);
       });
     }
 
     if (status != 'All') {
       res = res.where((m) {
-        final paid = _billStatus(m) == 2; // 2 => Paid (per your sample)
+        final paid = _isPaid(_billStatus(m));
         return status == 'Paid' ? paid : !paid;
       });
     }
@@ -259,8 +279,8 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
       res = res.where((m) {
         final d = _safeDate(_getAppointmentIso(m));
         if (dateFilter == 'Today') {
-          final n = DateTime.now();
-          final t = DateTime(n.year, n.month, n.day);
+          final nowD = DateTime.now();
+          final t = DateTime(nowD.year, nowD.month, nowD.day);
           return d.year == t.year && d.month == t.month && d.day == t.day;
         } else if (dateFilter == 'Upcoming') {
           return d.isAfter(now);
@@ -274,124 +294,84 @@ class _PatientEmgDetailsScreenState extends State<PatientEmgDetailsScreen> {
     return res.toList();
   }
 
-  _EmgSummary _summaryStats(List<EmgDetailsModel> list) {
+  _OpdSummary _summaryStats(List<OpdDetailsModel> list) {
     double totalDue = 0;
     for (final m in list) {
       totalDue += _due(m);
     }
-    return _EmgSummary(totalDue: totalDue);
+    return _OpdSummary(totalDue: totalDue);
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
-    return InkResponse(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
-      radius: 28,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)
-        ),
-        child: Icon(icon, color: Colors.black87),
-      ),
-    );
+  static bool _isPaid(int billStatus) {
+    // Common mapping: 1 = Pending/Unpaid, 2 = Paid (adjust if your API differs)
+    return billStatus == 2;
   }
 }
 
-class _EmgSummary {
+class _OpdSummary {
   final double totalDue;
-  _EmgSummary({required this.totalDue});
+  _OpdSummary({required this.totalDue});
 }
 
 // ===================== UI Widgets =====================
 
-class _EmgTile extends StatelessWidget {
-  final EmgDetailsModel emg;
+class _OpdTile extends StatelessWidget {
+  final OpdDetailsModel opd;
   final VoidCallback onTap;
-  const _EmgTile({required this.emg, required this.onTap});
+  const _OpdTile({required this.opd, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    String _doctor() {
-      final v = (emg as dynamic).doctorName ?? (emg as dynamic).doctor_name;
-      return (v?.toString().trim().isNotEmpty ?? false)
-          ? v.toString()
-          : 'Unknown Doctor';
+    // Accessors to be robust for snake/camel case
+    String _doctorName() {
+      final dn = opd.doctorName ?? (opd as dynamic).doctor_name;
+      return (dn?.toString().trim().isNotEmpty ?? false) ? dn.toString() : 'Unknown Doctor';
     }
 
-    String _department() {
-      final v =
-          (emg as dynamic).departmentName ?? (emg as dynamic).department_name;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
-
-    String _uid() {
-      final v = (emg as dynamic).uid;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
-
-    String _type() {
-      final v = (emg as dynamic).type;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
-
-    int _billStatus() {
-      final v = (emg as dynamic).billStatus ?? (emg as dynamic).bill_status;
-      if (v is int) return v;
-      if (v is String) return int.tryParse(v) ?? 0;
-      if (v is num) return v.toInt();
-      return 0;
-    }
-
-    double _due() {
-      final v = (emg as dynamic).dueAmount ?? (emg as dynamic).due_amount;
-      if (v is num) return v.toDouble();
-      if (v is String) return double.tryParse(v) ?? 0.0;
-      return 0.0;
+    String _departmentName() {
+      final dd = opd.departmentName ?? (opd as dynamic).department_name;
+      return (dd?.toString().trim().isNotEmpty ?? false) ? dd.toString() : '—';
     }
 
     String _appointmentIso() {
-      final v =
-          (emg as dynamic).appointmentDate ?? (emg as dynamic).appointment_date;
+      final v = opd.appointmentDate ?? (opd as dynamic).appointment_date;
       return v?.toString() ?? '';
     }
 
-    String _formatDateTime(String? iso) {
-      if (iso == null || iso.isEmpty) return '—';
-      final d = DateTime.tryParse(iso);
-      if (d == null) return iso;
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
-      ];
-      final dd = d.day.toString().padLeft(2, '0');
-      final mm = months[d.month - 1];
-      final yyyy = d.year.toString();
-      final hh = d.hour.toString().padLeft(2, '0');
-      final min = d.minute.toString().padLeft(2, '0');
-      return '$dd $mm $yyyy • $hh:$min';
+    int _ticket() {
+      final t = opd.billingId ?? (opd as dynamic).ticket_no;
+      if (t is int) return t;
+      if (t is String) return int.tryParse(t) ?? 0;
+      return 0;
     }
 
-    final paid = _billStatus() == 2;
-    final statusColor = paid ? Colors.green : Colors.orange;
+    String _type() {
+      final t = opd.type ?? (opd as dynamic).type;
+      return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
+    }
+
+    double _due() {
+      final d = opd.dueAmount ?? (opd as dynamic).due_amount;
+      if (d is num) return d.toDouble();
+      if (d is String) return double.tryParse(d) ?? 0.0;
+      return 0.0;
+    }
+
+    int _billStatus() {
+      final bs = opd.billStatus ?? (opd as dynamic).bill_status;
+      if (bs is int) return bs;
+      if (bs is String) return int.tryParse(bs) ?? 0;
+      return 0;
+    }
+
+    String _uid() {
+      final u = opd.uid ?? (opd as dynamic).uid;
+      return (u?.toString().trim().isNotEmpty ?? false) ? u.toString() : '—';
+    }
+
+    final statusPaid = _billStatus() == 2;
+    final statusColor = statusPaid ? Colors.green : Colors.orange;
     final apptText = _formatDateTime(_appointmentIso());
-    final due = _due();
 
     return InkWell(
       onTap: onTap,
@@ -412,13 +392,13 @@ class _EmgTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Gradient circle with UID tail
+            // Leading circular gradient with ticket
             Container(
               width: 52,
               height: 52,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
@@ -426,10 +406,17 @@ class _EmgTile extends StatelessWidget {
                     Color(0xFF7F5AF0),
                   ],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Center(
                 child: Text(
-                  _circleText(_uid()),
+                  _ticket() == 0 ? 'OPD' : _ticket().toString(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -445,12 +432,12 @@ class _EmgTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Department + Paid/Pending
+                  // Row: Department + Paid/Pending
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          _department(),
+                          _departmentName(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -461,16 +448,14 @@ class _EmgTile extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: statusColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(999),
-                          border:
-                              Border.all(color: statusColor.withOpacity(0.4)),
+                          border: Border.all(color: statusColor.withOpacity(0.4)),
                         ),
                         child: Text(
-                          paid ? 'Paid' : 'Pending',
+                          statusPaid ? 'Paid' : 'Pending',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w800,
@@ -487,7 +472,7 @@ class _EmgTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          "Dr  ${_doctor()}",
+                         "Dr  ${_doctorName()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -510,20 +495,13 @@ class _EmgTile extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.event,
-                              size: 16, color: Colors.blueGrey),
+                          const Icon(Icons.event, size: 16, color: Colors.blueGrey),
                           const SizedBox(width: 6),
-                          Text(apptText,
-                              style: const TextStyle(
-                                  fontSize: 12.5, color: Colors.black54)),
+                          Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
-                      if (_type().trim().isNotEmpty && _type() != '—')
-                        _chip(
-                            icon: Icons.category_outlined,
-                            label: _type().toUpperCase()),
-                      if (_uid() != '—')
-                        _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
+                      _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
+                      if (_uid() != '—') _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -532,8 +510,8 @@ class _EmgTile extends StatelessWidget {
                   _moneyPill(
                     icon: Icons.account_balance_wallet,
                     label: 'Due',
-                    value: _inr(due),
-                    emphasize: due > 0,
+                    value: _inr(_due()),
+                    emphasize: _due() > 0,
                   ),
                 ],
               ),
@@ -542,13 +520,6 @@ class _EmgTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static String _circleText(String uid) {
-    final digits =
-        RegExp(r'\d+').allMatches(uid).map((m) => m.group(0)!).join();
-    if (digits.isEmpty) return 'EMG';
-    return digits.length <= 3 ? digits : digits.substring(digits.length - 3);
   }
 
   static Widget _chip({required IconData icon, required String label}) {
@@ -566,18 +537,42 @@ class _EmgTile extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-            ),
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Colors.black87),
           ),
         ],
       ),
     );
   }
 
-  static Widget _moneyPill({
+  static String _formatDateTime(String? iso) {
+    if (iso == null || iso.isEmpty) return '—';
+    final d = DateTime.tryParse(iso);
+    if (d == null) return iso;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    final dd = d.day.toString().padLeft(2, '0');
+    final mm = months[d.month - 1];
+    final yyyy = d.year.toString();
+    final hh = d.hour.toString().padLeft(2, '0');
+    final min = d.minute.toString().padLeft(2, '0');
+    return '$dd $mm $yyyy • $hh:$min';
+  }
+
+  static String _inr(num? v) {
+    final n = (v ?? 0).toDouble();
+    final s = n.toStringAsFixed(2);
+    final parts = s.split('.');
+    final whole = parts[0];
+    final dec = parts[1];
+    final buf = StringBuffer();
+    for (int i = 0; i < whole.length; i++) {
+      final left = whole.length - i - 1;
+      buf.write(whole[i]);
+      if (left > 0 && left % 3 == 0) buf.write(',');
+    }
+    return '₹${buf.toString()}.$dec';
+  }
+
+  Widget _moneyPill({
     required IconData icon,
     required String label,
     required String value,
@@ -608,24 +603,7 @@ class _EmgTile extends StatelessWidget {
       ),
     );
   }
-
-  static String _inr(num? v) {
-    final n = (v ?? 0).toDouble();
-    final s = n.toStringAsFixed(2);
-    final parts = s.split('.');
-    final whole = parts[0];
-    final dec = parts[1];
-    final buf = StringBuffer();
-    for (int i = 0; i < whole.length; i++) {
-      final left = whole.length - i - 1;
-      buf.write(whole[i]);
-      if (left > 0 && left % 3 == 0) buf.write(',');
-    }
-    return '₹${buf.toString()}.$dec';
-  }
 }
-
-// ===== Filters/Search/Containers/Empty =====
 
 class _FilterBar extends StatelessWidget {
   final String status;
@@ -682,14 +660,9 @@ class _FilterBar extends StatelessWidget {
       children: [
         SizedBox(
           width: 60,
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
-            ),
-          ),
+          child: Text(label,
+              style: const TextStyle(
+                  fontSize: 12.5, fontWeight: FontWeight.w700, color: Colors.black87)),
         ),
         const SizedBox(width: 6),
         Expanded(
@@ -698,13 +671,13 @@ class _FilterBar extends StatelessWidget {
             child: Row(
               children: items
                   .map((it) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _segChip(
-                          label: it,
-                          selected: value == it,
-                          onTap: () => onChanged(it),
-                        ),
-                      ))
+                padding: const EdgeInsets.only(right: 8),
+                child: _segChip(
+                  label: it,
+                  selected: value == it,
+                  onTap: () => onChanged(it),
+                ),
+              ))
                   .toList(),
             ),
           ),
@@ -733,7 +706,7 @@ class _FilterBar extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            fontWeight:selected? FontWeight.w700: FontWeight.w600,
             color: color,
           ),
         ),
@@ -764,16 +737,15 @@ class _SearchField extends StatelessWidget {
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  controller.clear();
-                  onChanged?.call('');
-                },
-              ),
+          icon: const Icon(Icons.clear),
+          onPressed: () {
+            controller.clear();
+            onChanged?.call('');
+          },
+        ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
@@ -826,43 +798,19 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(Icons.emergency_outlined,
-            size: 64, color: Colors.blueGrey.withOpacity(0.4)),
+        Icon(Icons.event_busy_outlined, size: 64, color: Colors.blueGrey.withOpacity(0.4)),
         const SizedBox(height: 16),
-        Text(title,
-            style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black87)),
         const SizedBox(height: 8),
         Text(subtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54.withOpacity(0.8),
-                height: 1.3)),
+            style: TextStyle(fontSize: 14, color: Colors.black54.withOpacity(0.8), height: 1.3)),
       ],
     );
   }
 }
 
-// ---------- Shared summary INR ----------
-String _inr(num? v) {
-  final n = (v ?? 0).toDouble();
-  final s = n.toStringAsFixed(2);
-  final parts = s.split('.');
-  final whole = parts[0];
-  final dec = parts[1];
-  final buf = StringBuffer();
-  for (int i = 0; i < whole.length; i++) {
-    final left = whole.length - i - 1;
-    buf.write(whole[i]);
-    if (left > 0 && left % 3 == 0) buf.write(',');
-  }
-  return '₹${buf.toString()}.$dec';
-}
-
-// ---------- Shared summary tile ----------
+// ---------- Small UI bits ----------
 Widget _summaryTile({
   required IconData icon,
   required String label,
@@ -895,8 +843,7 @@ class _SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 16,
@@ -905,22 +852,13 @@ class _SummaryTile extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Column(
-          crossAxisAlignment:
-              alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black54,
-                )),
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.black54)),
             const SizedBox(height: 2),
             Text(value,
-                style: const TextStyle(
-                  fontSize: 16.5,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                )),
+                style: const TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, color: Colors.black87)),
           ],
         ),
       ],
@@ -928,17 +866,32 @@ class _SummaryTile extends StatelessWidget {
   }
 }
 
+// ---------- Simple INR formatter ----------
+String _inr(num? v) {
+  final n = (v ?? 0).toDouble();
+  final s = n.toStringAsFixed(2);
+  final parts = s.split('.');
+  final whole = parts[0];
+  final dec = parts[1];
+  final buf = StringBuffer();
+  for (int i = 0; i < whole.length; i++) {
+    final left = whole.length - i - 1;
+    buf.write(whole[i]);
+    if (left > 0 && left % 3 == 0) buf.write(',');
+  }
+  return '₹${buf.toString()}.$dec';
+}
+
+
 class _ExpandableFilterCard extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
-  final String title;
   final Widget searchField;
   final Widget filters;
 
   const _ExpandableFilterCard({
     required this.expanded,
     required this.onToggle,
-    required this.title,
     required this.searchField,
     required this.filters,
   });
@@ -949,7 +902,7 @@ class _ExpandableFilterCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header row (tap to toggle)
+          // Header row (tap anywhere to toggle)
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(10),
@@ -957,22 +910,22 @@ class _ExpandableFilterCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  const Icon(Icons.tune_rounded,
-                      size: 20, color: Colors.indigo),
+                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
                   const SizedBox(width: 8),
-                  Expanded(
+                  const Expanded(
                     child: Text(
-                      title,
-                      style: const TextStyle(
+                      'Search & Filters',
+                      style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
                         color: Colors.black87,
                       ),
                     ),
                   ),
+                  // chevron animates
                   AnimatedRotation(
                     duration: const Duration(milliseconds: 200),
-                    turns: expanded ? 0.5 : 0.0, // 0 = down, 0.5 = up
+                    turns: expanded ? 0.5 : 0.0, // 0 -> down, 0.5 -> up
                     child: const Icon(Icons.keyboard_arrow_down_rounded,
                         size: 22, color: Colors.black54),
                   ),
@@ -984,14 +937,13 @@ class _ExpandableFilterCard extends StatelessWidget {
           // Search always visible
           searchField,
 
-          // Smooth expand/collapse
+          // Animated expand area
           AnimatedCrossFade(
-            duration: const Duration(milliseconds: 220),
             firstCurve: Curves.easeOut,
             secondCurve: Curves.easeOut,
             sizeCurve: Curves.easeOut,
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 220),
+            crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Column(
               children: [
@@ -1008,13 +960,13 @@ class _ExpandableFilterCard extends StatelessWidget {
   }
 
   Widget _softDivider() => Container(
-        height: 1,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.black.withOpacity(0.06), Colors.transparent],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-        ),
-      );
+    height: 1,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+    ),
+  );
 }

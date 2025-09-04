@@ -7,8 +7,8 @@ import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/data/patient_details_usecase.dart';
 
 class PatientDetailsScreen extends StatefulWidget {
   const PatientDetailsScreen({super.key});

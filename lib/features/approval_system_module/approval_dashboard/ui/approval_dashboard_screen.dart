@@ -7,7 +7,7 @@ import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.da
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/data/approval_dashboard_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/glasscard.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
 
 class ApprovalDashboardScreen extends StatefulWidget {
   const ApprovalDashboardScreen({super.key});

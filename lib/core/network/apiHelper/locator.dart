@@ -12,8 +12,8 @@ import 'package:jnm_hospital_app/features/approval_system_module/approval_screen
 import 'package:jnm_hospital_app/features/approval_system_module/approval_screen/data/approval_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase.dart';
 import 'package:jnm_hospital_app/features/auth_module/data/auth_usecase_impl.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/data/patient_details_usecase_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/data/patient_details_usecase.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/data/patient_details_usecase_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/data/patient_login_usecase_impl.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/data/patient_opd_usecases.dart';

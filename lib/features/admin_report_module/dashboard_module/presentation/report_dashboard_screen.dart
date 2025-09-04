@@ -101,6 +101,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   Widget build(BuildContext context) {
     AppDimensions.init(context);
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           Container(

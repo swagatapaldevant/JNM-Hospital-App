@@ -9,6 +9,7 @@ import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/presentation/collection_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/collection_expandable_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/custom_date_picker_for_collection_module.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/department_bar_chart.dart';
@@ -19,11 +20,12 @@ class UserWiseCollectionReportScreen extends StatefulWidget {
   const UserWiseCollectionReportScreen({super.key});
 
   @override
-  State<UserWiseCollectionReportScreen> createState() => _UserWiseCollectionReportScreenState();
+  State<UserWiseCollectionReportScreen> createState() =>
+      _UserWiseCollectionReportScreenState();
 }
 
-class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionReportScreen> {
-
+class _UserWiseCollectionReportScreenState
+    extends State<UserWiseCollectionReportScreen> {
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
   final SharedPref _pref = getIt<SharedPref>();
   bool isLoading = false;
@@ -33,6 +35,7 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
   final ScrollController _scrollController = ScrollController();
   List<CollectionCardVM> _cards = [];
   Map<String, double> _deptTotals = {};
+
 
   @override
   void initState() {
@@ -57,7 +60,6 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
     final d = now.day.toString().padLeft(2, '0');
     return "$y-$m-$d";
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +150,7 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
                       DepartmentBarChart(
                         totals: _deptTotals,
                         subtitle: (selectedFromDate.isNotEmpty &&
-                            selectedToDate.isNotEmpty)
+                                selectedToDate.isNotEmpty)
                             ? "$selectedFromDate - $selectedToDate"
                             : null,
                       ),
@@ -157,27 +159,29 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : _cards.isEmpty
-                        ? Center(
-                      child: Text(
-                        "Please use proper date range",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black),
-                      ),
-                    )
-                        : ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: _cards.length,
-                        itemBuilder: (BuildContext context, int i) {
-                          final vm = _cards[i];
-                          return CollectionExpandableCard(
-                            date: vm.displayDate,
-                            totalCollection: vm.totalCollection,
-                            departmentData: vm.departmentData,
-                          );
-                        }),
+                            ? Center(
+                                child: Text(
+                                  "Please use proper date range",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black),
+                                ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: _cards.length,
+                                itemBuilder: (BuildContext context, int i) {
+                                  final vm = _cards[i];
+                                  return CollectionExpandableCard(
+                                    refundShow: true,
+                                    refund: vm.refund.toString(),
+                                    date: vm.displayDate,
+                                    totalCollection: vm.totalCollection,
+                                    departmentData: vm.departmentData,
+                                  );
+                                }),
                   ],
                 ),
               ),
@@ -190,15 +194,16 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
 
   /// Convert the raw API list (decoded JSON) into strongly-typed and aggregated VMs.
   List<CollectionCardVM> _buildUserCardsVMFromResult(
-      List<dynamic> users, {
-        required bool subtractRefundFromTotal,
-      }) {
+    List<dynamic> users, {
+    required bool subtractRefundFromTotal,
+  }) {
     final List<CollectionCardVM> items = [];
 
     for (final u in users) {
       final m = (u as Map).map((k, v) => MapEntry(k.toString(), v));
       final String userName = (m['name'] ?? '').toString().trim();
       final double refund = _toDouble(m['payment_refund']);
+
 
       final List payments = (m['payments'] as List?) ?? [];
 
@@ -207,7 +212,8 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
       double gross = 0.0;
 
       for (final p in payments) {
-        final pay = Payment.fromJson((p as Map).map((k, v) => MapEntry(k.toString(), v)));
+        final pay = Payment.fromJson(
+            (p as Map).map((k, v) => MapEntry(k.toString(), v)));
         final dep = pay.section.isEmpty ? 'Unknown' : pay.section;
         dept.putIfAbsent(dep, () => {"cash": 0.0, "bank": 0.0, "total": 0.0});
 
@@ -218,7 +224,8 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
         }
 
         // rolling total per department
-        dept[dep]!["total"] = (dept[dep]!["cash"] ?? 0) + (dept[dep]!["bank"] ?? 0);
+        dept[dep]!["total"] =
+            (dept[dep]!["cash"] ?? 0) + (dept[dep]!["bank"] ?? 0);
         gross += pay.amount;
       }
 
@@ -228,21 +235,22 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
 
       items.add(
         CollectionCardVM(
-          displayDate: userName,            // <<< this is the card TITLE (user name)
-          totalCollection: net,             // <<< header right value (user’s total)
-          departmentData: dept,             // <<< department breakdown (cash/bank/total)
+          displayDate: userName, // <<< this is the card TITLE (user name)
+          totalCollection: net, // <<< header right value (user’s total)
+          departmentData: dept, // <<< department breakdown (cash/bank/total)
+          refund: refund,
         ),
       );
     }
 
     return items;
   }
+
   double _toDouble(dynamic v) {
     if (v == null) return 0.0;
     if (v is num) return v.toDouble();
     return double.tryParse(v.toString().trim()) ?? 0.0;
   }
-
 
   Map<String, double> _aggregateDepartmentTotals(List<CollectionCardVM> cards) {
     final Map<String, double> totals = {};
@@ -263,7 +271,8 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
       "to_date": selectedToDate
     };
 
-    final resource = await _adminReportUsecase.getUserWiseCollectionReportDetails(
+    final resource =
+        await _adminReportUsecase.getUserWiseCollectionReportDetails(
       requestData: requestData,
     );
 
@@ -278,14 +287,15 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
             : (body is List ? body : const []);
 
         // Build user cards (one card per user "name")
-        final cards = _buildUserCardsVMFromResult(resultList, subtractRefundFromTotal: true);
+        final cards = _buildUserCardsVMFromResult(resultList,
+            subtractRefundFromTotal: true);
 
         // Build top graph totals (sum sections across all users)
         final totals = _aggregateDepartmentTotals(cards);
 
         setState(() {
           _cards = cards;
-          _deptTotals = totals;   // drives DepartmentBarChart
+          _deptTotals = totals; // drives DepartmentBarChart
           isLoading = false;
         });
       } catch (e) {
@@ -305,50 +315,6 @@ class _UserWiseCollectionReportScreenState extends State<UserWiseCollectionRepor
       );
     }
   }
-
-
-
-}
-
-
-/// ---------- MODELS ----------
-class Payment {
-  final String section;
-  final double amount;
-  final String mode;
-  final DateTime dateTime;
-
-  Payment({
-    required this.section,
-    required this.amount,
-    required this.mode,
-    required this.dateTime,
-  });
-
-  factory Payment.fromJson(Map<String, dynamic> j) {
-    // amount can be "2000.00" or 2000
-    double parseAmount(dynamic v) {
-      if (v == null) return 0.0;
-      if (v is num) return v.toDouble();
-      final s = v.toString().trim();
-      return double.tryParse(s) ?? 0.0;
-    }
-
-    // backend can send "yyyy-MM-dd HH:mm:ss"
-    DateTime parseDate(dynamic v) {
-      final raw = (v ?? '').toString().trim();
-      if (raw.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
-      final iso = raw.contains(' ') ? raw.replaceFirst(' ', 'T') : raw;
-      return DateTime.tryParse(iso) ?? DateTime.fromMillisecondsSinceEpoch(0);
-    }
-
-    return Payment(
-      section: (j['section'] ?? '').toString().trim(),
-      amount: parseAmount(j['payment_amount']),
-      mode: (j['payment_mode'] ?? '').toString().trim(),
-      dateTime: parseDate(j['payment_date']),
-    );
-  }
 }
 
 class DayCollection {
@@ -364,29 +330,58 @@ class DayCollection {
 
   factory DayCollection.fromJson(Map<String, dynamic> j) {
     final payments = (j['payments'] as List? ?? [])
-        .map((e) => Payment.fromJson(e as Map<String, dynamic>))
+        .map((e) => Payment.fromJson(
+            (e as Map).map((k, v) => MapEntry(k.toString(), v))))
         .toList();
 
     return DayCollection(
       rawDate: (j['date'] ?? '').toString(),
-      refund: (j['payment_refund'] as num?)?.toDouble() ?? 0.0,
+      refund: _toDouble(j['payment_refund']),
+      // ✅ no cast crash if it's "1100" (string)
       payments: payments,
+    );
+  }
+}
+
+class Payment {
+  final String section;
+  final double amount;
+  final String mode;
+  final DateTime dateTime;
+
+  Payment({
+    required this.section,
+    required this.amount,
+    required this.mode,
+    required this.dateTime,
+  });
+
+  factory Payment.fromJson(Map<String, dynamic> j) {
+    return Payment(
+      section: (j['section'] ?? '').toString().trim(),
+      amount: _toDouble(j['payment_amount']), // ✅ handles "2000.00" or 2000
+      mode: (j['payment_mode'] ?? '').toString().trim(),
+      dateTime:
+          _toDateTime(j['payment_date']), // ✅ handles "2025-09-03 13:13:00"
     );
   }
 }
 
 /// ---------- AGGREGATE RESULT FOR UI ----------
 class CollectionCardVM {
-  final String displayDate; // e.g. "01 Aug 2025"
-  final double totalCollection; // date-level total (gross or net)
+  final String displayDate;                 // user name (card title)
+  final double totalCollection;             // NET total (gross - refund) you show on header
   final Map<String, Map<String, double>> departmentData;
+  final double refund;                      // 👈 add this
 
   CollectionCardVM({
     required this.displayDate,
     required this.totalCollection,
     required this.departmentData,
+    required this.refund,                   // 👈 add this
   });
 }
+
 
 /// ---------- HELPERS ----------
 bool _isCash(String mode) {
@@ -434,4 +429,20 @@ String _formatDisplayDate(String raw) {
 
 String formatINR(double v) {
   return '₹${v.toStringAsFixed(2)}';
+}
+
+// ---- Top-level safe parsers (visible to all classes in this file) ----
+double _toDouble(dynamic v) {
+  if (v == null) return 0.0;
+  if (v is num) return v.toDouble();
+  return double.tryParse(v.toString().trim()) ?? 0.0;
+}
+
+DateTime _toDateTime(dynamic v) {
+  final raw = (v ?? '').toString().trim();
+  if (raw.isEmpty) return DateTime.fromMillisecondsSinceEpoch(0);
+  final iso = raw.contains(' ')
+      ? raw.replaceFirst(' ', 'T')
+      : raw; // "yyyy-MM-dd HH:mm:ss" -> ISO-ish
+  return DateTime.tryParse(iso) ?? DateTime.fromMillisecondsSinceEpoch(0);
 }

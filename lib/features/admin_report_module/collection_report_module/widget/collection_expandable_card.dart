@@ -5,13 +5,16 @@ class CollectionExpandableCard extends StatefulWidget {
   final String date;
   final double totalCollection;
   final Map<String, Map<String, double>> departmentData;
+  final String refund;
+  final bool refundShow;
 
-  const CollectionExpandableCard({
-    super.key,
-    required this.date,
-    required this.totalCollection,
-    required this.departmentData,
-  });
+  const CollectionExpandableCard(
+      {super.key,
+      required this.date,
+      required this.totalCollection,
+      required this.departmentData,
+      required this.refund,
+      required this.refundShow});
 
   @override
   State<CollectionExpandableCard> createState() =>
@@ -71,13 +74,27 @@ class _CollectionExpandableCardState extends State<CollectionExpandableCard> {
                 ),
                 Row(
                   children: [
-                    Text(
-                      "₹${widget.totalCollection.toStringAsFixed(2)}",
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.green[700],
-                        fontSize: 15,
-                      ),
+                    Column(
+                      children: [
+                        Text(
+                          "₹${widget.totalCollection.toStringAsFixed(2)}",
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.green[700],
+                            fontSize: 15,
+                          ),
+                        ),
+                        widget.refundShow == true
+                            ? Text(
+                                "(Refund ₹${widget.refund})",
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.red,
+                                  fontSize: 11,
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                      ],
                     ),
                     const SizedBox(width: 8),
                     AnimatedRotation(

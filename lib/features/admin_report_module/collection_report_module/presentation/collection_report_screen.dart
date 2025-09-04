@@ -173,6 +173,8 @@ class _CollectionReportScreenState extends State<CollectionReportScreen> {
                                 itemBuilder: (BuildContext context, int i) {
                                   final vm = _cards[i];
                                   return CollectionExpandableCard(
+                                    refund: "0",
+                                    refundShow: false,
                                     date: vm.displayDate,
                                     totalCollection: vm.totalCollection,
                                     departmentData: vm.departmentData,

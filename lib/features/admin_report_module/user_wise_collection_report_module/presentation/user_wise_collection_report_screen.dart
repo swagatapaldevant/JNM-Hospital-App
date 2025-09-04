@@ -2,19 +2,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
-import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/presentation/collection_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/collection_expandable_card.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/custom_date_picker_for_collection_module.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/collection_report_module/widget/department_bar_chart.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/user_wise_collection_report_module/presentation/department_wise_user_wise_details_screen.dart';
 
 class UserWiseCollectionReportScreen extends StatefulWidget {
   const UserWiseCollectionReportScreen({super.key});
@@ -175,6 +174,22 @@ class _UserWiseCollectionReportScreenState
                                 itemBuilder: (BuildContext context, int i) {
                                   final vm = _cards[i];
                                   return CollectionExpandableCard(
+                                    onDepartmentTap: (dept, totals){
+                                      final items = vm.paymentsByDept[dept] ?? const <Payment>[];
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => DepartmentWiseUserWiseDetailsScreen(
+                                            userName: vm.displayDate,
+                                            userId: vm.userId,
+                                            department: dept,
+                                            fromDate: selectedFromDate,
+                                            toDate: selectedToDate,
+                                            payments: items, // pass filtered list
+                                          ),
+                                        ),
+                                      );
+                                    },
                                     refundShow: true,
                                     refund: vm.refund.toString(),
                                     date: vm.displayDate,
@@ -194,28 +209,33 @@ class _UserWiseCollectionReportScreenState
 
   /// Convert the raw API list (decoded JSON) into strongly-typed and aggregated VMs.
   List<CollectionCardVM> _buildUserCardsVMFromResult(
-    List<dynamic> users, {
-    required bool subtractRefundFromTotal,
-  }) {
+      List<dynamic> users, {
+        required bool subtractRefundFromTotal,
+      }) {
     final List<CollectionCardVM> items = [];
 
     for (final u in users) {
       final m = (u as Map).map((k, v) => MapEntry(k.toString(), v));
+
       final String userName = (m['name'] ?? '').toString().trim();
+      final int userId = ((m['payment_recived_by'] ?? 0) as num).toInt(); // <-- add
       final double refund = _toDouble(m['payment_refund']);
 
+      final List paymentsRaw = (m['payments'] as List?) ?? [];
 
-      final List payments = (m['payments'] as List?) ?? [];
-
-      // section-wise bucket: { "OPD": {"cash": x, "bank": y, "total": z}, ... }
       final Map<String, Map<String, double>> dept = {};
+      final Map<String, List<Payment>> paymentsByDept = {}; // <-- add
       double gross = 0.0;
 
-      for (final p in payments) {
+      for (final p in paymentsRaw) {
         final pay = Payment.fromJson(
             (p as Map).map((k, v) => MapEntry(k.toString(), v)));
+
         final dep = pay.section.isEmpty ? 'Unknown' : pay.section;
+
         dept.putIfAbsent(dep, () => {"cash": 0.0, "bank": 0.0, "total": 0.0});
+        paymentsByDept.putIfAbsent(dep, () => []);
+        paymentsByDept[dep]!.add(pay); // <-- collect for details screen
 
         if (_isCash(pay.mode)) {
           dept[dep]!["cash"] = (dept[dep]!["cash"] ?? 0) + pay.amount;
@@ -223,9 +243,9 @@ class _UserWiseCollectionReportScreenState
           dept[dep]!["bank"] = (dept[dep]!["bank"] ?? 0) + pay.amount;
         }
 
-        // rolling total per department
         dept[dep]!["total"] =
             (dept[dep]!["cash"] ?? 0) + (dept[dep]!["bank"] ?? 0);
+
         gross += pay.amount;
       }
 
@@ -235,16 +255,19 @@ class _UserWiseCollectionReportScreenState
 
       items.add(
         CollectionCardVM(
-          displayDate: userName, // <<< this is the card TITLE (user name)
-          totalCollection: net, // <<< header right value (user’s total)
-          departmentData: dept, // <<< department breakdown (cash/bank/total)
-          refund: refund,
+          displayDate: userName,
+          userId: userId,                         // <-- add
+          totalCollection: net,
+          departmentData: dept,
+          paymentsByDept: paymentsByDept,         // <-- add
+          refund: refund,                         // <-- add
         ),
       );
     }
 
     return items;
   }
+
 
   double _toDouble(dynamic v) {
     if (v == null) return 0.0;
@@ -345,12 +368,14 @@ class DayCollection {
 
 class Payment {
   final String section;
+  final String patientName; // <-- add
   final double amount;
   final String mode;
   final DateTime dateTime;
 
   Payment({
     required this.section,
+    required this.patientName,
     required this.amount,
     required this.mode,
     required this.dateTime,
@@ -359,28 +384,34 @@ class Payment {
   factory Payment.fromJson(Map<String, dynamic> j) {
     return Payment(
       section: (j['section'] ?? '').toString().trim(),
-      amount: _toDouble(j['payment_amount']), // ✅ handles "2000.00" or 2000
+      patientName: (j['patient_name'] ?? '').toString().trim(),  // <-- add
+      amount: _toDouble(j['payment_amount']),
       mode: (j['payment_mode'] ?? '').toString().trim(),
-      dateTime:
-          _toDateTime(j['payment_date']), // ✅ handles "2025-09-03 13:13:00"
+      dateTime: _toDateTime(j['payment_date']),
     );
   }
 }
 
+
 /// ---------- AGGREGATE RESULT FOR UI ----------
 class CollectionCardVM {
-  final String displayDate;                 // user name (card title)
-  final double totalCollection;             // NET total (gross - refund) you show on header
+  final String displayDate; // here: user name (card title)
+  final int userId;         // <-- add
+  final double totalCollection;
   final Map<String, Map<String, double>> departmentData;
-  final double refund;                      // 👈 add this
+  final Map<String, List<Payment>> paymentsByDept; // <-- add
+  final double refund;      // <-- add
 
   CollectionCardVM({
     required this.displayDate,
+    required this.userId,
     required this.totalCollection,
     required this.departmentData,
-    required this.refund,                   // 👈 add this
+    required this.paymentsByDept,
+    required this.refund,
   });
 }
+
 
 
 /// ---------- HELPERS ----------
@@ -407,25 +438,6 @@ DateTime? _parseDdmmyyyy(String ddMMyyyy) {
   }
 }
 
-String _formatDisplayDate(String raw) {
-  final dt = _parseDdmmyyyy(raw);
-  if (dt == null) return raw;
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
-  return '${dt.day.toString().padLeft(2, '0')} ${months[dt.month - 1]} ${dt.year}';
-}
 
 String formatINR(double v) {
   return '₹${v.toStringAsFixed(2)}';

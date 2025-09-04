@@ -437,7 +437,7 @@ class OldNewPatientsBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final entries = doctors
         .map((d) => _GroupEntry(
-              label: d.docName,
+              label: "DR. ${d.docName.toUpperCase()}",
               oldVal: math.max(0, d.patients - d.newlyRegistered).toDouble(),
               newVal: d.newlyRegistered.toDouble(),
             ))
@@ -469,7 +469,7 @@ class OldNewPatientsBarChart extends StatelessWidget {
       innerGap: innerGap,
       // styles can be tuned here if you like
       labelStyle: const TextStyle(
-          fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
+          fontSize: 10, fontWeight: FontWeight.w600, color: Colors.black87),
       valueStyle: const TextStyle(
           fontSize: 8, fontWeight: FontWeight.w600, color: Colors.black54),
     );
@@ -635,7 +635,7 @@ class _SingleSeriesHBarPainter extends CustomPainter {
 
       // label
       final labelTP = TextPainter(
-        text: TextSpan(text: dep, style: labelStyle),
+        text: TextSpan(text: "DR. ${dep.toUpperCase()}", style: labelStyle),
         textDirection: TextDirection.ltr,
         maxLines: 1,
         ellipsis: '…',
@@ -901,12 +901,13 @@ class DoctorCollectionCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(data.docName,
+                      Text("DR. ${data.docName.toUpperCase()}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                             color: Colors.black87,
+                            fontSize: 15
                           )),
                       const SizedBox(height: 2),
                       Wrap(

@@ -7,6 +7,7 @@ class CollectionExpandableCard extends StatefulWidget {
   final Map<String, Map<String, double>> departmentData;
   final String refund;
   final bool refundShow;
+  final void Function(String dept, Map<String, double> totals)? onDepartmentTap;
 
   const CollectionExpandableCard(
       {super.key,
@@ -14,6 +15,7 @@ class CollectionExpandableCard extends StatefulWidget {
       required this.totalCollection,
       required this.departmentData,
       required this.refund,
+        this.onDepartmentTap,
       required this.refundShow});
 
   @override
@@ -65,7 +67,8 @@ class _CollectionExpandableCardState extends State<CollectionExpandableCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.date,
+                  widget.date.toString().length>20?
+                  widget.date.toUpperCase().substring(0, 20):widget.date.toUpperCase(),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -85,7 +88,9 @@ class _CollectionExpandableCardState extends State<CollectionExpandableCard> {
                           ),
                         ),
                         widget.refundShow == true
-                            ? Text(
+                            ?
+                        widget.refund.toString()=="0.0"?SizedBox.shrink():
+                        Text(
                                 "(Refund ₹${widget.refund})",
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.w500,
@@ -125,35 +130,39 @@ class _CollectionExpandableCardState extends State<CollectionExpandableCard> {
                     final name = dept.key;
                     final details = dept.value;
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.cyan.withOpacity(0.07),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                              fontSize: 13,
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () => widget.onDepartmentTap?.call(name, details),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.cyan.withOpacity(0.07),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                                fontSize: 13,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildStat("Cash", details["cash"] ?? 0),
-                              _buildStat("Bank", details["bank"] ?? 0),
-                              _buildStat("Total", details["total"] ?? 0,
-                                  isHighlight: true),
-                            ],
-                          )
-                        ],
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildStat("Cash", details["cash"] ?? 0),
+                                _buildStat("Bank", details["bank"] ?? 0),
+                                _buildStat("Total", details["total"] ?? 0,
+                                    isHighlight: true),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),

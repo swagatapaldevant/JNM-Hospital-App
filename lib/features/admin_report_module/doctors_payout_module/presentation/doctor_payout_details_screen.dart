@@ -61,7 +61,6 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
             isVisibleSearch: false,
             filterTap: () {},
           ),
-
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => getDoctorsPayoutDetailsData(showLoader: false),
@@ -77,7 +76,9 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
                       const SizedBox(height: 12),
 
                       // ===== Summary Card =====
-                      if (isLoading) const SizedBox.shrink() else
+                      if (isLoading)
+                        const SizedBox.shrink()
+                      else
                         SummaryCard(
                           doctorName: _doctorName.isEmpty ? "—" : _doctorName,
                           patients: _patientCount,
@@ -97,7 +98,7 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
                         const _EmptyState(
                           title: "No records found",
                           subtitle:
-                          "There are no bills for this doctor on the selected date.",
+                              "There are no bills for this doctor on the selected date.",
                         ),
                         const SizedBox(height: 24),
                       ] else ...[
@@ -146,8 +147,8 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
 
         final rows = list
             .map((e) => PayoutDetailRow.fromMap(
-          (e as Map).map((k, v) => MapEntry(k.toString(), v)),
-        ))
+                  (e as Map).map((k, v) => MapEntry(k.toString(), v)),
+                ))
             .toList();
 
         final doctorName = rows.isNotEmpty ? rows.first.doctorName : "";
@@ -184,8 +185,18 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
     try {
       final dt = DateTime.parse(ymd);
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ];
       return "${dt.day.toString().padLeft(2, '0')} ${months[dt.month - 1]} ${dt.year}";
     } catch (_) {
@@ -193,6 +204,7 @@ class _DoctorPayoutDetailsScreenState extends State<DoctorPayoutDetailsScreen> {
     }
   }
 }
+
 /// =======================
 /// SUMMARY CARD
 /// =======================
@@ -265,7 +277,7 @@ class SummaryCard extends StatelessWidget {
               children: [
                 // Doctor name
                 Text(
-                  doctorName,
+                  "DR. ${doctorName.toUpperCase()}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -288,7 +300,6 @@ class SummaryCard extends StatelessWidget {
                       ...sections
                           .map((s) => _pill(Icons.category_rounded, s))
                           .toList(),
-
                   ],
                 ),
               ],
@@ -367,7 +378,8 @@ class _BillsTable extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
               color: const Color(0xFFF2F5FF),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(14)),
               border: Border(
                 bottom: BorderSide(color: const Color(0xFFE6ECFB)),
               ),
@@ -385,18 +397,20 @@ class _BillsTable extends StatelessWidget {
           // Rows
           ...List.generate(rows.length, (i) {
             final r = rows[i];
-            final stripe = i.isOdd
-                ? Colors.grey.withOpacity(0.035)
-                : Colors.transparent;
+            final stripe =
+                i.isOdd ? Colors.grey.withOpacity(0.035) : Colors.transparent;
             return Container(
               color: stripe,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Row(
                 children: [
                   _cell("#${r.billingId}", flex: flexes[0]),
-                  _chipCell(r.section.isEmpty ? "-" : r.section, flex: flexes[1]),
-                  _cell("${r.name.isEmpty ? "-" : r.name}\n(${r.patientId.toString()})",
-                      flex: flexes[2], overflow: TextOverflow.ellipsis),
+                  _chipCell(r.section.isEmpty ? "-" : r.section,
+                      flex: flexes[1]),
+                  _cell(
+                      "${r.name.isEmpty ? "-" : r.name.toUpperCase()}\n(${r.patientId.toString()})",
+                      flex: flexes[2],
+                      overflow: TextOverflow.ellipsis),
                   _cell(_inr(r.commissionAmount),
                       flex: flexes[3], alignEnd: true, isStrong: true),
                 ],
@@ -438,13 +452,15 @@ class _BillsTable extends StatelessWidget {
     );
   }
 
-  static Widget _headCell(String text, {required int flex, bool alignEnd = false}) {
+  static Widget _headCell(String text,
+      {required int flex, bool alignEnd = false}) {
     return Expanded(
       flex: flex,
       child: Align(
         alignment: alignEnd ? Alignment.centerRight : Alignment.centerLeft,
         child: Text(
           text,
+          textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 12,
             color: Color(0xFF1D4ED8),
@@ -457,12 +473,12 @@ class _BillsTable extends StatelessWidget {
   }
 
   static Widget _cell(
-      String text, {
-        required int flex,
-        bool alignEnd = false,
-        bool isStrong = false,
-        TextOverflow? overflow,
-      }) {
+    String text, {
+    required int flex,
+    bool alignEnd = false,
+    bool isStrong = false,
+    TextOverflow? overflow,
+  }) {
     return Expanded(
       flex: flex,
       child: Align(
@@ -518,6 +534,7 @@ class _BillsTable extends StatelessWidget {
 class _EmptyState extends StatelessWidget {
   final String title;
   final String? subtitle;
+
   const _EmptyState({required this.title, this.subtitle});
 
   @override

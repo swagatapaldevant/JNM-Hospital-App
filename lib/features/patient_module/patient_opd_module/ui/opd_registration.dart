@@ -12,11 +12,10 @@ import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/presentation/report_dashboard_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/appointment_form/slot_selection_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_layout.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/data/patient_opd_usecases_impl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../patient_details_module/ui/common_header.dart';
+import '../../patient_details/ui/common_header.dart';
 
 class OpdRegistration extends StatelessWidget {
   const OpdRegistration({super.key});
@@ -402,13 +401,18 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                                     context: context,
                                     initialDate: selectedDate ?? DateTime.now(),
                                     firstDate:
-                                        DateTime.now(), // can’t pick past dates
+                                        DateTime.now(), 
                                     lastDate: DateTime(2100),
                                   );
 
                                   if (pickedDate != null) {
                                     setState(() {
                                       selectedDate = pickedDate;
+                                      selectedTime = null;
+                                      selectedDepartment = null;
+                                      departments.clear();
+                                      selectedDoctor = null;
+                                      doctors.clear();
                                     });
                                   }
                                 },
@@ -466,8 +470,6 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                                   setState(() {
                                     selectedDepartment = val;
                                     selectedDoctor = null;
-                                    selectedDate = null;
-                                    selectedTime = null;
                                     doctors.clear();
                                   });
                                   if (val != null) {
@@ -488,9 +490,7 @@ class _AppointmentFormState extends State<_AppointmentForm> {
                                 selectedItem: selectedDoctor,
                                 onChanged: (val) async {
                                   setState(() {
-                                    selectedDoctor = val;
-                                    selectedDate = null;
-                                    selectedTime = null;
+                                    selectedDoctor = val; 
                                   });
                                   // if (val != null) {
                                   //   print("Call getScheduleData()");

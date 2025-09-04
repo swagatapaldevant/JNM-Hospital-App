@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
 
 class ApprovalSystemLayout extends StatefulWidget {
   const ApprovalSystemLayout({super.key, required this.slivers, this.controller});

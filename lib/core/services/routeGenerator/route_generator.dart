@@ -29,16 +29,15 @@ import 'package:jnm_hospital_app/features/patient_module/doctor_details_module/u
 import 'package:jnm_hospital_app/features/patient_module/investigation/ui/investigation_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_bill_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_daycare_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_emg_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_emr_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_opd_details_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/patient_receipt_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/ui/patient_dashboard_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_bill_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_daycare_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_emg_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_emr_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_opd_details_screen.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/patient_receipt_details_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_login/ui/patient_login_screen.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/appointment_form_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/opd_registration.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_opd_module/ui/patient_opd_screen.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/rate_enquiry_screen.dart';
@@ -223,8 +222,7 @@ class RouteGenerator{
         return _animatedPageRoute(PatientDetailsScreen());
       case kPatientOPDScreen:
         return _animatedPageRoute(PatientOPDScreen());
-      case kOPDBookAppointmentScreen:
-        return _animatedPageRoute(AppointmentFormScreen());
+      
       case kRateEnquiryScreen:
         return _animatedPageRoute(RateEnquiryScreen());
       case kInvestigationScreen:

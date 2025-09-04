@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/data/dashboard_usecases_impl.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/widgets/app_drawer.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/data/dashboard_usecases_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -171,41 +171,41 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                     parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   // Header
-                  // SliverToBoxAdapter(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
-                  //     child: Row(
-                  //       children: [
-                  //         _roundIconButton(
-                  //           icon: Icons.menu_rounded,
-                  //           onTap: () =>
-                  //               _scaffoldKey.currentState?.openDrawer(),
-                  //         ),
-                  //         const SizedBox(width: 12),
-                  //         const Expanded(
-                  //           child: Text(
-                  //             'Dashboard',
-                  //             style: TextStyle(
-                  //               color: textPrimary,
-                  //               fontSize: 22,
-                  //               fontWeight: FontWeight.w800,
-                  //               letterSpacing: 0.2,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         _roundIconButton(
-                  //             icon: Icons.notifications_none_rounded,
-                  //             onTap: () {}),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate:
-                        DashboardHeader(scaffoldKey: _scaffoldKey, hPad: _hPad),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(_hPad, 20, _hPad, 10),
+                      child: Row(
+                        children: [
+                          _roundIconButton(
+                            icon: Icons.menu_rounded,
+                            onTap: () =>
+                                _scaffoldKey.currentState?.openDrawer(),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Dashboard',
+                              style: TextStyle(
+                                color: textPrimary,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ),
+                          _roundIconButton(
+                              icon: Icons.notifications_none_rounded,
+                              onTap: () {}),
+                        ],
+                      ),
+                    ),
                   ),
+
+                  // SliverPersistentHeader(
+                  //   pinned: true,
+                  //   delegate:
+                  //       DashboardHeader(scaffoldKey: _scaffoldKey, hPad: _hPad),
+                  // ),
 
                   // Date
                   SliverToBoxAdapter(
@@ -1258,86 +1258,86 @@ class _EmptyStateCard extends StatelessWidget {
   }
 }
 
-class DashboardHeader extends SliverPersistentHeaderDelegate {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  final double hPad;
+// class DashboardHeader extends SliverPersistentHeaderDelegate {
+//   final GlobalKey<ScaffoldState> scaffoldKey;
+//   final double hPad;
 
-  DashboardHeader({
-    required this.scaffoldKey,
-    this.hPad = 20,
-  });
+//   DashboardHeader({
+//     required this.scaffoldKey,
+//     this.hPad = 20,
+//   });
 
-  Widget _roundIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkResponse(
-      onTap: onTap,
-      radius: 28,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.cyan, width: 2),
-        ),
-        child: Icon(icon, color: Colors.black87),
-      ),
-    );
-  }
+//   Widget _roundIconButton({
+//     required IconData icon,
+//     required VoidCallback onTap,
+//   }) {
+//     return InkResponse(
+//       onTap: onTap,
+//       radius: 28,
+//       child: Container(
+//         width: 40,
+//         height: 40,
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           shape: BoxShape.circle,
+//           border: Border.all(color: Colors.cyan, width: 2),
+//         ),
+//         child: Icon(icon, color: Colors.black87),
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          color: Color.lerp(
-            Colors.transparent,
-            Colors.white.withOpacity(0.6),
-            progress,
-          ),
-          padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 10),
-          child: Row(
-            children: [
-              _roundIconButton(
-                icon: Icons.menu_rounded,
-                onTap: () => scaffoldKey.currentState?.openDrawer(),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Dashboard',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ),
-              _roundIconButton(
-                icon: Icons.notifications_none_rounded,
-                onTap: () {},
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(
+//       BuildContext context, double shrinkOffset, bool overlapsContent) {
+//     final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
+//     return ClipRect(
+//       child: BackdropFilter(
+//         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+//         child: Container(
+//           color: Color.lerp(
+//             Colors.transparent,
+//             Colors.white.withOpacity(0.6),
+//             progress,
+//           ),
+//           padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 10),
+//           child: Row(
+//             children: [
+//               _roundIconButton(
+//                 icon: Icons.menu_rounded,
+//                 onTap: () => scaffoldKey.currentState?.openDrawer(),
+//               ),
+//               const SizedBox(width: 12),
+//               const Expanded(
+//                 child: Text(
+//                   'Dashboard',
+//                   style: TextStyle(
+//                     color: Colors.black87,
+//                     fontSize: 22,
+//                     fontWeight: FontWeight.w800,
+//                     letterSpacing: 0.2,
+//                   ),
+//                 ),
+//               ),
+//               _roundIconButton(
+//                 icon: Icons.notifications_none_rounded,
+//                 onTap: () {},
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  @override
-  double get maxExtent => 70;
+//   @override
+//   double get maxExtent => 70;
 
-  @override
-  double get minExtent => 70;
+//   @override
+//   double get minExtent => 70;
 
-  @override
-  bool shouldRebuild(covariant DashboardHeader oldDelegate) {
-    return oldDelegate.hPad != hPad || oldDelegate.scaffoldKey != scaffoldKey;
-  }
-}
+//   @override
+//   bool shouldRebuild(covariant DashboardHeader oldDelegate) {
+//     return oldDelegate.hPad != hPad || oldDelegate.scaffoldKey != scaffoldKey;
+//   }
+// }

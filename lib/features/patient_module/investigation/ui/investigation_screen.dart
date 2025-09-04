@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/investigation_report/investigation_report_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_header.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_layout.dart';
 
 class InvestigationScreen extends StatefulWidget {
   const InvestigationScreen({super.key});

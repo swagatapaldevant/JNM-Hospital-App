@@ -6,7 +6,6 @@ import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
-import 'package:jnm_hospital_app/core/utils/commonWidgets/common_header.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/custom_textField.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/animation.dart';

@@ -4,23 +4,23 @@ import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
-import 'package:jnm_hospital_app/features/patient_module/new%20patient_module/patient_dashboard/data/dashboard_usecases.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/data/patient_details_usecase.dart';
 
-class DashboardUsecaseImpl implements DashboardUsecase {
-  @override
-  Future<Resource> getDoctors() async {
-    final ApiClient _apiClient = getIt<ApiClient>();
+class PatientDetailsUsecaseImpl extends PatientDetailsUsecase {
+  final ApiClient _apiClient = getIt<ApiClient>();
   final SharedPref _pref = getIt<SharedPref>();
 
-  
-      
+  @override
+  Future<Resource> getPatientDetails() async {
     String token = await _pref.getUserAuthToken();
+    
     Map<String, String> header = {
       "Authorization": "Bearer $token"
     };
+    
     // print("Bearer$token");
     Resource resource = await _apiClient.getRequest(
-        url: ApiEndPoint.getDoctor,
+        url: ApiEndPoint.patientDetails,
         header: header,);
     if (resource.status == STATUS.SUCCESS) {
       return resource;
@@ -28,6 +28,4 @@ class DashboardUsecaseImpl implements DashboardUsecase {
       return resource;
     }
   }
-    
-  
 }

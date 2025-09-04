@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/patient_details/patient_details_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_header.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_header.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_layout.dart';
 
 class PatientBillsListScreen extends StatefulWidget {
   final List<BillDetail> bills;

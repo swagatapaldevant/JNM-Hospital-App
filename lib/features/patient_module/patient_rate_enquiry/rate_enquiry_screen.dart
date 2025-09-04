@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/searchable_dropdown.dart';
 import 'package:jnm_hospital_app/features/patient_module/model/rate_enquiry/rate_enquiry_model.dart';
-import 'package:jnm_hospital_app/features/patient_module/patient_details_module/ui/common_layout.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_layout.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_rate_enquiry/data/rate_enquiry_usecases_impl.dart';
 
-import '../patient_details_module/ui/common_header.dart';
+import '../patient_details/ui/common_header.dart';
 
 class RateEnquiryScreen extends StatefulWidget {
   const RateEnquiryScreen({super.key});

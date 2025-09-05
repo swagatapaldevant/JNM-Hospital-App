@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/simmers.dart';
 
-class OpdScreenSimmer extends StatelessWidget {
-  const OpdScreenSimmer({super.key});
+class GraphAndCardScreenSimmer extends StatelessWidget {
+  const GraphAndCardScreenSimmer({super.key});
 
   @override
   Widget build(BuildContext context) {

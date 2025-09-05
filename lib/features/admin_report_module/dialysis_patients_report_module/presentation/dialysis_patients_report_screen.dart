@@ -29,6 +29,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class DialysisPatientsReportScreen extends StatefulWidget {
   const DialysisPatientsReportScreen({super.key});
@@ -177,12 +178,7 @@ class _DialysisPatientsReportScreenState
             },
           ),
           Expanded(
-            child: isLoading && dialysisReportList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -345,6 +341,7 @@ class _DialysisPatientsReportScreenState
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           dialysisReportList.isEmpty
                               ? Center(
                                   child: Text(

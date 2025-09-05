@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
-import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+// import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -21,6 +21,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_
 import 'package:jnm_hospital_app/features/admin_report_module/model/birth_chart_report/birth_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/birth_chart_report/delivery_mode_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class BirthReportScreen extends StatefulWidget {
   const BirthReportScreen({super.key});
@@ -42,7 +43,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
   int? femaleCount;
 
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
-  final SharedPref _pref = getIt<SharedPref>();
+  // final SharedPref _pref = getIt<SharedPref>();
   List<BirthReportModel> birthReportList = [];
   final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
@@ -58,7 +59,6 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
@@ -118,12 +118,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
             },
           ),
           Expanded(
-            child: isLoading && birthReportList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -267,6 +262,7 @@ class _BirthReportScreenState extends State<BirthReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           birthReportList.isEmpty
                               ? Center(
                                   child: Text(

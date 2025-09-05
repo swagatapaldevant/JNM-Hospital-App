@@ -26,6 +26,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/opd_patient_item_data.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class EmgPatientReportScreen extends StatefulWidget {
   const EmgPatientReportScreen({super.key});
@@ -144,12 +145,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
             },
           ),
           Expanded(
-            child: isLoading && patientList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: AppDimensions.screenPadding),
@@ -307,6 +303,7 @@ class _EmgPatientReportScreenState extends State<EmgPatientReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           patientList.isEmpty
                               ? Center(
                                   child: Text(

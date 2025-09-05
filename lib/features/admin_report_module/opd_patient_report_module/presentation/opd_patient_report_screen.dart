@@ -26,6 +26,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/opd_patient_report_data_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class OpdPatientReportScreen extends StatefulWidget {
   const OpdPatientReportScreen({super.key});
@@ -77,8 +78,6 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
   Map<int, String> providerByDataMap = {};
   String? selectedProviderData = "";
   BillingDetailsModel? billingDetails;
-
-
 
   @override
   void initState() {
@@ -310,6 +309,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           patientList.isEmpty
                               ? Center(
                                   child: Text(
@@ -324,7 +324,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                   children: [
                                     TableStatsSwitcher(
                                       rows: departmentName,
-                                      cols:  ["New", "Old"],
+                                      cols: ["New", "Old"],
                                       isTransposeData: true,
                                       data: [
                                         graphData
@@ -363,8 +363,6 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                             : oldCount,
                                       ),
                                     ),
-
-
                                     ListView.builder(
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
@@ -399,7 +397,6 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                     uhid: patientList[index]
                                                         .patientId
                                                         .toString(),
-
                                                     department:
                                                         patientList[index]
                                                             .departmentName
@@ -415,36 +412,39 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
                                                         patientList[index]
                                                             .type
                                                             .toString(),
-                                                    info: [{
-                                                      "gender": patientList[index]
-                                                        .gender
-                                                        .toString(),
-                                                    "age": patientList[index]
-                                                        .dobYear
-                                                        .toString(),
-                                                    "mobile": patientList[index]
-                                                        .phone
-                                                        .toString(),
-                                                    "App. Date":
-                                                        patientList[index]
-                                                            .appointmentDate
-                                                            .toString()
-
-                                                  }]
-                                                    ,
-                                                    onTap: ()async {
+                                                    info: [
+                                                      {
+                                                        "gender":
+                                                            patientList[index]
+                                                                .gender
+                                                                .toString(),
+                                                        "age":
+                                                            patientList[index]
+                                                                .dobYear
+                                                                .toString(),
+                                                        "mobile":
+                                                            patientList[index]
+                                                                .phone
+                                                                .toString(),
+                                                        "App. Date":
+                                                            patientList[index]
+                                                                .appointmentDate
+                                                                .toString()
+                                                      }
+                                                    ],
+                                                    onTap: () async {
                                                       await getBillingDetails(
                                                           "opd",
                                                           patientList[index]
                                                               .id!);
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            RouteGenerator
-                                                                .kBillingDetailsScreen,
-                                                            arguments: {
-                                                              "id": "102",
-                                                              "deptId": "opd"
-                                                            });
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          RouteGenerator
+                                                              .kBillingDetailsScreen,
+                                                          arguments: {
+                                                            "id": "102",
+                                                            "deptId": "opd"
+                                                          });
                                                     },
                                                   ),
                                                 ),
@@ -620,10 +620,10 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     setState(() {
       isLoading = true;
     });
-  
+
     Resource resource = await _adminReportUsecase.getBillingDetails(
         deptId: deptId, billId: billId);
-  
+
     if (resource.status == STATUS.SUCCESS) {
       // Handle successful response
       print(resource.data);

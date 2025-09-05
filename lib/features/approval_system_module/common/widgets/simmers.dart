@@ -29,7 +29,6 @@ class CustomShimmer extends StatelessWidget {
     );
   }
 }
-
 class LineGraphShimmer extends StatelessWidget {
   const LineGraphShimmer({super.key});
 
@@ -56,6 +55,55 @@ class LineGraphShimmer extends StatelessWidget {
   }
 }
 
+// class _LineGraphShimmerPainter extends CustomPainter {
+//   final List<Offset> points;
+
+//   _LineGraphShimmerPainter(this.points);
+
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final Paint linePaint = Paint()
+//       ..color = Colors.grey.shade300
+//       ..strokeWidth = 3
+//       ..style = PaintingStyle.stroke;
+
+//     final Paint dotPaint = Paint()
+//       ..color = Colors.grey.shade400
+//       ..style = PaintingStyle.fill;
+
+//     // Draw smooth curved line using quadratic Bezier curves
+//     final Path path = Path();
+//     if (points.isNotEmpty) {
+//       path.moveTo(points.first.dx, size.height - points.first.dy);
+
+//       for (int i = 0; i < points.length - 1; i++) {
+//         final current = Offset(points[i].dx, size.height - points[i].dy);
+//         final next = Offset(points[i + 1].dx, size.height - points[i + 1].dy);
+        
+//         // Calculate control point for smooth curve
+//         final controlPointX = current.dx + (next.dx - current.dx) * 0.5;
+//         final controlPointY = current.dy; // Keep control point at current height for natural curve
+        
+//         path.quadraticBezierTo(controlPointX, controlPointY, next.dx, next.dy);
+//       }
+//     }
+
+//     canvas.drawPath(path, linePaint);
+
+//     // Draw shimmer dots
+//     for (var point in points) {
+//       canvas.drawCircle(
+//         Offset(point.dx, size.height - point.dy),
+//         6,
+//         dotPaint,
+//       );
+//     }
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+// }
+
 class PieGraphShimmer extends StatelessWidget {
   const PieGraphShimmer({super.key});
 
@@ -81,12 +129,54 @@ class CardListShimmer extends StatelessWidget {
     return Column(
       children: List.generate(
         count,
-        (index) => Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: const CustomShimmer(
-            height: 80,
-            width: double.infinity,
-            radius: 12,
+        (index) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row with title + chip
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const CustomShimmer(
+                    height: 16,
+                    width: 140,
+                    radius: 6,
+                  ),
+                  const CustomShimmer(
+                    height: 20,
+                    width: 20,
+                    radius: 20, // pill-shaped chip
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Sub headers
+              const CustomShimmer(
+                height: 14,
+                width: 200,
+                radius: 6,
+              ),
+              const SizedBox(height: 8),
+              const CustomShimmer(
+                height: 14,
+                width: 160,
+                radius: 6,
+              ),
+            ],
           ),
         ),
       ),

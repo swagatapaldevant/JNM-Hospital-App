@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
-import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+// import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_button.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -21,6 +21,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/discharge_report_m
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_graph_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/discharge_report/discharge_report_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class DischargeReportScreen extends StatefulWidget {
   const DischargeReportScreen({super.key});
@@ -42,7 +43,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
   double? femaleCount;
 
   final AdminReportUsecase _adminReportUsecase = getIt<AdminReportUsecase>();
-  final SharedPref _pref = getIt<SharedPref>();
+  // final SharedPref _pref = getIt<SharedPref>();
   List<DischargeReportModel> dischargeReportList = [];
   final ScrollController _scrollController = ScrollController();
   int currentPage = 1;
@@ -57,7 +58,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
@@ -111,12 +112,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
             },
           ),
           Expanded(
-            child:isLoading && dischargeReportList.isEmpty
-                ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.arrowBackground,
-                ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
               controller: _scrollController,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
@@ -253,7 +249,7 @@ class _DischargeReportScreenState extends State<DischargeReportScreen> {
 
 
                     SizedBox(height: ScreenUtils().screenHeight(context) * 0.04),
-
+                    isLoading ? GraphAndCardScreenSimmer() :
                     dischargeReportList.isEmpty?Center(
                       child: Text("No discharge are there in that timeframe", style: TextStyle(
                           fontSize: 14,

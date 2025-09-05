@@ -153,12 +153,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
             },
           ),
           Expanded(
-            child: isLoading && patientList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(

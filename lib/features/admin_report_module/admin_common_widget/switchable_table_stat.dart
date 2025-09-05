@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 
 class TableStatsSwitcher<T> extends StatefulWidget {
   final List<String> rows; // row labels (e.g., departments)
@@ -539,7 +540,10 @@ class _InsightCardState<T> extends State<_InsightCard<T>> {
                       label: _prettyNum(sum),
                       value: '',
                       subtitle: '',
-                      color: Colors.blue,
+                      color: Color.fromARGB(255, 69, 108, 248), 
+                      showBorder: true,
+                      textColor: Colors.white,
+                      containerColor: Colors.white,
                     ),
                   ),
                   Icon(
@@ -739,7 +743,7 @@ class _SummaryChip extends StatelessWidget {
   final Color color;
   final Color? textColor;
   final Color? containerColor;
-
+  final bool? showBorder;
 
   const _SummaryChip({
     required this.label,
@@ -748,6 +752,7 @@ class _SummaryChip extends StatelessWidget {
     required this.color,
     this.textColor = Colors.black,
     this.containerColor = Colors.black,
+    this.showBorder
   });
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
+import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/commonWidgets/common_dialog.dart';
 import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 import 'package:jnm_hospital_app/core/utils/helper/app_dimensions.dart';
@@ -70,6 +71,8 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
   String newPatientDialysis = "0";
   String oldPatientDialysis = "0";
 
+  List<String> approvalListPermission = [];
+
   static const List<String> departments = [
     "OPD",
     "EMR",
@@ -84,6 +87,11 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
     super.initState();
     userData();
     getDashboardData();
+    getApprovalPerms();
+  }
+
+  void getApprovalPerms() async {
+    approvalListPermission = await _pref.getApprovalPermissionList();
   }
 
   Future<void> userData() async {
@@ -189,6 +197,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                                       "/IpdPatientReportScreen");
                                 },
                               ),
+                              
                             ],
                           ),
                           SizedBox(height: AppDimensions.contentGap3),
@@ -276,6 +285,16 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                                       "/DoctorsPayoutScreen");
                                 },
                               ),
+
+                              if(approvalListPermission.isNotEmpty)
+                                dashboardItem(
+                                  "assets/images/admin_report/ipd.png",
+                                  "Approval System",
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        RouteGenerator.kApprovalDashboardScreen);
+                                  },
+                                )
 
                             ],
                           ),

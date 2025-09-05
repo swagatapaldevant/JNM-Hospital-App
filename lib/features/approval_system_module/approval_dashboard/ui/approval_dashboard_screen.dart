@@ -351,10 +351,10 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
             count += _pendingCount[id] ?? 0;
           });
 
-          if (count == 0) {
-            print("Skipping Department $key as it has $count");
-            return null;
-          }
+          // if (count == 0) {
+          //   print("Skipping Department $key as it has $count");
+          //   return null;
+          // }
 
           return GlassTile(
             icon: config["icon"] as IconData,

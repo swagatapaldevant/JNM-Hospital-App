@@ -334,7 +334,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen>
     if (patientDetailsData.ipdDetails.isNotEmpty || patientDetailsData.daycareDetails.isNotEmpty) {
       tiles.add(GlassTile(
         icon: Icons.bed,
-        label: "Daycare/IPD",
+        label: "IPD/Daycare",
         onTap: () {
           Navigator.pushNamed(
             context,

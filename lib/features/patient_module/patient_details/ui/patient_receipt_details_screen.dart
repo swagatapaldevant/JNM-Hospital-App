@@ -11,7 +11,8 @@ class PatientReceiptsListScreen extends StatefulWidget {
   const PatientReceiptsListScreen({super.key, required this.receipts});
 
   @override
-  State<PatientReceiptsListScreen> createState() => _PatientReceiptsListScreenState();
+  State<PatientReceiptsListScreen> createState() =>
+      _PatientReceiptsListScreenState();
 }
 
 class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
@@ -23,10 +24,10 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
   void initState() {
     super.initState();
     _sorted = [...widget.receipts]..sort((a, b) {
-      final ad = _safeDate(a.paymentDate);
-      final bd = _safeDate(b.paymentDate);
-      return bd.compareTo(ad); // newest first
-    });
+        final ad = _safeDate(a.paymentDate);
+        final bd = _safeDate(b.paymentDate);
+        return bd.compareTo(ad); // newest first
+      });
   }
 
   @override
@@ -41,7 +42,6 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
     final summary = _summaryStats(filtered);
 
     return PatientDetailsScreenLayout(
-    
       slivers: [
         // Header
         // SliverToBoxAdapter(
@@ -70,84 +70,89 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
         // ),
         CommonHeader(title: "Receipts"),
         SliverList(
-        delegate: SliverChildListDelegate.fixed([
-          const SizedBox(height: 16),
+          delegate: SliverChildListDelegate.fixed([
+            const SizedBox(height: 16),
 
-          // ---- Summary Bar ----
-          _GlassCard(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: Row(
-              children: [
-                _summaryTile(
-                  icon: Icons.receipt_long,
-                  label: 'Receipts',
-                  value: '${filtered.length}',
-                  color: Colors.indigo,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _summaryTile(
-                    icon: Icons.attach_money,
-                    label: 'Total Received',
-                    value: _inr(summary.totalReceived),
-                    color: Colors.green,
-                    alignEnd: true,
+            // ---- Summary Bar ----
+            _GlassCard(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  _summaryTile(
+                    icon: Icons.receipt_long,
+                    label: 'Receipts',
+                    value: '${filtered.length}',
+                    color: Colors.indigo,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _summaryTile(
+                      icon: Icons.attach_money,
+                      label: 'Total Received',
+                      value: _inr(summary.totalReceived),
+                      color: Colors.green,
+                      alignEnd: true,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // ---- Search & Filters ----
-          _GlassCard(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-            child: Column(
-              children: [
-                _SearchField(
-                  controller: _search,
-                  hint: 'Search by Receipt ID, Billing ID, Section, Received by…',
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 10),
-                _ModeFilterRow(
-                  value: _modeFilter,
-                  onChanged: (v) => setState(() => _modeFilter = v),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // ---- Empty state ----
-          if (filtered.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: const _EmptyState(
-                title: 'No receipts found',
-                subtitle: 'Try clearing filters or searching with a different term.',
+            // ---- Search & Filters ----
+            _GlassCard(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              child: Column(
+                children: [
+                  _SearchField(
+                    controller: _search,
+                    hint:
+                        'Search by Receipt ID, Billing ID, Section, Received by…',
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  const SizedBox(height: 10),
+                  _ModeFilterRow(
+                    value: _modeFilter,
+                    onChanged: (v) => setState(() => _modeFilter = v),
+                  ),
+                ],
               ),
             ),
 
-          // ---- Receipts list ----
-          ...filtered.map((r) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: _ReceiptTile(
-              receipt: r,
-              onTap: () {
-                HapticFeedback.selectionClick();
-                // Navigator.pushNamed(
-                //   context,
-                //   RouteGenerator.kPatientReceiptDetailsScreen,
-                //   arguments: r,
-                // );
-              },
-            ),
-          )),
-          const SizedBox(height: 32),
-        ]),
-      )],
+            const SizedBox(height: 12),
+
+            // ---- Empty state ----
+            if (filtered.isEmpty)
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                child: const _EmptyState(
+                  title: 'No receipts found',
+                  subtitle:
+                      'Try clearing filters or searching with a different term.',
+                ),
+              ),
+
+            // ---- Receipts list ----
+            ...filtered.map((r) => Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: _ReceiptTile(
+                    receipt: r,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      // Navigator.pushNamed(
+                      //   context,
+                      //   RouteGenerator.kPatientReceiptDetailsScreen,
+                      //   arguments: r,
+                      // );
+                    },
+                  ),
+                )),
+            const SizedBox(height: 32),
+          ]),
+        )
+      ],
     );
   }
 
@@ -207,7 +212,6 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
     return _ReceiptSummary(totalReceived: totalReceived);
   }
 
-
   Widget _roundIconButton(
       {required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
@@ -222,13 +226,11 @@ class _PatientReceiptsListScreenState extends State<PatientReceiptsListScreen> {
         decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)
-        ),
+            border: Border.all(color: Colors.cyan, width: 2)),
         child: Icon(icon, color: Colors.black87),
       ),
     );
   }
-
 }
 
 class _ReceiptSummary {
@@ -249,7 +251,7 @@ class _ReceiptTile extends StatelessWidget {
     final section = receipt.section?.trim().isNotEmpty == true
         ? receipt.section!
         : 'Unknown';
-    final date = _formatDate(receipt.paymentDate);
+    final date = _formatDateTime(receipt.paymentDate.toString());
     final amount = (receipt.paymentAmount ?? 0).toDouble();
     final mode = (receipt.paymentMode ?? '—').trim();
     final modeStyle = _modeStyle(mode);
@@ -264,7 +266,7 @@ class _ReceiptTile extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            color: Colors.white, 
+            color: Colors.white,
             border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
             boxShadow: [
               BoxShadow(
@@ -311,135 +313,133 @@ class _ReceiptTile extends StatelessWidget {
               ),
               const SizedBox(width: 14),
 
-              // Texts
+              // Main content column
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Section + Mode
-                    Row(
-                      children: [
-                        // Expanded(
-                        //   child: Text(
-                        //     section,
-                        //     maxLines: 1,
-                        //     overflow: TextOverflow.ellipsis,
-                        //     style: const TextStyle(
-                        //       fontSize: 15.5,
-                        //       fontWeight: FontWeight.w800,
-                        //       color: Colors.black87,
-                        //     ),
-                        //   ),
-                        // ),
-                        // Container(
-                        //   padding: const EdgeInsets.symmetric(
-                        //       horizontal: 10, vertical: 6),
-                        //   decoration: BoxDecoration(
-                        //     color: modeStyle.color.withOpacity(0.12),
-                        //     borderRadius: BorderRadius.circular(999),
-                        //     border: Border.all(
-                        //         color: modeStyle.color.withOpacity(0.45)),
-                        //   ),
-                        //   child: Row(
-                        //     mainAxisSize: MainAxisSize.min,
-                        //     children: [
-                        //       Icon(modeStyle.icon,
-                        //           size: 14, color: modeStyle.color),
-                        //       const SizedBox(width: 6),
-                        //       Text(
-                        //         modeStyle.label,
-                        //         style: TextStyle(
-                        //           fontSize: 11.5,
-                        //           fontWeight: FontWeight.w800,
-                        //           color: modeStyle.color,
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        Align(
-                          alignment: Alignment.topRight, 
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: secColor.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                  color: secColor.withValues(alpha: 0.45)),
-                            ),
-                            child: Row(
-                              
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.local_hospital,
-                                    size: 14, color: secColor),
-                                const SizedBox(width: 6),
-                                Text(
-                                  section,
-                                  style: TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: secColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Row: Section pill (left) + Mode pill (right)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // Section pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: secColor.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                              color: secColor.withValues(alpha: 0.45)),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.local_hospital,
+                                size: 12, color: secColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              section,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: secColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                    // Date + Received By
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 6,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
+                      
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Date + Received By
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.date_range,
+                              size: 16, color: Colors.blueGrey),
+                          const SizedBox(width: 6),
+                          Text(
+                            date,
+                            style: const TextStyle(
+                                fontSize: 12.5, color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                      if ((receipt.paymentRecivedByName ?? '')
+                          .trim()
+                          .isNotEmpty)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.date_range,
+                            const Icon(Icons.person,
                                 size: 16, color: Colors.blueGrey),
                             const SizedBox(width: 6),
                             Text(
-                              date,
+                              receipt.paymentRecivedByName!,
                               style: const TextStyle(
                                   fontSize: 12.5, color: Colors.black54),
                             ),
                           ],
                         ),
-                        if ((receipt.paymentRecivedByName ?? '')
-                            .trim()
-                            .isNotEmpty)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.person,
-                                  size: 16, color: Colors.blueGrey),
-                              const SizedBox(width: 6),
-                              Text(
-                                receipt.paymentRecivedByName!,
-                                style: const TextStyle(
-                                    fontSize: 12.5, color: Colors.black54),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
+                    ],
+                  ),
 
-                    // Amount
-                    _amountPill(
-                      icon: Icons.attach_money,
-                      label: 'Amount',
-                      value: _inr(amount),
-                      color: Colors.green,
-                    ),
-                  ],
-                ),
-              ),
+                  const SizedBox(height: 8),
+
+                  // Amount pill (dedicated row, right-aligned)
+                  Column(
+                    spacing: 4,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _amountPill(
+                        icon: Icons.attach_money,
+                        label: 'Amount',
+                        value: _inr(amount),
+                        color: Colors.green,
+                      ),
+                      // Mode pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: modeStyle.color.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                              color: modeStyle.color.withOpacity(0.4)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(modeStyle.icon,
+                                size: 12, color: modeStyle.color),
+                            const SizedBox(width: 4),
+                            Text(
+                              modeStyle.label,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: modeStyle.color,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ))
             ],
           ),
         ),
@@ -447,10 +447,10 @@ class _ReceiptTile extends StatelessWidget {
     );
   }
 
-
   static String _circleText(String id) {
     // Show last 3 digits or 'RCT'
-    final onlyDigits = RegExp(r'\d+').allMatches(id).map((m) => m.group(0)!).join();
+    final onlyDigits =
+        RegExp(r'\d+').allMatches(id).map((m) => m.group(0)!).join();
     if (onlyDigits.isEmpty) return 'RCT';
     return onlyDigits.length <= 3
         ? "#$onlyDigits"
@@ -461,11 +461,57 @@ class _ReceiptTile extends StatelessWidget {
     if (iso == null) return '—';
     final d = DateTime.tryParse(iso.toString());
     if (d == null) return iso.toString();
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     final dd = d.day.toString().padLeft(2, '0');
     final mm = months[d.month - 1];
     final yyyy = d.year.toString();
     return '$dd $mm $yyyy';
+  }
+
+  String _formatDateTime(String? iso) {
+    if (iso == null || iso.isEmpty) return '—';
+    final d = DateTime.tryParse(iso);
+    if (d == null) return iso;
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
+    final dd = d.day.toString().padLeft(2, '0');
+    final mm = months[d.month - 1];
+    final yyyy = d.year.toString();
+
+    // Convert to 12-hour format
+    int hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+    final hh = hour.toString().padLeft(2, '0');
+    final min = d.minute.toString().padLeft(2, '0');
+    final period = d.hour >= 12 ? 'PM' : 'AM';
+
+    return '$dd $mm $yyyy • $hh:$min $period';
   }
 
   static String _inr(num? v) {
@@ -517,26 +563,33 @@ class _ReceiptTile extends StatelessWidget {
   _ModeStyle _modeStyle(String mode) {
     switch (mode.toLowerCase()) {
       case 'cash':
-        return _ModeStyle(label: 'Cash', color: Colors.green, icon: Icons.attach_money);
+        return _ModeStyle(
+            label: 'Cash', color: Colors.green, icon: Icons.attach_money);
       case 'card':
-        return _ModeStyle(label: 'Card', color: Colors.blue, icon: Icons.credit_card);
+        return _ModeStyle(
+            label: 'Card', color: Colors.blue, icon: Icons.credit_card);
       case 'upi':
-        return _ModeStyle(label: 'UPI', color: Colors.purple, icon: Icons.qr_code);
+        return _ModeStyle(
+            label: 'UPI', color: Colors.purple, icon: Icons.qr_code);
       case 'cheque':
-        return _ModeStyle(label: 'Cheque', color: Colors.orange, icon: Icons.receipt_long);
+        return _ModeStyle(
+            label: 'Cheque', color: Colors.orange, icon: Icons.receipt_long);
       default:
-        return _ModeStyle(label: mode.isEmpty ? 'Other' : mode, color: Colors.blueGrey, icon: Icons.payment);
+        return _ModeStyle(
+            label: mode.isEmpty ? 'Other' : mode,
+            color: Colors.blueGrey,
+            icon: Icons.payment);
     }
   }
-  
- Color _secStyle(String section) {
+
+  Color _secStyle(String section) {
     final Map<String, Color> secColors = {
-        "OPD": Colors.blue,       
-        "IPD": Colors.green,      
-        "INVESTIGATION": Colors.orange, 
-        "EMR": Colors.purple,     
-        "BILLS": Colors.redAccent,
-      };
+      "OPD": Colors.blue,
+      "IPD": Colors.green,
+      "INVESTIGATION": Colors.orange,
+      "EMR": Colors.purple,
+      "BILLS": Colors.redAccent,
+    };
     return secColors[section] ?? Colors.blue;
   }
 }
@@ -593,7 +646,7 @@ class _ModeFilterRow extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: selected?FontWeight.w800:FontWeight.w600,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
             color: color,
           ),
         ),
@@ -624,15 +677,16 @@ class _SearchField extends StatelessWidget {
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () {
-            controller.clear();
-            onChanged?.call('');
-          },
-        ),
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call('');
+                },
+              ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
@@ -653,7 +707,8 @@ class _SearchField extends StatelessWidget {
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
-  const _GlassCard({required this.child, this.padding = const EdgeInsets.all(16)});
+  const _GlassCard(
+      {required this.child, this.padding = const EdgeInsets.all(16)});
 
   @override
   Widget build(BuildContext context) {
@@ -684,7 +739,8 @@ class _GlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: radius,
               color: Colors.white.withOpacity(0.82),
-              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -712,17 +768,22 @@ class _EmptyState extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.receipt_long_outlined, size: 64, color: Colors.blueGrey.withOpacity(0.4)),
+        Icon(Icons.receipt_long_outlined,
+            size: 64, color: Colors.blueGrey.withOpacity(0.4)),
         const SizedBox(height: 16),
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black87),
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black87),
         ),
         const SizedBox(height: 8),
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.black54.withOpacity(0.8), height: 1.3),
+          style: TextStyle(
+              fontSize: 14,
+              color: Colors.black54.withOpacity(0.8),
+              height: 1.3),
         ),
       ],
     );
@@ -762,7 +823,8 @@ class _SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 16,
@@ -772,7 +834,7 @@ class _SummaryTile extends StatelessWidget {
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(label,
                 style: const TextStyle(

@@ -288,14 +288,14 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
   List<Map<String, dynamic>> _medicines(EmrDetailsModel m) =>
       _parseMapList((m as dynamic).medicines);
 
-  List<Map<String, dynamic>> _progress(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).progressNote ?? (m as dynamic).progress_note);
+List<Map<String, dynamic>> _progress(EmrDetailsModel m) =>
+    _parseMapList((m as dynamic).progressNote);
 
-  List<Map<String, dynamic>> _nursing(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).nursingInstructions ?? (m as dynamic).nursing_instructions);
+List<Map<String, dynamic>> _nursing(EmrDetailsModel m) => _parseMapList(
+    (m as dynamic).nursingInstructions);
 
-  List<String> _tests(EmrDetailsModel m) =>
-      _parseStringList((m as dynamic).testName ?? (m as dynamic).test_name);
+List<String> _tests(EmrDetailsModel m) =>
+    _parseStringList((m as dynamic).testName);
 
   // ---------------- Filters ----------------
 

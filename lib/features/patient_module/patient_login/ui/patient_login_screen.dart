@@ -310,11 +310,11 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
                                   onTap: _goAdmin,
                                 ),
 
-                                const SizedBox(height: 12),
-                                _ApprovalAccessCard(
-                                  accent: approvalAccent,
-                                  onTap: _goApproval,
-                                ),
+                                // const SizedBox(height: 12),
+                                // _ApprovalAccessCard(
+                                //   accent: approvalAccent,
+                                //   onTap: _goApproval,
+                                // ),
 
                                 const SizedBox(height: 24),
                               ],
@@ -335,10 +335,10 @@ class _PatientLoginScreenState extends State<PatientLoginScreen> {
     Navigator.pushNamed(context, "/LoginScreen");
   }
 
-  void _goApproval() {
-    HapticFeedback.selectionClick();
-    Navigator.pushNamed(context, "/ApprovalLoginScreen");
-  }
+  // void _goApproval() {
+  //   HapticFeedback.selectionClick();
+  //   Navigator.pushNamed(context, "/ApprovalLoginScreen");
+  // }
 
   // Decorative blob
   Widget _blob(double size, Color color) {
@@ -724,70 +724,70 @@ class _AdminAccessCard extends StatelessWidget {
   }
 }
 
-/// "Login as Admin" promo card
-class _ApprovalAccessCard extends StatelessWidget {
-  final Color accent;
-  final VoidCallback onTap;
 
-  const _ApprovalAccessCard({
-    required this.accent,
-    required this.onTap,
-  });
+// class _ApprovalAccessCard extends StatelessWidget {
+//   final Color accent;
+//   final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(18);
+//   const _ApprovalAccessCard({
+//     required this.accent,
+//     required this.onTap,
+//   });
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: radius,
-            border: Border.all(color: accent.withOpacity(0.45), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: accent.withOpacity(0.12),
-                    border: Border.all(color: accent.withOpacity(0.45)),
-                  ),
-                  child: Icon(Icons.approval_outlined,
-                      color: accent, size: 22),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'Approval Login',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                Icon(Icons.arrow_forward_rounded, color: accent),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     final radius = BorderRadius.circular(18);
+
+//     return Material(
+//       color: Colors.transparent,
+//       child: InkWell(
+//         borderRadius: radius,
+//         onTap: onTap,
+//         child: Ink(
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: radius,
+//             border: Border.all(color: accent.withOpacity(0.45), width: 1.5),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: Colors.black.withOpacity(0.08),
+//                 blurRadius: 14,
+//                 offset: const Offset(0, 6),
+//               ),
+//             ],
+//           ),
+//           child: Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+//             child: Row(
+//               children: [
+//                 Container(
+//                   width: 42,
+//                   height: 42,
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     color: accent.withOpacity(0.12),
+//                     border: Border.all(color: accent.withOpacity(0.45)),
+//                   ),
+//                   child: Icon(Icons.approval_outlined,
+//                       color: accent, size: 22),
+//                 ),
+//                 const SizedBox(width: 12),
+//                 const Expanded(
+//                   child: Text(
+//                     'Approval Login',
+//                     style: TextStyle(
+//                       color: Colors.black87,
+//                       fontWeight: FontWeight.w800,
+//                       fontSize: 16,
+//                     ),
+//                   ),
+//                 ),
+//                 Icon(Icons.arrow_forward_rounded, color: accent),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

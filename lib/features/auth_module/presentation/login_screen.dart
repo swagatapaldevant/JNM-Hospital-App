@@ -20,7 +20,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -59,19 +60,28 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           const _AnimatedGradientBackground(),
 
           // 2) Decorative blurred blobs
-          Positioned(top: -60, left: -40, child: _blob(180, AppColors.arrowBackground.withOpacity(.10))),
-          Positioned(bottom: -70, right: -60, child: _blob(220, const Color(0xFF7F5AF0).withOpacity(.10))),
-          Positioned(top: 120, right: -40, child: _blob(100, Colors.white.withOpacity(.18))),
+          Positioned(
+              top: -60,
+              left: -40,
+              child: _blob(180, AppColors.arrowBackground.withOpacity(.10))),
+          Positioned(
+              bottom: -70,
+              right: -60,
+              child: _blob(220, const Color(0xFF7F5AF0).withOpacity(.10))),
+          Positioned(
+              top: 120,
+              right: -40,
+              child: _blob(100, Colors.white.withOpacity(.18))),
 
           // 3) Content
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding, vertical: 18),
+              padding: EdgeInsets.symmetric(
+                  horizontal: AppDimensions.screenPadding, vertical: 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-
                   SizedBox(height: AppDimensions.contentGap1),
 
                   // Brand row
@@ -143,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             controller: passwordController,
                             hintText: 'Password',
                             prefixIcon: Icons.lock_rounded,
-                            suffixIcon: Icons.visibility, // your widget handles obscure
+                            suffixIcon:
+                                Icons.visibility, // your widget handles obscure
                             isPassword: true,
                           ),
                         ),
@@ -184,16 +195,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                           controller: _controller,
                           child: isLoading
                               ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: CircularProgressIndicator(color: AppColors.arrowBackground),
-                            ),
-                          )
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 6),
+                                    child: CircularProgressIndicator(
+                                        color: AppColors.arrowBackground),
+                                  ),
+                                )
                               : CommonButton(
-                            onTap: _onLoginPressed,
-                            width: AppDimensions.screenWidth * 0.7,
-                            buttonName: 'Login',
-                          ),
+                                  onTap: _onLoginPressed,
+                                  width: AppDimensions.screenWidth * 0.7,
+                                  buttonName: 'Login',
+                                ),
                         ),
                       ],
                     ),
@@ -227,6 +240,34 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     loginAdmin();
   }
 
+  List<String> parseApprovalPermission(List<dynamic> json) {
+    
+    /*Permission structure
+    // {
+          "id": 117,
+          "permissions": "APPROVAL BILL",
+          "parent_id": 1,
+          "guard_name": "web"
+    }*/
+
+    List<String> permList = [];
+    bool hasPerm = false;
+
+    for (var item in json) {
+      if (item["permissions"] == "APPROVAL BILL") {
+        hasPerm = true;
+      } else {
+        String permName = item["permissions"].split(" ").last;
+        permList.add(permName);
+      }
+    }
+    print("Permissions: ");
+    print(permList);
+    
+
+    return  hasPerm ? permList : [];
+  }
+
   Future<void> loginAdmin() async {
     setState(() => isLoading = true);
 
@@ -235,7 +276,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       "password": passwordController.text.trim(),
     };
 
-    final Resource resource = await _authUsecase.login(requestData: requestData);
+    final Resource resource =
+        await _authUsecase.login(requestData: requestData);
 
     if (!mounted) return;
 
@@ -245,12 +287,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       _pref.setProfileImage(resource.data["user"]["profile_img"].toString());
       _pref.setUserName(resource.data["user"]["name"].toString());
 
+      List<String> approvalPermissionList = [];
+      approvalPermissionList =
+          parseApprovalPermission(resource.data["user"]["permissions"]);
+      _pref.setApprovalPermissionList(approvalPermissionList);
+      
+
       setState(() => isLoading = false);
 
       Navigator.pushNamedAndRemoveUntil(
         context,
         "/ReportDashboardScreen",
-            (Route<dynamic> route) => false,
+        (Route<dynamic> route) => false,
       );
     } else {
       setState(() => isLoading = false);
@@ -269,10 +317,12 @@ class _AnimatedGradientBackground extends StatefulWidget {
   const _AnimatedGradientBackground();
 
   @override
-  State<_AnimatedGradientBackground> createState() => _AnimatedGradientBackgroundState();
+  State<_AnimatedGradientBackground> createState() =>
+      _AnimatedGradientBackgroundState();
 }
 
-class _AnimatedGradientBackgroundState extends State<_AnimatedGradientBackground>
+class _AnimatedGradientBackgroundState
+    extends State<_AnimatedGradientBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
@@ -292,8 +342,10 @@ class _AnimatedGradientBackgroundState extends State<_AnimatedGradientBackground
       builder: (_, __) {
         final t = _c.value;
         // subtle shift between two palettes
-        final c1 = Color.lerp(const Color(0xFFF0F3FF), const Color(0xFFEAF4FF), t)!;
-        final c2 = Color.lerp(const Color(0xFFCDDBFF), const Color(0xFFD6E6FF), 1 - t)!;
+        final c1 =
+            Color.lerp(const Color(0xFFF0F3FF), const Color(0xFFEAF4FF), t)!;
+        final c2 = Color.lerp(
+            const Color(0xFFCDDBFF), const Color(0xFFD6E6FF), 1 - t)!;
         return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -344,7 +396,10 @@ class _GlassPanel extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.white.withOpacity(.88), Colors.white.withOpacity(.72)],
+                colors: [
+                  Colors.white.withOpacity(.88),
+                  Colors.white.withOpacity(.72)
+                ],
               ),
             ),
             child: child,
@@ -389,7 +444,7 @@ class _BrandHeader extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.arrowBackground, // primary
-            Color(0xFF7F5AF0),         // accent
+            Color(0xFF7F5AF0), // accent
           ],
         ),
         boxShadow: [
@@ -401,7 +456,8 @@ class _BrandHeader extends StatelessWidget {
         ],
       ),
       child: const Center(
-        child: Icon(Icons.local_hospital_rounded, color: Colors.white, size: 26),
+        child:
+            Icon(Icons.local_hospital_rounded, color: Colors.white, size: 26),
       ),
     );
   }

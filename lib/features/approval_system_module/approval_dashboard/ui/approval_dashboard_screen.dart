@@ -2,7 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
+import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/data/approval_dashboard_usecases_impl.dart';
@@ -35,6 +37,12 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   bool isLoading = true;
 
   final Map<String, int> _pendingCount = {};
+  final SharedPref _pref = getIt<SharedPref>();
+  List<String> approvalPermissionList = [];
+
+  void loadApprovalPerms() async {
+    approvalPermissionList = await _pref.getApprovalPermissionList();
+  }
 
   Future<void> getPendingCount() async {
     setState(() {
@@ -71,56 +79,65 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "label": "OPD",
       "api": ApiEndPoint.approvalSystemOPD,
       "title": "OPD Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "opd"
     },
     "IPD": {
       "icon": Icons.bed,
       "label": "IPD/Daycare",
       "api": ApiEndPoint.approvalSystemIPD,
       "title": "IPD/Daycare Approval",
-      "other_ids": ["DAYCARE"]
+      "other_ids": ["DAYCARE"],
+      "approve_list_url_suffx": "ipd"
     },
     "OT": {
       "icon": Icons.history,
       "label": "OT",
       "api": ApiEndPoint.approvalSystemOT,
       "title": "OT Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "ot"
     },
     "EMG": {
       "icon": Icons.history,
       "label": "EMG",
       "api": ApiEndPoint.approvalSystemEMG,
       "title": "EMG Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "emr"
     },
     "OP": {
       "icon": Icons.receipt_long,
       "label": "OP",
       "api": ApiEndPoint.approvalSystemOP,
       "title": "OP Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "op"
     },
     "DIALYSIS": {
       "icon": Icons.receipt_long,
       "label": "OP",
       "api": ApiEndPoint.approvalSystemDialysis,
       "title": "Dialysis Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "dialysis"
     },
     "INVESTIGATION": {
       "icon": Icons.payments,
       "label": "INVESTIGATION",
       "api": ApiEndPoint.approvalSystemInvestigation,
       "title": "Investigation Approval",
-      "other_ids": []
+      "other_ids": [],
+      "approve_list_url_suffx": "investigation"
     },
   };
 
   @override
   void initState() {
+
     super.initState();
     getPendingCount();
+    loadApprovalPerms();
   }
 
   Future<void> _onRefresh() async {
@@ -153,6 +170,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     const wds = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return '${wds[now.weekday - 1]}, ${now.day} ${months[now.month - 1]} ${now.year}';
   }
+  List<String> tabList = [];
+  List<String> tabUrl = [];
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -254,9 +273,15 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                           horizontal: 20, vertical: 16),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, RouteGenerator.kApprovedListScreen);
-                        },
+                            Navigator.pushNamed(
+                              context,
+                              RouteGenerator.kApprovedListScreen,
+                              arguments: {
+                                "tabList": tabList,
+                                "tabUrl": tabUrl,
+                              },
+                            );
+                          },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
@@ -339,11 +364,20 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   }
 
   Widget buildPatientDetailsGrid(BuildContext context) {
+    tabList.clear();
+    tabUrl.clear();
     final tiles = approvalConfig.entries
         .map((entry) {
           final key = entry.key;
           final config = entry.value;
           int count = 0;
+
+          if(!approvalPermissionList.contains(key)) {
+            return null;
+          } else {
+            tabList.add(config["label"]);
+            tabUrl.add(config["approve_list_url_suffx"]);
+          }
 
           count += _pendingCount[key] ?? 0;
 

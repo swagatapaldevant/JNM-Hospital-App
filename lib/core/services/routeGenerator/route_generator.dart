@@ -45,14 +45,11 @@ import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_
 import 'package:jnm_hospital_app/features/splash_module/presentation/onboarding_screen.dart';
 import 'package:jnm_hospital_app/features/splash_module/presentation/splash_screen.dart';
 
-class RouteGenerator{
-
+class RouteGenerator {
   // general navigation
   static const kSplash = "/";
 
-
   static const kRoleSelectionScreen = "/RoleSelectionScreen";
-
 
   static const kOnboardingScreen = "/OnboardingScreen";
   static const kOnboardingAuthScreen = "/OnboardingAuthScreen";
@@ -61,11 +58,7 @@ class RouteGenerator{
   static const kPatientLoginScreen = "/PatientLoginScreen";
   static const kSignupScreen = "/SignupScreen";
 
-
   static const kPatientDashboardScreen = "/PatientDashboardScreen";
-
-
-
 
   // static const kPatientButtonNavigation = "/PatientButtonNavigation";
   // static const kTopDoctorScreen = "/TopDoctorScreen";
@@ -74,11 +67,10 @@ class RouteGenerator{
   // //static const kDoctorDetailsScreen = "/DoctorDetailsScreen";
   // static const kBookingPaymentScreen = "/BookingPaymentScreen";
 
-
-
   static const kReportDashboardScreen = "/ReportDashboardScreen";
   static const kOpdPatientReportScreen = "/OpdPatientReportScreen";
-  static const kDepartmentWiseOpdReportLandscapeScreen = "/DepartmentWiseOpdReportLandscapeScreen";
+  static const kDepartmentWiseOpdReportLandscapeScreen =
+      "/DepartmentWiseOpdReportLandscapeScreen";
   static const kEmgPatientReportScreen = "/EmgPatientReportScreen";
   static const kDialysisPatientsReportScreen = "/DialysisPatientsReportScreen";
   static const kIpdPatientReportScreen = "/IpdPatientReportScreen";
@@ -88,7 +80,8 @@ class RouteGenerator{
   static const kDischargeReportScreen = "/DischargeReportScreen";
   static const kEditBillReportScreen = "/EditBillReportScreen";
   static const kCollectionReportScreen = "/CollectionReportScreen";
-  static const kUserWiseCollectionReportScreen = "/UserWiseCollectionReportScreen";
+  static const kUserWiseCollectionReportScreen =
+      "/UserWiseCollectionReportScreen";
   static const kDoctorsPayoutScreen = "/DoctorsPayoutScreen";
   static const kDoctorPayoutDetailsScreen = "/DoctorPayoutDetailsScreen";
 
@@ -106,7 +99,6 @@ class RouteGenerator{
   static const kInvestigationScreen = "/InvestigationScreen";
   static const kOPDRegistrationScreen = "/OPDRegistrationScreen";
 
-
   static const kApprovalLoginScreen = "/ApprovalLoginScreen";
   static const kApprovalDashboardScreen = "/ApprovalDashboardScreen";
   static const kApprovalDetailscreen = "/ApprovalDetailscreen";
@@ -117,18 +109,14 @@ class RouteGenerator{
   static const kApprovedListScreen = "/ApprovedListScreen";
   static const kBillingDetailsScreen = "/BillingDetailsScreen";
 
-
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  static Route<dynamic> generateRoute(RouteSettings settings){
-
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-    switch(settings.name){
-
+    switch (settings.name) {
       case kSplash:
         //return MaterialPageRoute(builder: (_)=>SplashScreen());
         return _animatedPageRoute(SplashScreen());
-
 
       case kRoleSelectionScreen:
         return _animatedPageRoute(RoleSelectionScreen());
@@ -137,7 +125,6 @@ class RouteGenerator{
 
       case kOnboardingAuthScreen:
         return _animatedPageRoute(OnboardingAuthScreen());
-
 
       case kLoginScreen:
         return _animatedPageRoute(LoginScreen());
@@ -151,78 +138,86 @@ class RouteGenerator{
 
       case kPatientBillDetailsScreen:
         final args = settings.arguments as List<BillDetail>;
-        return _animatedPageRoute(PatientBillsListScreen( bills: args,));
+        return _animatedPageRoute(PatientBillsListScreen(
+          bills: args,
+        ));
       case kPatientReceiptDetailsScreen:
         final args = settings.arguments as List<ReceiptDetail>;
-        return _animatedPageRoute(PatientReceiptsListScreen(receipts: args,));
+        return _animatedPageRoute(PatientReceiptsListScreen(
+          receipts: args,
+        ));
       case kPatientOpdDetailsScreen:
         final args = settings.arguments as List<OpdDetailsModel>;
-        return _animatedPageRoute(PatientOpdDetailsScreen(opdList: args,));
+        return _animatedPageRoute(PatientOpdDetailsScreen(
+          opdList: args,
+        ));
       case kPatientDaycareDetailsScreen:
         final args = settings.arguments as List<DaycareDetailsModel>;
-        return _animatedPageRoute(PatientDaycareDetailsScreen(dayCareList: args,));
+        return _animatedPageRoute(PatientDaycareDetailsScreen(
+          dayCareList: args,
+        ));
       case kPatientEmgDetailsScreen:
         final args = settings.arguments as List<EmgDetailsModel>;
-        return _animatedPageRoute(PatientEmgDetailsScreen(emgList: args,));
+        return _animatedPageRoute(PatientEmgDetailsScreen(
+          emgList: args,
+        ));
       case kPatientEmrDetailsScreen:
         final args = settings.arguments as List<EmrDetailsModel>;
-        return _animatedPageRoute(PatientEmrDetailsScreen(emrList: args,));
+        return _animatedPageRoute(PatientEmrDetailsScreen(
+          emrList: args,
+        ));
       case kDoctorDetailsScreen:
-        return _animatedPageRoute(DoctorDetailsScreen(doctorDetails: args as DoctorModel,));
+        return _animatedPageRoute(DoctorDetailsScreen(
+          doctorDetails: args as DoctorModel,
+        ));
       case kOPDRegistrationScreen:
         return _animatedPageRoute(OpdRegistration());
 
-
-
-
-        case kReportDashboardScreen:
+      case kReportDashboardScreen:
         return _animatedPageRoute(ReportDashboardScreen());
-        case kOpdPatientReportScreen:
+      case kOpdPatientReportScreen:
         return _animatedPageRoute(OpdPatientReportScreen());
-       case kDepartmentWiseOpdReportLandscapeScreen:
-         final args = settings.arguments as Map<String, dynamic>;
+      case kDepartmentWiseOpdReportLandscapeScreen:
+        final args = settings.arguments as Map<String, dynamic>;
         return _animatedPageRoute(DepartmentWiseOpdReportLandscapeScreen(
           newCount: args["newCount"],
           oldCount: args["oldCount"],
           departmentName: args["departmentName"],
         ));
-       case kEmgPatientReportScreen:
+      case kEmgPatientReportScreen:
         return _animatedPageRoute(EmgPatientReportScreen());
-       case kDialysisPatientsReportScreen:
+      case kDialysisPatientsReportScreen:
         return _animatedPageRoute(DialysisPatientsReportScreen());
-       case kIpdPatientReportScreen:
+      case kIpdPatientReportScreen:
         return _animatedPageRoute(IpdPatientReportScreen());
-       case kBillingReportScreen:
+      case kBillingReportScreen:
         return _animatedPageRoute(BillingReportScreen());
-       case kBirthReportScreen:
+      case kBirthReportScreen:
         return _animatedPageRoute(BirthReportScreen());
-       case kDeathReportScreen:
+      case kDeathReportScreen:
         return _animatedPageRoute(DeathReportScreen());
-       case kDischargeReportScreen:
+      case kDischargeReportScreen:
         return _animatedPageRoute(DischargeReportScreen());
-       case kEditBillReportScreen:
+      case kEditBillReportScreen:
         return _animatedPageRoute(EditBillReportScreen());
-       case kCollectionReportScreen:
+      case kCollectionReportScreen:
         return _animatedPageRoute(CollectionReportScreen());
-       case kUserWiseCollectionReportScreen:
+      case kUserWiseCollectionReportScreen:
         return _animatedPageRoute(UserWiseCollectionReportScreen());
-       case kDoctorsPayoutScreen:
+      case kDoctorsPayoutScreen:
         return _animatedPageRoute(DoctorsPayoutScreen());
-       case kDoctorPayoutDetailsScreen:
-         final args = settings.arguments as Map<String, dynamic>;
-         return _animatedPageRoute(
-            DoctorPayoutDetailsScreen(
+      case kDoctorPayoutDetailsScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return _animatedPageRoute(DoctorPayoutDetailsScreen(
           id: args['id'] as String? ?? '',
-          selectedDate:args['date'] as String? ?? '' ,
+          selectedDate: args['date'] as String? ?? '',
         ));
 
-
-
-       case kPatientDetailsScreen:
+      case kPatientDetailsScreen:
         return _animatedPageRoute(PatientDetailsScreen());
       case kPatientOPDScreen:
         return _animatedPageRoute(PatientOPDScreen());
-      
+
       case kRateEnquiryScreen:
         return _animatedPageRoute(RateEnquiryScreen());
       case kInvestigationScreen:
@@ -233,13 +228,19 @@ class RouteGenerator{
       case kApprovalDashboardScreen:
         return _animatedPageRoute(ApprovalDashboardScreen());
       case kApprovalDetailscreen:
-       final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments as Map<String, dynamic>;
         return _animatedPageRoute(ApprovalScreen(
-           apiEndpoint: args['apiEndpoint'] as String? ?? '',
+          apiEndpoint: args['apiEndpoint'] as String? ?? '',
           title: args['title'] as String? ?? '',
         ));
       case kApprovedListScreen:
-        return _animatedPageRoute(ApprovedListScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ApprovedListScreen(
+            tabList: args["tabList"] as List<String>,
+            tabUrl: args["tabUrl"] as List<String>,
+          ),
+        );
       case kBillingDetailsScreen:
         final args = settings.arguments;
         return _animatedPageRoute(BillingDetailsScreen(
@@ -248,15 +249,13 @@ class RouteGenerator{
 
       default:
         return _errorRoute(errorMessage: "Route not found: ${settings.name}");
-
     }
-
   }
 
   static Route<dynamic> _animatedPageRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
-        return page;  // The page to navigate to
+        return page; // The page to navigate to
       },
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         // Define the transition animation
@@ -264,9 +263,10 @@ class RouteGenerator{
         // Slide from the right (Offset animation)
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
-        final curve = Curves.easeInToLinear;  // A more natural easing curve
+        final curve = Curves.easeInToLinear; // A more natural easing curve
 
-        var offsetTween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetTween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         var offsetAnimation = animation.drive(offsetTween);
 
         // Scale transition (page zooms in slightly)
@@ -287,26 +287,21 @@ class RouteGenerator{
               child: Material(
                 color: Colors.transparent,
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Add blur effect
+                  filter: ImageFilter.blur(
+                      sigmaX: 5.0, sigmaY: 5.0), // Add blur effect
                   child: child,
                 ),
               ),
             ),
           ),
         );
-
       },
     );
   }
 
-
-
-
-  static Route<dynamic> _errorRoute(
-      {
-        String errorMessage = '',
-      }
-      ) {
+  static Route<dynamic> _errorRoute({
+    String errorMessage = '',
+  }) {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(
@@ -324,14 +319,12 @@ class RouteGenerator{
               Text(
                 "Oops something went wrong",
                 style: Theme.of(_).textTheme.displayMedium?.copyWith(
-                    fontSize: AppFontSize.textExtraLarge,
-                    color: Colors.black),
+                    fontSize: AppFontSize.textExtraLarge, color: Colors.black),
               ),
               Text(
                 errorMessage,
                 style: Theme.of(_).textTheme.displayMedium?.copyWith(
-                    fontSize: AppFontSize.textExtraLarge,
-                    color: Colors.black),
+                    fontSize: AppFontSize.textExtraLarge, color: Colors.black),
               ),
             ],
           ),

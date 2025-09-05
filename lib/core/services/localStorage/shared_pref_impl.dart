@@ -345,4 +345,16 @@ class SharedPrefImpl extends SharedPref {
     prefs.setString(_userAddress, data);
   }
 
+  @override
+  void setApprovalPermissionList(List<String> data) async {
+    final SharedPreferences prefs = await super.prefs;
+    await prefs.setStringList("approval_permissions", data);
+  }
+
+  @override
+  Future<List<String>> getApprovalPermissionList() async {
+    final SharedPreferences prefs = await super.prefs;
+    return prefs.getStringList("approval_permissions") ?? [];
+  }
+  
 }

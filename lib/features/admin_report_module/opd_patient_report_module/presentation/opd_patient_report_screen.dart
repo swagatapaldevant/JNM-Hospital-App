@@ -108,6 +108,7 @@ class _OpdPatientReportScreenState extends State<OpdPatientReportScreen> {
     AppDimensions.init(context);
 
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           CommonHeaderForReportModule(

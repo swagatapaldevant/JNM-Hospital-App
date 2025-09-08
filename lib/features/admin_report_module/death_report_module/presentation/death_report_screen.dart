@@ -74,6 +74,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
     AppDimensions.init(context);
 
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           CommonHeaderForReportModule(

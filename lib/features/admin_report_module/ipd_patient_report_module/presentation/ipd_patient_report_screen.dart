@@ -29,6 +29,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/widgets/department_wise_opd_report.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class IpdPatientReportScreen extends StatefulWidget {
   const IpdPatientReportScreen({super.key});
@@ -147,6 +148,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
     AppDimensions.init(context);
 
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           CommonHeaderForReportModule(
@@ -196,12 +198,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
             },
           ),
           Expanded(
-            child: isLoading && ipdReportList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -290,7 +287,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                                   newCount.clear();
                                   oldCount.clear();
                                   departmentName.clear();
-
+            
                                   currentPage = 1;
                                   hasMoreData = true;
                                   getIpdPatientData();
@@ -365,6 +362,7 @@ class _IpdPatientReportScreenState extends State<IpdPatientReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           ipdReportList.isEmpty
                               ? Center(
                                   child: Text(

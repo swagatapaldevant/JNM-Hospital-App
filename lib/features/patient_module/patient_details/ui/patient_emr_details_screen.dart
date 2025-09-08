@@ -10,16 +10,17 @@ class PatientEmrDetailsScreen extends StatefulWidget {
   const PatientEmrDetailsScreen({super.key, required this.emrList});
 
   @override
-  State<PatientEmrDetailsScreen> createState() => _PatientEmrDetailsScreenState();
+  State<PatientEmrDetailsScreen> createState() =>
+      _PatientEmrDetailsScreenState();
 }
 
 class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
   final TextEditingController _search = TextEditingController();
 
   // Filters
-  String _sectionFilter = 'All';  // All | OPD | IPD | EMG | Daycare
-  String _dateFilter = 'All';     // All | Today | Past
-  String _doctorFilter = 'All';   // All | <Doctor Names>
+  String _sectionFilter = 'All'; // All | OPD | IPD | EMG | Daycare
+  String _dateFilter = 'All'; // All | Today | Past
+  String _doctorFilter = 'All'; // All | <Doctor Names>
 
   late List<EmrDetailsModel> _sorted;
   late List<String> _doctors;
@@ -31,10 +32,10 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
     super.initState();
 
     _sorted = [...widget.emrList]..sort((a, b) {
-      final ad = _safeDate(_getDateIso(a));
-      final bd = _safeDate(_getDateIso(b));
-      return bd.compareTo(ad); // newest first
-    });
+        final ad = _safeDate(_getDateIso(a));
+        final bd = _safeDate(_getDateIso(b));
+        return bd.compareTo(ad); // newest first
+      });
 
     final docs = <String>{};
     for (final e in widget.emrList) {
@@ -61,9 +62,7 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
     );
 
     return Scaffold(
-      body: PatientDetailsScreenLayout(
-        
-        slivers:[ 
+      body: PatientDetailsScreenLayout(slivers: [
         //   SliverToBoxAdapter(
         //   child: Padding(
         //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -89,7 +88,7 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
         //   ),
         // ),
         CommonHeader(title: "Emergency (EMR)"),
-          SliverList(
+        SliverList(
           delegate: SliverChildListDelegate.fixed([
             const SizedBox(height: 16),
 
@@ -108,7 +107,8 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
                     child: _summaryTile(
                       icon: Icons.biotech_outlined,
                       label: 'With Tests',
-                      value: '${filtered.where((e) => _tests(e).isNotEmpty).length}',
+                      value:
+                          '${filtered.where((e) => _tests(e).isNotEmpty).length}',
                       color: Colors.teal,
                       alignEnd: true,
                     ),
@@ -122,7 +122,8 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
             // ===== Search & Filters (expandable) =====
             _ExpandableFilterCard(
               expanded: _filtersExpanded,
-              onToggle: () => setState(() => _filtersExpanded = !_filtersExpanded),
+              onToggle: () =>
+                  setState(() => _filtersExpanded = !_filtersExpanded),
               title: 'Search & Filters',
               searchField: _SearchField(
                 controller: _search,
@@ -140,37 +141,40 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
               ),
             ),
 
-
             const SizedBox(height: 12),
 
             // ===== Empty =====
             if (filtered.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 child: const _EmptyState(
                   title: 'No EMR records found',
-                  subtitle: 'Try clearing filters or searching with a different term.',
+                  subtitle:
+                      'Try clearing filters or searching with a different term.',
                 ),
               ),
 
             // ===== EMR list =====
             ...filtered.map((emr) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              child: _EmrTile(
-                emr: emr,
-                onTap: () {
-                  HapticFeedback.selectionClick();
-                  _showEmrBottomSheet(context, emr);
-                },
-              ),
-            )),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: _EmrTile(
+                    emr: emr,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      _showEmrBottomSheet(context, emr);
+                    },
+                  ),
+                )),
 
             const SizedBox(height: 28),
           ]),
-        ),]
-      ),
+        ),
+      ]),
     );
   }
+
   Widget _roundIconButton(
       {required IconData icon, required VoidCallback onTap}) {
     return InkResponse(
@@ -185,391 +189,429 @@ class _PatientEmrDetailsScreenState extends State<PatientEmrDetailsScreen> {
         decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)
-        ),
+            border: Border.all(color: Colors.cyan, width: 2)),
         child: Icon(icon, color: Colors.black87),
       ),
     );
   }
-
 }
 
-  // ---------------- Helpers: parsing & accessors ----------------
+// ---------------- Helpers: parsing & accessors ----------------
 
-  DateTime _safeDate(dynamic iso) {
-    if (iso == null) return DateTime.fromMillisecondsSinceEpoch(0);
-    final d = DateTime.tryParse(iso.toString());
-    if (d != null) return d;
-    // fallback for "yyyy-MM-dd HH:mm:ss"
-    try {
-      final s = iso.toString().replaceFirst(' ', 'T');
-      return DateTime.tryParse(s) ?? DateTime.fromMillisecondsSinceEpoch(0);
-    } catch (_) {
-      return DateTime.fromMillisecondsSinceEpoch(0);
+DateTime _safeDate(dynamic iso) {
+  if (iso == null) return DateTime.fromMillisecondsSinceEpoch(0);
+  final d = DateTime.tryParse(iso.toString());
+  if (d != null) return d;
+  // fallback for "yyyy-MM-dd HH:mm:ss"
+  try {
+    final s = iso.toString().replaceFirst(' ', 'T');
+    return DateTime.tryParse(s) ?? DateTime.fromMillisecondsSinceEpoch(0);
+  } catch (_) {
+    return DateTime.fromMillisecondsSinceEpoch(0);
+  }
+}
+
+String? _getDateIso(EmrDetailsModel m) {
+  final v = (m as dynamic).date;
+  return v?.toString();
+}
+
+String _doctor(EmrDetailsModel m) {
+  final v = (m as dynamic).doctorName ?? (m as dynamic).doctor_name;
+  return (v?.toString().trim().isNotEmpty ?? false)
+      ? v.toString()
+      : 'Unknown Doctor';
+}
+
+String _section(EmrDetailsModel m) {
+  final v = (m as dynamic).section;
+  if (v == null) return '—';
+  final s = v.toString().toUpperCase();
+  switch (s) {
+    case 'OPD':
+      return 'OPD';
+    case 'IPD':
+      return 'IPD';
+    case 'EMG':
+      return 'EMG';
+    default:
+      return s; // Daycare, etc.
+  }
+}
+
+String _formatDateTime(String? iso) {
+  if (iso == null || iso.isEmpty) return '—';
+  final d = DateTime.tryParse(iso);
+  if (d == null) return iso;
+
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
+  final dd = d.day.toString().padLeft(2, '0');
+  final mm = months[d.month - 1];
+  final yyyy = d.year.toString();
+
+  // Convert to 12-hour format
+  int hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+  final hh = hour.toString().padLeft(2, '0');
+  final min = d.minute.toString().padLeft(2, '0');
+  final period = d.hour >= 12 ? 'PM' : 'AM';
+
+  return '$dd $mm $yyyy • $hh:$min $period';
+}
+
+List<Map<String, dynamic>> _parseMapList(dynamic v) {
+  if (v == null) return const [];
+  if (v is List) {
+    return v.map((e) => (e as Map).cast<String, dynamic>()).toList();
+  }
+  // Stringified JSON array
+  final s = v.toString();
+  try {
+    final decoded = json.decode(s);
+    if (decoded is List) {
+      return decoded.map((e) => (e as Map).cast<String, dynamic>()).toList();
     }
+  } catch (_) {}
+  return const [];
+}
+
+List<String> _parseStringList(dynamic v) {
+  if (v == null) return const [];
+  if (v is List) return v.map((e) => e.toString()).toList();
+  try {
+    final decoded = json.decode(v.toString());
+    if (decoded is List) return decoded.map((e) => e.toString()).toList();
+  } catch (_) {}
+  return const [];
+}
+
+String _stripHtml(String? html) {
+  if (html == null || html.isEmpty) return '';
+  final noTags = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: false);
+  return html.replaceAll(noTags, '').trim();
+}
+
+// Accessors for tiles / filters
+List<Map<String, dynamic>> _vitals(EmrDetailsModel m) =>
+    _parseMapList((m as dynamic).vitals);
+
+List<Map<String, dynamic>> _diagnosis(EmrDetailsModel m) =>
+    _parseMapList((m as dynamic).diagnosis);
+
+List<Map<String, dynamic>> _medicines(EmrDetailsModel m) =>
+    _parseMapList((m as dynamic).medicines);
+
+List<Map<String, dynamic>> _progress(EmrDetailsModel m) =>
+    _parseMapList((m as dynamic).progressNote);
+
+List<Map<String, dynamic>> _nursing(EmrDetailsModel m) => _parseMapList(
+    (m as dynamic).nursingInstructions);
+
+List<String> _tests(EmrDetailsModel m) =>
+    _parseStringList((m as dynamic).testName);
+
+// ---------------- Filters ----------------
+
+List<EmrDetailsModel> _applyFilters(
+  List<EmrDetailsModel> list,
+  String q,
+  String section,
+  String date,
+  String doctor,
+) {
+  Iterable<EmrDetailsModel> res = list;
+  final query = q.trim().toLowerCase();
+  final now = DateTime.now();
+
+  if (query.isNotEmpty) {
+    res = res.where((m) {
+      final diag = _diagnosis(m)
+          .map((e) => (e['diagnosis'] ?? '').toString().toLowerCase())
+          .join(' ');
+      final meds = _medicines(m)
+          .map((e) => (e['medicine'] ?? '').toString().toLowerCase())
+          .join(' ');
+      final doc = _doctor(m).toLowerCase();
+      final sec = _section(m).toLowerCase();
+      final tests = _tests(m).join(' ').toLowerCase();
+      return diag.contains(query) ||
+          meds.contains(query) ||
+          doc.contains(query) ||
+          sec.contains(query) ||
+          tests.contains(query);
+    });
   }
 
-  String? _getDateIso(EmrDetailsModel m) {
-    final v = (m as dynamic).date;
-    return v?.toString();
+  if (section != 'All') {
+    res = res.where((m) => _section(m).toUpperCase() == section.toUpperCase());
   }
 
-  String _doctor(EmrDetailsModel m) {
-    final v = (m as dynamic).doctorName ?? (m as dynamic).doctor_name;
-    return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
+  if (doctor != 'All') {
+    res = res.where((m) => _doctor(m) == doctor);
   }
 
-  String _section(EmrDetailsModel m) {
-    final v = (m as dynamic).section;
-    if (v == null) return '—';
-    final s = v.toString().toUpperCase();
-    switch (s) {
-      case 'OPD': return 'OPD';
-      case 'IPD': return 'IPD';
-      case 'EMG': return 'EMG';
-      default: return s; // Daycare, etc.
-    }
-  }
-
-  String _formatDateTime(dynamic dateStr) {
-    if (dateStr == null) return '—';
-    // examples: "2025-08-22 12:24:00" or iso
-    final s = dateStr.toString();
-    final parsed = DateTime.tryParse(s) ?? DateTime.tryParse(s.replaceFirst(' ', 'T'));
-    if (parsed == null) return s;
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    final dd = parsed.day.toString().padLeft(2, '0');
-    final mm = months[parsed.month - 1];
-    final yyyy = parsed.year.toString();
-    final hh = parsed.hour.toString().padLeft(2, '0');
-    final min = parsed.minute.toString().padLeft(2, '0');
-    return '$dd $mm $yyyy • $hh:$min';
-  }
-
-  List<Map<String, dynamic>> _parseMapList(dynamic v) {
-    if (v == null) return const [];
-    if (v is List) {
-      return v.map((e) => (e as Map).cast<String, dynamic>()).toList();
-    }
-    // Stringified JSON array
-    final s = v.toString();
-    try {
-      final decoded = json.decode(s);
-      if (decoded is List) {
-        return decoded.map((e) => (e as Map).cast<String, dynamic>()).toList();
+  if (date != 'All') {
+    res = res.where((m) {
+      final d = _safeDate(_getDateIso(m));
+      if (date == 'Today') {
+        final n = DateTime.now();
+        return d.year == n.year && d.month == n.month && d.day == n.day;
+      } else if (date == 'Past') {
+        return d.isBefore(DateTime(now.year, now.month, now.day));
       }
-    } catch (_) {}
-    return const [];
+      return true;
+    });
   }
 
-  List<String> _parseStringList(dynamic v) {
-    if (v == null) return const [];
-    if (v is List) return v.map((e) => e.toString()).toList();
-    try {
-      final decoded = json.decode(v.toString());
-      if (decoded is List) return decoded.map((e) => e.toString()).toList();
-    } catch (_) {}
-    return const [];
-  }
+  return res.toList();
+}
 
-  String _stripHtml(String? html) {
-    if (html == null || html.isEmpty) return '';
-    final noTags = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: false);
-    return html.replaceAll(noTags, '').trim();
-  }
+// ---------------- Bottom sheet ----------------
 
-  // Accessors for tiles / filters
-  List<Map<String, dynamic>> _vitals(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).vitals);
+void _showEmrBottomSheet(BuildContext context, EmrDetailsModel emr) {
+  final vitals = _vitals(emr);
+  final diagnosis = _diagnosis(emr);
+  final meds = _medicines(emr);
+  final progress = _progress(emr);
+  final nursing = _nursing(emr);
+  final tests = _tests(emr);
+  final advice = _stripHtml(((emr as dynamic).advice)?.toString());
 
-  List<Map<String, dynamic>> _diagnosis(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).diagnosis);
-
-  List<Map<String, dynamic>> _medicines(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).medicines);
-
-  List<Map<String, dynamic>> _progress(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).progressNote ?? (m as dynamic).progress_note);
-
-  List<Map<String, dynamic>> _nursing(EmrDetailsModel m) =>
-      _parseMapList((m as dynamic).nursingInstructions ?? (m as dynamic).nursing_instructions);
-
-  List<String> _tests(EmrDetailsModel m) =>
-      _parseStringList((m as dynamic).testName ?? (m as dynamic).test_name);
-
-  // ---------------- Filters ----------------
-
-  List<EmrDetailsModel> _applyFilters(
-      List<EmrDetailsModel> list,
-      String q,
-      String section,
-      String date,
-      String doctor,
-      ) {
-    Iterable<EmrDetailsModel> res = list;
-    final query = q.trim().toLowerCase();
-    final now = DateTime.now();
-
-    if (query.isNotEmpty) {
-      res = res.where((m) {
-        final diag = _diagnosis(m).map((e) => (e['diagnosis'] ?? '').toString().toLowerCase()).join(' ');
-        final meds = _medicines(m).map((e) => (e['medicine'] ?? '').toString().toLowerCase()).join(' ');
-        final doc = _doctor(m).toLowerCase();
-        final sec = _section(m).toLowerCase();
-        final tests = _tests(m).join(' ').toLowerCase();
-        return diag.contains(query) ||
-            meds.contains(query) ||
-            doc.contains(query) ||
-            sec.contains(query) ||
-            tests.contains(query);
-      });
-    }
-
-    if (section != 'All') {
-      res = res.where((m) => _section(m).toUpperCase() == section.toUpperCase());
-    }
-
-    if (doctor != 'All') {
-      res = res.where((m) => _doctor(m) == doctor);
-    }
-
-    if (date != 'All') {
-      res = res.where((m) {
-        final d = _safeDate(_getDateIso(m));
-        if (date == 'Today') {
-          final n = DateTime.now();
-          return d.year == n.year && d.month == n.month && d.day == n.day;
-        } else if (date == 'Past') {
-          return d.isBefore(DateTime(now.year, now.month, now.day));
-        }
-        return true;
-      });
-    }
-
-    return res.toList();
-  }
-
-  // ---------------- Bottom sheet ----------------
-
-  void _showEmrBottomSheet(BuildContext context, EmrDetailsModel emr) {
-    final vitals = _vitals(emr);
-    final diagnosis = _diagnosis(emr);
-    final meds = _medicines(emr);
-    final progress = _progress(emr);
-    final nursing = _nursing(emr);
-    final tests = _tests(emr);
-    final advice = _stripHtml(((emr as dynamic).advice)?.toString());
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
-      builder: (_) {
-        return SafeArea(
-          child: DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.85,
-            minChildSize: 0.5,
-            maxChildSize: 0.95,
-            builder: (_, c) {
-              return SingleChildScrollView(
-                controller: c,
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_section(emr)} • ${_doctor(emr)}',
-                            style: const TextStyle(
-                              fontSize: 16.5,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black87,
-                            ),
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+    ),
+    builder: (_) {
+      return SafeArea(
+        child: DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.85,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (_, c) {
+            return SingleChildScrollView(
+              controller: c,
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${_section(emr)} • ${_doctor(emr)}',
+                          style: const TextStyle(
+                            fontSize: 16.5,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
                           ),
                         ),
-                        Text(
-                          _formatDateTime((emr as dynamic).date),
-                          style: const TextStyle(fontSize: 12.5, color: Colors.black54),
-                        ),
-                      ],
+                      ),
+                      Text(
+                        _formatDateTime((emr as dynamic).date),
+                        style: const TextStyle(
+                            fontSize: 12.5, color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  if (vitals.isNotEmpty) ...[
+                    _sheetSection('Vitals'),
+                    const SizedBox(height: 8),
+                    _vitalsGrid(vitals.first),
+                    const SizedBox(height: 14),
+                  ],
+
+                  if (diagnosis.isNotEmpty) ...[
+                    _sheetSection('Diagnosis'),
+                    const SizedBox(height: 8),
+                    ...diagnosis
+                        .map((d) => _bullet(d['diagnosis']?.toString() ?? '—')),
+                    const SizedBox(height: 14),
+                  ],
+
+                  if (meds.isNotEmpty) ...[
+                    _sheetSection('Medicines'),
+                    const SizedBox(height: 8),
+                    ...meds.map((m) => _bullet(
+                          '${m['medicine'] ?? ''} • ${m['dose'] ?? ''} • ${m['when'] ?? ''}'
+                              .replaceAll(' •  • ', '')
+                              .trim(),
+                        )),
+                    const SizedBox(height: 14),
+                  ],
+
+                  if (progress.isNotEmpty) ...[
+                    _sheetSection('Progress Notes'),
+                    const SizedBox(height: 8),
+                    ...progress.map(
+                        (p) => _bullet(p['observation']?.toString() ?? '—')),
+                    const SizedBox(height: 14),
+                  ],
+
+                  if (nursing.isNotEmpty) ...[
+                    _sheetSection('Nursing Instructions'),
+                    const SizedBox(height: 8),
+                    ...nursing.map(
+                        (n) => _bullet(n['instructions']?.toString() ?? '—')),
+                    const SizedBox(height: 14),
+                  ],
+
+                  if (tests.isNotEmpty) ...[
+                    _sheetSection('Investigations'),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: tests
+                          .map((t) =>
+                              _chip(icon: Icons.biotech_outlined, label: t))
+                          .toList(),
                     ),
                     const SizedBox(height: 14),
-
-                    if (vitals.isNotEmpty) ...[
-                      _sheetSection('Vitals'),
-                      const SizedBox(height: 8),
-                      _vitalsGrid(vitals.first),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (diagnosis.isNotEmpty) ...[
-                      _sheetSection('Diagnosis'),
-                      const SizedBox(height: 8),
-                      ...diagnosis.map((d) => _bullet(d['diagnosis']?.toString() ?? '—')),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (meds.isNotEmpty) ...[
-                      _sheetSection('Medicines'),
-                      const SizedBox(height: 8),
-                      ...meds.map((m) => _bullet(
-                        '${m['medicine'] ?? ''} • ${m['dose'] ?? ''} • ${m['when'] ?? ''}'
-                            .replaceAll(' •  • ', '')
-                            .trim(),
-                      )),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (progress.isNotEmpty) ...[
-                      _sheetSection('Progress Notes'),
-                      const SizedBox(height: 8),
-                      ...progress.map((p) => _bullet(p['observation']?.toString() ?? '—')),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (nursing.isNotEmpty) ...[
-                      _sheetSection('Nursing Instructions'),
-                      const SizedBox(height: 8),
-                      ...nursing.map((n) => _bullet(n['instructions']?.toString() ?? '—')),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (tests.isNotEmpty) ...[
-                      _sheetSection('Investigations'),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: tests.map((t) => _chip(icon: Icons.biotech_outlined, label: t)).toList(),
-                      ),
-                      const SizedBox(height: 14),
-                    ],
-
-                    if (advice.isNotEmpty) ...[
-                      _sheetSection('Advice'),
-                      const SizedBox(height: 8),
-                      Text(
-                        advice,
-                        style: const TextStyle(fontSize: 14.5, color: Colors.black87, height: 1.35),
-                      ),
-                    ],
                   ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
 
-  // ---------- Shared bullet list item ----------
-  Widget _bullet(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 2),
-            child: Text(
-              '•',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-                height: 1.2,
+                  if (advice.isNotEmpty) ...[
+                    _sheetSection('Advice'),
+                    const SizedBox(height: 8),
+                    Text(
+                      advice,
+                      style: const TextStyle(
+                          fontSize: 14.5, color: Colors.black87, height: 1.35),
+                    ),
+                  ],
+                ],
               ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text.isEmpty ? '—' : text,
-              style: const TextStyle(
-                fontSize: 14.5,
-                color: Colors.black87,
-                height: 1.35,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            );
+          },
+        ),
+      );
+    },
+  );
+}
 
-
-  // ---------- Shared chip (diagnosis/tests/etc.) ----------
-  Widget _chip({
-    required IconData icon,
-    required String label,
-    Color color = Colors.indigo,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
+// ---------- Shared bullet list item ----------
+Widget _bullet(String text) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 2),
+          child: Text(
+            '•',
             style: TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+              height: 1.2,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-
-  // ====== bottom-sheet small UIs ======
-  Widget _sheetSection(String title) => Text(
-    title,
-    style: const TextStyle(
-      fontSize: 14.5,
-      fontWeight: FontWeight.w800,
-      color: Colors.black87,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text.isEmpty ? '—' : text,
+            style: const TextStyle(
+              fontSize: 14.5,
+              color: Colors.black87,
+              height: 1.35,
+            ),
+          ),
+        ),
+      ],
     ),
   );
+}
 
-  Widget _vitalsGrid(Map<String, dynamic> v) {
-    String _v(String k) => (v[k]?.toString().trim().isEmpty ?? true) ? '—' : v[k].toString();
+// ---------- Shared chip (diagnosis/tests/etc.) ----------
+Widget _chip({
+  required IconData icon,
+  required String label,
+  Color color = Colors.indigo,
+}) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.08),
+      borderRadius: BorderRadius.circular(999),
+      border: Border.all(color: color.withOpacity(0.25)),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
-    final items = [
-      ['Pulse', _v('pulse')],
-      ['Temp', _v('temperature')],
-      ['BP',  (_v('bp_systolic') == '—' && _v('bp_diastolic') == '—')
-          ? '—'
-          : '${_v('bp_systolic')}/${_v('bp_diastolic')}'],
-      ['SpO₂', _v('SpO2')],
-      ['Resp', _v('respiratory')],
-      ['Wt',   _v('weight')],
-      ['Ht',   _v('height')],
-    ];
-
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: items.map((e) => _tag(icon: Icons.monitor_heart_outlined, label: '${e[0]}: ${e[1]}')).toList(),
+// ====== bottom-sheet small UIs ======
+Widget _sheetSection(String title) => Text(
+      title,
+      style: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w800,
+        color: Colors.black87,
+      ),
     );
-  }
 
+Widget _vitalsGrid(Map<String, dynamic> v) {
+  String _v(String k) =>
+      (v[k]?.toString().trim().isEmpty ?? true) ? '—' : v[k].toString();
+
+  final items = [
+    ['Pulse', _v('pulse')],
+    ['Temp', _v('temperature')],
+    [
+      'BP',
+      (_v('bp_systolic') == '—' && _v('bp_diastolic') == '—')
+          ? '—'
+          : '${_v('bp_systolic')}/${_v('bp_diastolic')}'
+    ],
+    ['SpO₂', _v('SpO2')],
+    ['Resp', _v('respiratory')],
+    ['Wt', _v('weight')],
+    ['Ht', _v('height')],
+  ];
+
+  return Wrap(
+    spacing: 10,
+    runSpacing: 10,
+    children: items
+        .map((e) =>
+            _tag(icon: Icons.monitor_heart_outlined, label: '${e[0]}: ${e[1]}'))
+        .toList(),
+  );
+}
 
 // ---------- Shared tag chip ----------
 Widget _tag({required IconData icon, required String label}) {
@@ -610,46 +652,76 @@ class _EmrTile extends StatelessWidget {
     // accessors scoped to tile
     String _doctor() {
       final v = (emr as dynamic).doctorName ?? (emr as dynamic).doctor_name;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : 'Unknown Doctor';
+      return (v?.toString().trim().isNotEmpty ?? false)
+          ? v.toString()
+          : 'Unknown Doctor';
     }
+
     String _section() {
       final v = (emr as dynamic).section?.toString().toUpperCase() ?? '—';
       return v;
     }
+
     String _dateText() {
-      final s = (emr as dynamic).date?.toString();
-      if (s == null) return '—';
-      DateTime? d = DateTime.tryParse(s) ?? DateTime.tryParse(s.replaceFirst(' ', 'T'));
-      if (d == null) return s;
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      final iso = (emr as dynamic).date?.toString();
+      if (iso == null || iso.isEmpty) return '—';
+      final d = DateTime.tryParse(iso);
+      if (d == null) return iso;
+
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+
       final dd = d.day.toString().padLeft(2, '0');
       final mm = months[d.month - 1];
       final yyyy = d.year.toString();
-      final hh = d.hour.toString().padLeft(2, '0');
+
+      // Convert to 12-hour format
+      int hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+      final hh = hour.toString().padLeft(2, '0');
       final min = d.minute.toString().padLeft(2, '0');
-      return '$dd $mm $yyyy • $hh:$min';
+      final period = d.hour >= 12 ? 'PM' : 'AM';
+
+      return '$dd $mm $yyyy • $hh:$min $period';
     }
+
     List<Map<String, dynamic>> _vitals() {
       final raw = (emr as dynamic).vitals;
       try {
         final list = (raw is String) ? json.decode(raw) : raw;
-        if (list is List) return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
+        if (list is List)
+          return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
       } catch (_) {}
       return const [];
     }
+
     List<Map<String, dynamic>> _diag() {
       final raw = (emr as dynamic).diagnosis;
       try {
         final list = (raw is String) ? json.decode(raw) : raw;
-        if (list is List) return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
+        if (list is List)
+          return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
       } catch (_) {}
       return const [];
     }
+
     List<Map<String, dynamic>> _meds() {
       final raw = (emr as dynamic).medicines;
       try {
         final list = (raw is String) ? json.decode(raw) : raw;
-        if (list is List) return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
+        if (list is List)
+          return list.map((e) => (e as Map).cast<String, dynamic>()).toList();
       } catch (_) {}
       return const [];
     }
@@ -658,16 +730,18 @@ class _EmrTile extends StatelessWidget {
     final diag = _diag();
     final meds = _meds();
 
-    String? pulse = vitals.isNotEmpty ? vitals.first['pulse']?.toString() : null;
-    String? temp  = vitals.isNotEmpty ? vitals.first['temperature']?.toString() : null;
-    String? spo2  = vitals.isNotEmpty ? (vitals.first['SpO2'] ?? vitals.first['spo2'])?.toString() : null;
+    String? pulse =
+        vitals.isNotEmpty ? vitals.first['pulse']?.toString() : null;
+    String? temp =
+        vitals.isNotEmpty ? vitals.first['temperature']?.toString() : null;
+    String? spo2 = vitals.isNotEmpty
+        ? (vitals.first['SpO2'] ?? vitals.first['spo2'])?.toString()
+        : null;
 
-    String diagText = diag.isNotEmpty
-        ? (diag.first['diagnosis']?.toString() ?? '')
-        : '';
-    String medText = meds.isNotEmpty
-        ? (meds.first['medicine']?.toString() ?? '')
-        : '';
+    String diagText =
+        diag.isNotEmpty ? (diag.first['diagnosis']?.toString() ?? '') : '';
+    String medText =
+        meds.isNotEmpty ? (meds.first['medicine']?.toString() ?? '') : '';
 
     return InkWell(
       onTap: onTap,
@@ -705,7 +779,9 @@ class _EmrTile extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  _section().length >= 3 ? _section().substring(0,3) : _section(),
+                  _section().length >= 3
+                      ? _section().substring(0, 3)
+                      : _section(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -739,9 +815,12 @@ class _EmrTile extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.event, size: 16, color: Colors.blueGrey),
+                          const Icon(Icons.event,
+                              size: 16, color: Colors.blueGrey),
                           const SizedBox(width: 6),
-                          Text(_dateText(), style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
+                          Text(_dateText(),
+                              style: const TextStyle(
+                                  fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
                     ],
@@ -773,9 +852,18 @@ class _EmrTile extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        if (pulse != null) _tag(icon: Icons.monitor_heart_outlined, label: 'Pulse: $pulse'),
-                        if (temp  != null) _tag(icon: Icons.thermostat_outlined, label: 'Temp: $temp'),
-                        if (spo2  != null) _tag(icon: Icons.bloodtype_outlined, label: 'SpO₂: $spo2'),
+                        if (pulse != null)
+                          _tag(
+                              icon: Icons.monitor_heart_outlined,
+                              label: 'Pulse: $pulse'),
+                        if (temp != null)
+                          _tag(
+                              icon: Icons.thermostat_outlined,
+                              label: 'Temp: $temp'),
+                        if (spo2 != null)
+                          _tag(
+                              icon: Icons.bloodtype_outlined,
+                              label: 'SpO₂: $spo2'),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -787,7 +875,9 @@ class _EmrTile extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       if (diagText.isNotEmpty)
-                        _chip(icon: Icons.assignment_turned_in_outlined, label: diagText),
+                        _chip(
+                            icon: Icons.assignment_turned_in_outlined,
+                            label: diagText),
                       if (medText.isNotEmpty)
                         _chip(icon: Icons.medication_outlined, label: medText),
                     ],
@@ -927,13 +1017,13 @@ class _FilterBar extends StatelessWidget {
             child: Row(
               children: items
                   .map((it) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _segChip(
-                  label: it,
-                  selected: value == it,
-                  onTap: () => onChanged(it),
-                ),
-              ))
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _segChip(
+                          label: it,
+                          selected: value == it,
+                          onTap: () => onChanged(it),
+                        ),
+                      ))
                   .toList(),
             ),
           ),
@@ -966,13 +1056,13 @@ class _FilterBar extends StatelessWidget {
             child: Row(
               children: items
                   .map((it) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _segChip(
-                  label: it,
-                  selected: value == it,
-                  onTap: () => onChanged(it),
-                ),
-              ))
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _segChip(
+                          label: it,
+                          selected: value == it,
+                          onTap: () => onChanged(it),
+                        ),
+                      ))
                   .toList(),
             ),
           ),
@@ -1001,7 +1091,7 @@ class _FilterBar extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12.5,
-            fontWeight: selected? FontWeight.w700: FontWeight.w600,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
             color: color,
           ),
         ),
@@ -1032,15 +1122,16 @@ class _SearchField extends StatelessWidget {
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () {
-            controller.clear();
-            onChanged?.call('');
-          },
-        ),
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call('');
+                },
+              ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: Colors.black.withOpacity(0.08)),
@@ -1093,7 +1184,8 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(Icons.description_outlined, size: 64, color: Colors.blueGrey.withOpacity(0.4)),
+        Icon(Icons.description_outlined,
+            size: 64, color: Colors.blueGrey.withOpacity(0.4)),
         const SizedBox(height: 16),
         Text(title,
             style: const TextStyle(
@@ -1145,7 +1237,8 @@ class _SummaryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
         CircleAvatar(
           radius: 16,
@@ -1154,7 +1247,8 @@ class _SummaryTile extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Column(
-          crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(label,
                 style: const TextStyle(
@@ -1173,7 +1267,6 @@ class _SummaryTile extends StatelessWidget {
     );
   }
 }
-
 
 class _ExpandableFilterCard extends StatelessWidget {
   final bool expanded;
@@ -1204,7 +1297,8 @@ class _ExpandableFilterCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  const Icon(Icons.tune_rounded, size: 20, color: Colors.indigo),
+                  const Icon(Icons.tune_rounded,
+                      size: 20, color: Colors.indigo),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1218,7 +1312,8 @@ class _ExpandableFilterCard extends StatelessWidget {
                   ),
                   AnimatedRotation(
                     duration: const Duration(milliseconds: 200),
-                    turns: expanded ? 0.5 : 0.0, // arrow rotates up when expanded
+                    turns:
+                        expanded ? 0.5 : 0.0, // arrow rotates up when expanded
                     child: const Icon(Icons.keyboard_arrow_down_rounded,
                         size: 22, color: Colors.black54),
                   ),
@@ -1237,7 +1332,7 @@ class _ExpandableFilterCard extends StatelessWidget {
             secondCurve: Curves.easeOut,
             sizeCurve: Curves.easeOut,
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Column(
               children: [
@@ -1254,13 +1349,13 @@ class _ExpandableFilterCard extends StatelessWidget {
   }
 
   Widget _softDivider() => Container(
-    height: 1,
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Colors.black.withOpacity(0.06), Colors.transparent],
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-      ),
-    ),
-  );
+        height: 1,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.black.withOpacity(0.06), Colors.transparent],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+      );
 }

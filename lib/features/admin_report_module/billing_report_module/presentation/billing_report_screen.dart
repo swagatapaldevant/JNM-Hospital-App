@@ -27,6 +27,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/model/billing_repo
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/doctor_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/opd_patient_report/referral_list_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/opd_patient_report_module/presentation/opd_patient_report_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class BillingReportScreen extends StatefulWidget {
   const BillingReportScreen({super.key});
@@ -111,6 +112,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
     AppDimensions.init(context);
 
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           CommonHeaderForReportModule(
@@ -159,12 +161,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
             },
           ),
           Expanded(
-            child: isLoading && billingList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child:  SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -335,6 +332,7 @@ class _BillingReportScreenState extends State<BillingReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           billingList.isEmpty
                               ? Center(
                                   child: Text(

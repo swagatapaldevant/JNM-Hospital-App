@@ -93,4 +93,7 @@ abstract class SharedPref {
   void setUserPhone(String data);
   Future<String?> getUserPhone();
 
+  void setApprovalPermissionList(List<String> data);
+  Future<List<String>> getApprovalPermissionList();
+
 }

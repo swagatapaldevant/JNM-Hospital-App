@@ -14,6 +14,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/collection_report_
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/user_wise_collection_report_module/presentation/department_wise_user_wise_details_screen.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class UserWiseCollectionReportScreen extends StatefulWidget {
   const UserWiseCollectionReportScreen({super.key});
@@ -158,15 +159,7 @@ class _UserWiseCollectionReportScreenState
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : _cards.isEmpty
-                            ? Center(
-                                child: Text(
-                                  "Please use proper date range",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black),
-                                ),
-                              )
+                            ? GraphAndCardScreenSimmer()
                             : ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),

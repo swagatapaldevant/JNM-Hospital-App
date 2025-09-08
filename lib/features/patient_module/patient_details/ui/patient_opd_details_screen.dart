@@ -94,14 +94,15 @@ class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
                     color: Colors.indigo,
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: _summaryTile(
-                      icon: Icons.account_balance_wallet_outlined,
-                      label: 'Total Due',
-                      value: _inr(summary.totalDue),
-                      color: Colors.deepOrange,
-                      alignEnd: true,
-                    ),
+                  if(summary.totalDue > 0)
+                    Expanded(
+                      child: _summaryTile(
+                        icon: Icons.account_balance_wallet_outlined,
+                        label: 'Total Due',
+                        value: _inr(summary.totalDue),
+                        color: Colors.deepOrange,
+                        alignEnd: true,
+                      ),
                   ),
                 ],
               ),
@@ -122,7 +123,7 @@ class _PatientOpdDetailsScreenState extends State<PatientOpdDetailsScreen> {
               filters: _FilterBar(
                 status: _statusFilter,
                 onStatusChanged: (v) => setState(() => _statusFilter = v),
-                type: _typeFilter,
+                // type: _typeFilter,
                 onTypeChanged: (v) => setState(() => _typeFilter = v),
                 date: _dateFilter,
                 onDateChanged: (v) => setState(() => _dateFilter = v),
@@ -345,10 +346,10 @@ class _OpdTile extends StatelessWidget {
       return 0;
     }
 
-    String _type() {
-      final t = opd.type ?? (opd as dynamic).type;
-      return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
-    }
+    // String _type() {
+    //   final t = opd.type ?? (opd as dynamic).type;
+    //   return (t?.toString().trim().isNotEmpty ?? false) ? t.toString() : '—';
+    // }
 
     double _due() {
       final d = opd.dueAmount ?? (opd as dynamic).due_amount;
@@ -500,19 +501,19 @@ class _OpdTile extends StatelessWidget {
                           Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
-                      _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
-                      if (_uid() != '—') _chip(icon: Icons.tag, label: 'UID: ${_uid()}'),
+                      // _chip(icon: Icons.category_outlined, label: (_type()).toUpperCase()),
+                      if (_uid() != '—') _chip(icon: Icons.tag, label: 'UHID: ${_uid()}'),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // Due pill
-                  _moneyPill(
-                    icon: Icons.account_balance_wallet,
-                    label: 'Due',
-                    value: _inr(_due()),
-                    emphasize: _due() > 0,
-                  ),
+                  if(_due() > 0)
+                    _moneyPill(
+                      icon: Icons.account_balance_wallet,
+                      label: 'Due',
+                      value: _inr(_due()),
+                      emphasize: _due() > 0,
+                    ),
                 ],
               ),
             ),
@@ -544,18 +545,38 @@ class _OpdTile extends StatelessWidget {
     );
   }
 
-  static String _formatDateTime(String? iso) {
-    if (iso == null || iso.isEmpty) return '—';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return iso;
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    final dd = d.day.toString().padLeft(2, '0');
-    final mm = months[d.month - 1];
-    final yyyy = d.year.toString();
-    final hh = d.hour.toString().padLeft(2, '0');
-    final min = d.minute.toString().padLeft(2, '0');
-    return '$dd $mm $yyyy • $hh:$min';
-  }
+    String _formatDateTime(String? iso) {
+      if (iso == null || iso.isEmpty) return '—';
+      final d = DateTime.tryParse(iso);
+      if (d == null) return iso;
+
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+
+      final dd = d.day.toString().padLeft(2, '0');
+      final mm = months[d.month - 1];
+      final yyyy = d.year.toString();
+
+      // Convert to 12-hour format
+      int hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+      final hh = hour.toString().padLeft(2, '0');
+      final min = d.minute.toString().padLeft(2, '0');
+      final period = d.hour >= 12 ? 'PM' : 'AM';
+
+      return '$dd $mm $yyyy • $hh:$min $period';
+    }
 
   static String _inr(num? v) {
     final n = (v ?? 0).toDouble();
@@ -607,7 +628,7 @@ class _OpdTile extends StatelessWidget {
 
 class _FilterBar extends StatelessWidget {
   final String status;
-  final String type;
+  // final String type;
   final String date;
   final ValueChanged<String> onStatusChanged;
   final ValueChanged<String> onTypeChanged;
@@ -615,7 +636,7 @@ class _FilterBar extends StatelessWidget {
 
   const _FilterBar({
     required this.status,
-    required this.type,
+    // required this.type,
     required this.date,
     required this.onStatusChanged,
     required this.onTypeChanged,
@@ -632,13 +653,13 @@ class _FilterBar extends StatelessWidget {
           value: status,
           onChanged: onStatusChanged,
         ),
-        const SizedBox(height: 8),
-        _segmentedRow(
-          label: 'Type',
-          items: const ['All', 'New', 'Old'],
-          value: type,
-          onChanged: onTypeChanged,
-        ),
+        // const SizedBox(height: 8),
+        // _segmentedRow(
+        //   label: 'Type',
+        //   items: const ['All', 'New', 'Old'],
+        //   value: type,
+        //   onChanged: onTypeChanged,
+        // ),
         const SizedBox(height: 8),
         _segmentedRow(
           label: 'Date',

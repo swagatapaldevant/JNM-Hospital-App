@@ -9,7 +9,11 @@ import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 
 class ApprovedListScreen extends StatefulWidget {
-  const ApprovedListScreen({Key? key}) : super(key: key);
+  final List<String> tabList;
+  final List<String> tabUrl;
+
+  const ApprovedListScreen(
+      {super.key, required this.tabList, required this.tabUrl});
 
   @override
   State<ApprovedListScreen> createState() => _ApprovedListScreenState();
@@ -20,16 +24,10 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
   late TabController _tabController;
 
   // Data + loading per tab
-  final List<List<ApprovalSystemModel>> _tabData = List.generate(5, (_) => []);
-  final List<bool> _isLoading = List.generate(5, (_) => false);
+  List<List<ApprovalSystemModel>> _tabData = [];
+  List<bool> _isLoading = [];
 
-  final List<String> _tabNames = [
-    "OPD",
-    "IPD/Daycare",
-    "EMR",
-    "DIALYSIS",
-    "INVESTIGATION"
-  ];
+  List<String> _tabNames = [];
 
   static const Color bg1 = Color(0xFFF0F0F0);
   static const Color bg2 = Color(0xFFCDDBFF);
@@ -52,8 +50,9 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-
+    _tabController = TabController(length: widget.tabList.length, vsync: this);
+    _tabData.addAll(List.generate(widget.tabList.length, (_) => []));
+    _isLoading.addAll(List.generate(widget.tabList.length, (_) => false));
     // Fetch first tab initially
     _fetchTabData(0);
 
@@ -65,16 +64,11 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
         _fetchTabData(i);
       }
     });
+    _tabNames = widget.tabList;
   }
 
   Future<void> _fetchTabData(int tabIndex) async {
-    final List<String> tabURL = [
-      'opd',
-      'ipd',
-      'emr',
-      'dialysis',
-      'investigation'
-    ];
+    final List<String> tabURL = widget.tabUrl;
 
     setState(() => _isLoading[tabIndex] = true);
 

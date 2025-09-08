@@ -19,6 +19,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_
 import 'package:jnm_hospital_app/features/admin_report_module/death_report_module/widgets/doctor_wise_patient_death_count_graph.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/doctor_by_death_count_model.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/model/death_report/patient_death_report_model.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class DeathReportScreen extends StatefulWidget {
   const DeathReportScreen({super.key});
@@ -51,7 +52,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
     selectedFromDate = getCurrentDate();
     selectedToDate = getCurrentDate();
@@ -73,6 +74,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
     AppDimensions.init(context);
 
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: Column(
         children: [
           CommonHeaderForReportModule(
@@ -86,12 +88,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
             filterTap: () {},
           ),
           Expanded(
-            child: isLoading && deathReportList.isEmpty
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: AppColors.arrowBackground,
-                  ))
-                : SingleChildScrollView(
+            child: SingleChildScrollView(
                     controller: _scrollController,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -233,6 +230,7 @@ class _DeathReportScreenState extends State<DeathReportScreen> {
                           SizedBox(
                               height:
                                   ScreenUtils().screenHeight(context) * 0.04),
+                          isLoading ? GraphAndCardScreenSimmer() :
                           deathReportList.isEmpty
                               ? Center(
                                   child: Text(

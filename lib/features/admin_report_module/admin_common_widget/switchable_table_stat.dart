@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jnm_hospital_app/core/utils/constants/app_colors.dart';
 
 class TableStatsSwitcher<T> extends StatefulWidget {
   final List<String> rows; // row labels (e.g., departments)
@@ -316,7 +317,10 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
             label: "All",
             value: _formatNumber(rowSum.fold(0, (a, b) => a + b)),
             subtitle: "Grand Total",
-            color: selectedRow == null ? Colors.blue : Colors.grey,
+            textColor: selectedRow == null ? Colors.white : Colors.black,
+             containerColor: selectedRow == null ? Colors.white : _metricColor(0),
+
+            color: selectedRow == null ? Colors.blue : Colors.white,
           ),
         ),
         ...List.generate(rowCount, (r) {
@@ -332,7 +336,9 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
               label: title,
               value: value,
               subtitle: subtitle,
-              color: selectedRow == title ? _metricColor(r) : Colors.grey,
+              color: selectedRow == title ? _metricColor(r) : const Color.fromARGB(255, 255, 255, 255),
+              textColor: selectedRow == title ? Colors.white : Colors.black,
+              containerColor: selectedRow == title ? Colors.white : _metricColor(r),
             ),
           );
         }),
@@ -534,7 +540,10 @@ class _InsightCardState<T> extends State<_InsightCard<T>> {
                       label: _prettyNum(sum),
                       value: '',
                       subtitle: '',
-                      color: Colors.blue,
+                      color: Color.fromARGB(255, 69, 108, 248), 
+                      showBorder: true,
+                      textColor: Colors.white,
+                      containerColor: Colors.white,
                     ),
                   ),
                   Icon(
@@ -732,12 +741,18 @@ class _SummaryChip extends StatelessWidget {
   final String value;
   final String subtitle;
   final Color color;
+  final Color? textColor;
+  final Color? containerColor;
+  final bool? showBorder;
 
   const _SummaryChip({
     required this.label,
     required this.value,
     required this.subtitle,
     required this.color,
+    this.textColor = Colors.black,
+    this.containerColor = Colors.black,
+    this.showBorder
   });
 
   @override
@@ -753,20 +768,20 @@ class _SummaryChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 10,
-            height: 10,
+            width: 8,
+            height: 8,
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(3)),
+                color: containerColor, borderRadius: BorderRadius.circular(3)),
           ),
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500,  color: Colors.white),
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500,  color: textColor),
           ),
           const SizedBox(width: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: Colors.white),
+            style: TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: textColor),
           ),
         ],
       ),

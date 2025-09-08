@@ -60,14 +60,15 @@ class _PatientBillsListScreenState extends State<PatientBillsListScreen> {
                   color: Colors.indigo,
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _summaryTile(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: 'Total Due',
-                    value: _inr(summary.totalDue),
-                    color: Colors.deepOrange,
-                    alignEnd: true,
-                  ),
+                if(summary.totalDue > 0)
+                  Expanded(
+                    child: _summaryTile(
+                      icon: Icons.account_balance_wallet_outlined,
+                      label: 'Total Due',
+                      value: _inr(summary.totalDue),
+                      color: Colors.deepOrange,
+                      alignEnd: true,
+                    ),
                 ),
               ],
             ),
@@ -358,12 +359,13 @@ class _BillTile extends StatelessWidget {
                         value: _inr(total),
                       ),
                       const SizedBox(height: 8),
-                      _moneyPill(
-                        icon: Icons.account_balance_wallet,
-                        label: 'Due',
-                        value: _inr(due),
-                        emphasize: due > 0,
-                      )
+                      if(due > 0)
+                        _moneyPill(
+                          icon: Icons.account_balance_wallet,
+                          label: 'Due',
+                          value: _inr(due),
+                          emphasize: due > 0,
+                        )
                     ],
                   ),
                 ),

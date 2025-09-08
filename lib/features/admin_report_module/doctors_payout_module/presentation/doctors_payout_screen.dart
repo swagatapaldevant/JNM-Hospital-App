@@ -12,6 +12,7 @@ import 'package:jnm_hospital_app/features/admin_report_module/collection_report_
 import 'package:jnm_hospital_app/features/admin_report_module/common_widgets/common_header.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/data/admin_report_usecase.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/doctors_payout_module/model/doctor_payout_model.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/graph_and_card_screen_simmer.dart';
 
 class DoctorsPayoutScreen extends StatefulWidget {
   const DoctorsPayoutScreen({super.key});
@@ -194,9 +195,7 @@ class _DoctorsPayoutScreenState extends State<DoctorsPayoutScreen> {
                     ],
 
                     if (isLoading) ...[
-                      const SizedBox(height: 40),
-                      const Center(child: CircularProgressIndicator()),
-                      const SizedBox(height: 40),
+                      GraphAndCardScreenSimmer()
                     ] else if (_doctors.isEmpty) ...[
                       const SizedBox(height: 24),
                       const Center(

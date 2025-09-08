@@ -53,7 +53,7 @@ class _PatientDaycareDetailsScreenState
       body: PatientDetailsScreenLayout(
         
         slivers: [
-          CommonHeader(title: "Daycare Details"),
+          CommonHeader(title: "IPD/Daycare Details"),
           SliverList(
           delegate: SliverChildListDelegate.fixed([
             const SizedBox(height: 16),
@@ -98,7 +98,7 @@ class _PatientDaycareDetailsScreenState
               filters: _FilterBar(
                 status: _statusFilter,
                 onStatusChanged: (v) => setState(() => _statusFilter = v),
-                type: _typeFilter,
+                // type: _typeFilter,
                 onTypeChanged: (v) => setState(() => _typeFilter = v),
                 date: _dateFilter,
                 onDateChanged: (v) => setState(() => _dateFilter = v),
@@ -343,10 +343,10 @@ class _DaycareTile extends StatelessWidget {
       return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
     }
 
-    String _type() {
-      final v = (dc as dynamic).type;
-      return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
-    }
+    // String _type() {
+    //   final v = (dc as dynamic).type;
+    //   return (v?.toString().trim().isNotEmpty ?? false) ? v.toString() : '—';
+    // }
 
     bool _isDischarged() {
       final v = (dc as dynamic).dischargeStatus ?? (dc as dynamic).discharge_status;
@@ -365,13 +365,33 @@ class _DaycareTile extends StatelessWidget {
       if (iso == null || iso.isEmpty) return '—';
       final d = DateTime.tryParse(iso);
       if (d == null) return iso;
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+
       final dd = d.day.toString().padLeft(2, '0');
       final mm = months[d.month - 1];
       final yyyy = d.year.toString();
-      final hh = d.hour.toString().padLeft(2, '0');
+
+      // Convert to 12-hour format
+      int hour = d.hour % 12 == 0 ? 12 : d.hour % 12;
+      final hh = hour.toString().padLeft(2, '0');
       final min = d.minute.toString().padLeft(2, '0');
-      return '$dd $mm $yyyy • $hh:$min';
+      final period = d.hour >= 12 ? 'PM' : 'AM';
+
+      return '$dd $mm $yyyy • $hh:$min $period';
     }
 
     String _insuranceIdText() {
@@ -514,7 +534,7 @@ class _DaycareTile extends StatelessWidget {
                           Text(apptText, style: const TextStyle(fontSize: 12.5, color: Colors.black54)),
                         ],
                       ),
-                      _chip(icon: Icons.category_outlined, label: _type().toUpperCase()),
+                      // _chip(icon: Icons.category_outlined, label: _type().toUpperCase()),
                       if (_admissionType().isNotEmpty && _admissionType() != '—')
                         _chip(icon: Icons.local_hospital_outlined, label: _admissionType()),
                     ],
@@ -534,17 +554,17 @@ class _DaycareTile extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Package & Insurance chips (if any)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (_packageType().isNotEmpty)
-                        _chip(icon: Icons.medical_services_outlined, label: _packageType()),
-                      if (_packageName().isNotEmpty)
-                        _chip(icon: Icons.label_important_outline, label: _packageName()),
-                      finalInsurance(_insuranceIdText()),
-                    ].whereType<Widget>().toList(),
-                  ),
+                  // Wrap(
+                  //   spacing: 8,
+                  //   runSpacing: 8,
+                  //   children: [
+                  //     if (_packageType().isNotEmpty)
+                  //       _chip(icon: Icons.medical_services_outlined, label: _packageType()),
+                  //     if (_packageName().isNotEmpty)
+                  //       _chip(icon: Icons.label_important_outline, label: _packageName()),
+                  //     finalInsurance(_insuranceIdText()),
+                  //   ].whereType<Widget>().toList(),
+                  // ),
                 ],
               ),
             ),
@@ -562,7 +582,7 @@ class _DaycareTile extends StatelessWidget {
   static String _circleText(String id) {
     final digits = RegExp(r'\d+').allMatches(id).map((m) => m.group(0)!).join();
     if (digits.isEmpty) return 'DC';
-    return digits.length <= 3 ? digits : digits.substring(digits.length - 3);
+    return '#${(digits.length <= 3 ? digits : digits.substring(digits.length - 3))}';
   }
 
   static Widget _chip({required IconData icon, required String label}) {
@@ -620,7 +640,7 @@ class _DaycareTile extends StatelessWidget {
 
 class _FilterBar extends StatelessWidget {
   final String status;
-  final String type;
+  //final String type;
   final String date;
   final ValueChanged<String> onStatusChanged;
   final ValueChanged<String> onTypeChanged;
@@ -628,7 +648,7 @@ class _FilterBar extends StatelessWidget {
 
   const _FilterBar({
     required this.status,
-    required this.type,
+    //required this.type,
     required this.date,
     required this.onStatusChanged,
     required this.onTypeChanged,
@@ -645,13 +665,13 @@ class _FilterBar extends StatelessWidget {
           value: status,
           onChanged: onStatusChanged,
         ),
-        const SizedBox(height: 8),
-        _segmentedRow(
-          label: 'Type',
-          items: const ['All', 'New', 'Old'],
-          value: type,
-          onChanged: onTypeChanged,
-        ),
+        // const SizedBox(height: 8),
+        // _segmentedRow(
+        //   label: 'Type',
+        //   items: const ['All', 'New', 'Old'],
+        //   value: type,
+        //   onChanged: onTypeChanged,
+        // ),
         const SizedBox(height: 8),
         _segmentedRow(
           label: 'Date',

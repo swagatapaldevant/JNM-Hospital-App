@@ -119,15 +119,18 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     if (!_mounted) return;
 
     if (response.status == STATUS.SUCCESS) {
+
+     // _fetchBills(initial: true);
+
       CommonUtils().flutterSnackBar(
         context: context,
         mes: "Approval successful",
         messageType: 1,
       );
       // OPTIONAL: Refresh the list or locally mark approved
-      // _currentPage = 1;
-      // _hasMore = true;
-      // await _fetchBills(initial: true);
+      _currentPage = 1;
+      _hasMore = true;
+      await _fetchBills(initial: true);
     } else {
       CommonUtils().flutterSnackBar(
         context: context,

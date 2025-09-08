@@ -81,6 +81,7 @@ class _PatientItemDataState extends State<PatientItemData>
       width: w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(.05),
@@ -242,16 +243,21 @@ class _PatientItemDataState extends State<PatientItemData>
                               ),
                               const SizedBox(height: 8),
                               if(widget.hideBtn == null || widget.hideBtn == false)
-                                SizedBox(
-                                  width: 120,
+                                Align(
+                                  alignment: Alignment.centerRight,
                                   child: CommonButton(
+                                    height: ScreenUtils().screenHeight(context)*0.04,
+                                    width: ScreenUtils().screenWidth(context)*0.38,
+                                    textFontSize: 12,
                                     buttonName: "View Details",
                                     onTap: () {
                                       Navigator.pushNamed(context,
                                           RouteGenerator.kBillingDetailsScreen,
                                           arguments: billingDetails);
                                     }),
-                                )
+                                ),
+
+                              const SizedBox(height: 8),
                               
                             ],
                           ),

@@ -263,22 +263,22 @@ class _AppDrawerState extends State<AppDrawer> {
                       // TODO: Navigator.pushNamed(context, '/Appointments');
                     },
                   ),
-                  _DrawerItem(
-                    icon: Icons.visibility_outlined,
-                    label: 'Optical Orders',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Navigator.pushNamed(context, '/OpticalOrders');
-                    },
-                  ),
-                  _DrawerItem(
-                    icon: Icons.receipt_long_outlined,
-                    label: 'Prescriptions',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Navigator.pushNamed(context, '/Prescriptions');
-                    },
-                  ),
+                  // _DrawerItem(
+                  //   icon: Icons.visibility_outlined,
+                  //   label: 'Optical Orders',
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     // TODO: Navigator.pushNamed(context, '/OpticalOrders');
+                  //   },
+                  // ),
+                  // _DrawerItem(
+                  //   icon: Icons.receipt_long_outlined,
+                  //   label: 'Prescriptions',
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //     // TODO: Navigator.pushNamed(context, '/Prescriptions');
+                  //   },
+                  // ),
                   _DrawerItem(
                     icon: Icons.payments_outlined,
                     label: 'Payments',
@@ -287,28 +287,28 @@ class _AppDrawerState extends State<AppDrawer> {
                       // TODO: Navigator.pushNamed(context, '/Payments');
                     },
                   ),
-                  _DrawerItem(
-                    icon: Icons.description_outlined,
-                    label: 'Reports',
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  // _DrawerItem(
+                  //   icon: Icons.description_outlined,
+                  //   label: 'Reports',
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                   const Divider(height: 12),
-                  _DrawerItem(
-                    icon: Icons.settings_outlined,
-                    label: 'Settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  _DrawerItem(
-                    icon: Icons.help_outline_rounded,
-                    label: 'Help & Support',
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  // _DrawerItem(
+                  //   icon: Icons.settings_outlined,
+                  //   label: 'Settings',
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
+                  // _DrawerItem(
+                  //   icon: Icons.help_outline_rounded,
+                  //   label: 'Help & Support',
+                  //   onTap: () {
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                   _DrawerItem(
                     icon: Icons.logout_rounded,
                     label: 'Logout',

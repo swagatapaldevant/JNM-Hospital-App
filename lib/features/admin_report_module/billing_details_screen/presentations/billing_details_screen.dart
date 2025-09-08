@@ -99,17 +99,6 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                         // Main Bill Container
                         Container(
                           margin: const EdgeInsets.all(2),
-                          // decoration: BoxDecoration(
-                          //   color: Colors.white,
-                          //   borderRadius: BorderRadius.circular(20),
-                          //   boxShadow: [
-                          //     BoxShadow(
-                          //       color: Colors.black.withOpacity(0.08),
-                          //       blurRadius: 20,
-                          //       offset: const Offset(0, 4),
-                          //     ),
-                          //   ],
-                          // ),
                           child: Padding(
                             padding:  EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
                             child: Column(

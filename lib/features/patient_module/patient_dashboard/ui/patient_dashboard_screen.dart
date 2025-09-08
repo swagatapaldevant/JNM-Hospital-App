@@ -262,18 +262,18 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                         RouteGenerator.kOPDRegistrationScreen);
                                   },
                                 ),
-                                _QuickActionChip(
-                                  icon: Icons.visibility_outlined,
-                                  label: 'Optical',
-                                  color: opticalAccent,
-                                  onTap: () => HapticFeedback.selectionClick(),
-                                ),
-                                _QuickActionChip(
-                                  icon: Icons.receipt_long_outlined,
-                                  label: 'Prescriptions',
-                                  color: const Color(0xFF20C997),
-                                  onTap: () => HapticFeedback.selectionClick(),
-                                ),
+                                // _QuickActionChip(
+                                //   icon: Icons.visibility_outlined,
+                                //   label: 'Optical',
+                                //   color: opticalAccent,
+                                //   onTap: () => HapticFeedback.selectionClick(),
+                                // ),
+                                // _QuickActionChip(
+                                //   icon: Icons.receipt_long_outlined,
+                                //   label: 'Prescriptions',
+                                //   color: const Color(0xFF20C997),
+                                //   onTap: () => HapticFeedback.selectionClick(),
+                                // ),
                                 _QuickActionChip(
                                   icon: Icons.receipt_long_outlined,
                                   label: 'Details',
@@ -410,46 +410,46 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                     ),
 
                   // Optical Upcoming (separate list)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
-                      child: _SectionHeader(
-                          title: 'Optical Appointment',
-                          actionText: 'View all',
-                          onAction: () {}),
-                    ),
-                  ),
-                  if (_loading)
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: 1,
-                        itemBuilder: (_, __) =>
-                            const _AppointmentCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    )
-                  else if (_opticalUpcoming.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                        child: const _EmptyStateCard(
-                          icon: Icons.visibility_outlined,
-                          message: 'No upcoming Optical appointments',
-                          hint: 'Schedule a new visit from Quick actions.',
-                        ),
-                      ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                      sliver: SliverList.separated(
-                        itemCount: _opticalUpcoming.length,
-                        itemBuilder: (context, i) =>
-                            _AppointmentCard(appt: _opticalUpcoming[i]),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      ),
-                    ),
+                  // SliverToBoxAdapter(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
+                  //     child: _SectionHeader(
+                  //         title: 'Optical Appointment',
+                  //         actionText: 'View all',
+                  //         onAction: () {}),
+                  //   ),
+                  // ),
+                  // if (_loading)
+                  //   SliverPadding(
+                  //     padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                  //     sliver: SliverList.separated(
+                  //       itemCount: 1,
+                  //       itemBuilder: (_, __) =>
+                  //           const _AppointmentCardSkeleton(),
+                  //       separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  //     ),
+                  //   )
+                  // else if (_opticalUpcoming.isEmpty)
+                  //   SliverToBoxAdapter(
+                  //     child: Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                  //       child: const _EmptyStateCard(
+                  //         icon: Icons.visibility_outlined,
+                  //         message: 'No upcoming Optical appointments',
+                  //         hint: 'Schedule a new visit from Quick actions.',
+                  //       ),
+                  //     ),
+                  //   )
+                  // else
+                  //   SliverPadding(
+                  //     padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                  //     sliver: SliverList.separated(
+                  //       itemCount: _opticalUpcoming.length,
+                  //       itemBuilder: (context, i) =>
+                  //           _AppointmentCard(appt: _opticalUpcoming[i]),
+                  //       separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  //     ),
+                  //   ),
 
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],

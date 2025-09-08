@@ -10,10 +10,11 @@ class CommonButton extends StatelessWidget {
   final double? borderRadius;
   final double? width;
   final double? height;
+  final double? textFontSize;
   final String buttonName;
   Function()? onTap;
 
-   CommonButton({super.key,this.onTap,this.height, this.bgColor, this.labelTextColor, this.borderColor, this.borderRadius, this.width, required this.buttonName});
+   CommonButton({super.key,this.textFontSize,this.onTap,this.height, this.bgColor, this.labelTextColor, this.borderColor, this.borderRadius, this.width, required this.buttonName});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,7 @@ class CommonButton extends StatelessWidget {
         ),
         child: Center(
           child: Text(buttonName, style: TextStyle(
-            fontSize: 14,
+            fontSize: textFontSize??14,
             color:labelTextColor?? AppColors.white,
             fontWeight: FontWeight.w500
           ),),

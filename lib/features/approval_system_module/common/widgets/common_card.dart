@@ -317,36 +317,6 @@ class _ApprovalCardState extends State<ApprovalCard> {
     );
   }
 
-  Widget _buildInfoSection({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: const Color(0xFF667eea)),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: Color(0xFF1E293B),
-                  )),
-              Text(subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF64748B),
-                    fontSize: 12,
-                  )),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildAmountRow(String label, String amount, bool isBold,
       {bool isGrandTotal = false, bool isDue = false}) {

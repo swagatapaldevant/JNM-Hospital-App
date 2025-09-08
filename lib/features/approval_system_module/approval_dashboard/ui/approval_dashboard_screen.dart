@@ -32,8 +32,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   static const Color opticalAccent = Color(0xFF7F5AF0); // violet
   static const double _hPad = 20;
 
-  bool _loading = true; // for refersh bar loading
-
   bool isLoading = true;
 
   final Map<String, int> _pendingCount = {};
@@ -42,6 +40,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
 
   void loadApprovalPerms() async {
     approvalPermissionList = await _pref.getApprovalPermissionList();
+    print(approvalPermissionList);
   }
 
   Future<void> getPendingCount() async {
@@ -116,7 +115,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     },
     "DIALYSIS": {
       "icon": Icons.receipt_long,
-      "label": "OP",
+      "label": "DIALYSIS",
       "api": ApiEndPoint.approvalSystemDialysis,
       "title": "Dialysis Approval",
       "other_ids": [],
@@ -134,7 +133,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
 
   @override
   void initState() {
-
     super.initState();
     getPendingCount();
     loadApprovalPerms();
@@ -142,13 +140,11 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
 
   Future<void> _onRefresh() async {
     HapticFeedback.lightImpact();
-    setState(() => _loading = true);
     getPendingCount();
     await Future.delayed(const Duration(seconds: 1)); // simulate
     if (!mounted) return;
 
     // Example: you could also shuffle/add items here to visualize updates
-    setState(() => _loading = false);
   }
 
   String get _prettyToday {
@@ -170,6 +166,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     const wds = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return '${wds[now.weekday - 1]}, ${now.day} ${months[now.month - 1]} ${now.year}';
   }
+
   List<String> tabList = [];
   List<String> tabUrl = [];
 
@@ -273,15 +270,15 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                           horizontal: 20, vertical: 16),
                       child: GestureDetector(
                         onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteGenerator.kApprovedListScreen,
-                              arguments: {
-                                "tabList": tabList,
-                                "tabUrl": tabUrl,
-                              },
-                            );
-                          },
+                          Navigator.pushNamed(
+                            context,
+                            RouteGenerator.kApprovedListScreen,
+                            arguments: {
+                              "tabList": tabList,
+                              "tabUrl": tabUrl,
+                            },
+                          );
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
@@ -372,7 +369,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
           final config = entry.value;
           int count = 0;
 
-          if(!approvalPermissionList.contains(key)) {
+          if (!approvalPermissionList.contains(key)) {
             return null;
           } else {
             tabList.add(config["label"]);
@@ -384,12 +381,6 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
           config["other_ids"].forEach((id) {
             count += _pendingCount[id] ?? 0;
           });
-
-          // if (count == 0) {
-          //   print("Skipping Department $key as it has $count");
-          //   return null;
-          // }
-
           return GlassTile(
             icon: config["icon"] as IconData,
             label: config["label"],
@@ -423,7 +414,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       crossAxisCount = 4;
     }
 
-    final aspect = contentW < 380 ? 0.95 : 1.2;
+    final aspect = contentW < 380 ? 0.95 : 1.0;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 12),
@@ -478,6 +469,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       ),
     );
   }
+
   // ---------- Helpers / Decor ----------
 
   Widget _blob(double size, Color color) {
@@ -503,6 +495,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
+
   const _GlassCard(
       {required this.child, this.padding = const EdgeInsets.all(18)});
 

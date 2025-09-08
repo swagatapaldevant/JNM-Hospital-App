@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen>
                           controller: _controller,
                           child: CustomTextField(
                             controller: emailController,
-                            hintText: "Enter your email",
+                            hintText: "Enter your userId",
                             prefixIcon: Icons.email_rounded,
                           ),
                         ),
@@ -162,32 +162,32 @@ class _LoginScreenState extends State<LoginScreen>
                         SizedBox(height: AppDimensions.contentGap1),
 
                         // Forgot pass (optional)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Bounceable(
-                            onTap: () {
-                              // hook if needed
-                              CommonUtils().flutterSnackBar(
-                                context: context,
-                                mes: "Use admin tool to reset password.",
-                                messageType: 2,
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.arrowBackground,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: AppDimensions.contentGap3),
+                        // Align(
+                        //   alignment: Alignment.centerRight,
+                        //   child: Bounceable(
+                        //     onTap: () {
+                        //       // hook if needed
+                        //       CommonUtils().flutterSnackBar(
+                        //         context: context,
+                        //         mes: "Use admin tool to reset password.",
+                        //         messageType: 2,
+                        //       );
+                        //     },
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.only(top: 6),
+                        //       child: Text(
+                        //         "Forgot Password?",
+                        //         style: TextStyle(
+                        //           fontSize: 13,
+                        //           fontWeight: FontWeight.w600,
+                        //           color: AppColors.arrowBackground,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        //
+                        // SizedBox(height: AppDimensions.contentGap3),
 
                         // Login button + loading state
                         StaggeredAnimatedWidget(

@@ -29,9 +29,13 @@ class ApprovalUsecasesImpl implements ApprovalUsecases {
   Future<Resource> approveData(String url, int billId) async {
     final ApiClient _apiClient = getIt<ApiClient>();
     final SharedPref _pref = getIt<SharedPref>();
-    
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+
     Resource resource = await _apiClient.getRequest(
-      url: '$url/$billId',
+      url: '$url/$billId',header: header,
     );
     if (resource.status == STATUS.SUCCESS) {
       return resource;

@@ -10,7 +10,7 @@ class ApiEndPoint{
   ApiEndPoint._internal();
 
   //static const baseurl = "http://192.168.29.243:8001/api";
-//  static const baseurl = "https://devanthims.in/rainbow/api";
+  //static const baseurl = "https://devanthims.in/rainbow/api";
  static const baseurl = "https://devanttest.in/kgh-demo/api";
  // static const baseurl = "https://jmnmedicalcollege.com/api";
 
@@ -58,7 +58,7 @@ class ApiEndPoint{
   static const approvalSystemOP = "$baseurl/approvalList/op";
   static const approvalSystemOT = "$baseurl/approvalList/ot";
 
-  static const approveData =  "$baseurl/approvalsystem/approve";
+  static const approveData =  "$baseurl/approve";
   static const approvalDeptWiseCount =  "$baseurl/approval-list-count";
   static const approvalList =  "$baseurl/approvalList";
   

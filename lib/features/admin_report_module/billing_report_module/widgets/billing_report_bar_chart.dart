@@ -193,13 +193,16 @@ class BarChartDetailsForBilling extends StatelessWidget {
                   if (index >= 0 && index < type.length) {
                     return Padding(
                       padding:  EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        type[index],
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontFamily: "Poppins",
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
+                      child: Transform.rotate(
+                        angle: 20 * 3.1415926535 / 180,
+                        child: Text(
+                          type[index],
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                     );

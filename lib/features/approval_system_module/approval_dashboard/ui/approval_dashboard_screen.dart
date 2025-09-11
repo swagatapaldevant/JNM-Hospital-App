@@ -255,19 +255,21 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                               'Hi $userName 👋',
                               style: TextStyle(
                                   color: textPrimary,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              "Wishing you a healthy day! Heres what's lined up for you.",
+                              "Wishing you a healthy day! Here what's lined up for you.",
                               style: TextStyle(
                                   color: Colors.black.withOpacity(0.70),
-                                  fontSize: 14.5,
+                                  fontSize: 13,
                                   height: 1.35),
                             ),
                             const SizedBox(height: 12),
-                            _buildPieChart(_pendingCount)
+
+                            buildPendingApprovalsPie(_pendingCount, pieSize: 120)
+                            //_buildPieChart(_pendingCount)
                           ],
                         ),
                       ),
@@ -376,7 +378,13 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     );
   }
 
-  Widget _buildPieChart(Map<String, int> pendingPerDept) {
+// import 'package:fl_chart/fl_chart.dart';
+// import 'package:flutter/material.dart';
+
+  Widget buildPendingApprovalsPie(
+      Map<String, int> pendingPerDept, {
+        double pieSize = 80, // <- control the pie’s fixed size
+      }) {
     final total = pendingPerDept.values.fold<int>(0, (a, b) => a + b);
 
     if (total == 0) {
@@ -388,45 +396,133 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       );
     }
 
-    final colors = [
+    // Stable ordering so colors don't jump between rebuilds.
+    final entries = pendingPerDept.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    final palette = <Color>[
       Colors.blue,
       Colors.pink,
       Colors.green,
       Colors.orange,
       Colors.purple,
       Colors.cyan,
+      Colors.teal,
+      Colors.amber,
     ];
 
-    return PieChart(
-      PieChartData(
-        sections: pendingPerDept.entries
-            .toList()
-            .asMap()
-            .map((i, e) {
-              final dept = e.key;
-              final count = e.value;
-              final percent = (count / total) * 100;
+    List<PieChartSectionData> sections = List.generate(entries.length, (i) {
+      final e = entries[i];
+      return PieChartSectionData(
+        value: e.value.toDouble(),
+        color: palette[i % palette.length],
+        showTitle: false, // <-- hide cramped slice labels
+        radius: (pieSize / 2) - 10, // keeps the pie sleek within the box
+      );
+    });
 
-              return MapEntry(
-                i,
-                PieChartSectionData(
-                  value: count.toDouble(),
-                  color: colors[i % colors.length],
-                  title: "$count (${percent.toStringAsFixed(1)}%)\n$dept",
-                  radius: 55,
-                  titleStyle: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+    Widget legendItem({
+      required Color color,
+      required String dept,
+      required int count,
+    }) {
+      final percent = (count / total) * 100;
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                dept,
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              "$count",
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              "(${percent.toStringAsFixed(1)}%)",
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Fixed-size pie so it fits anywhere (cards, side panels, etc.)
+        SizedBox(
+          width: pieSize,
+          height: pieSize,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              PieChart(
+                PieChartData(
+                  sections: sections,
+                  sectionsSpace: 1,
+                  //centerSpaceRadius: pieSize * 0.28, // donut
+                  centerSpaceRadius: 0, // donut
                 ),
-              );
-            })
-            .values
-            .toList(),
-        sectionsSpace: 2,
-        centerSpaceRadius: 24,
-      ),
+              ),
+              // Center label: total
+              // Column(
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     const Text(
+              //       "Total",
+              //       style: TextStyle(fontSize: 8, color: Colors.black54, fontWeight: FontWeight.w500,),
+              //     ),
+              //     Text(
+              //       "$total",
+              //       style: const TextStyle(
+              //         fontSize: 12,
+              //         fontWeight: FontWeight.w600,
+              //       ),
+              //     ),
+              //   ],
+              // ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        // Legend with counts & %
+        Expanded(
+          child: SingleChildScrollView(
+            // Scroll if many departments; otherwise it just sizes to content
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(entries.length, (i) {
+                final e = entries[i];
+                return legendItem(
+                  color: palette[i % palette.length],
+                  dept: e.key,
+                  count: e.value,
+                );
+              }),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

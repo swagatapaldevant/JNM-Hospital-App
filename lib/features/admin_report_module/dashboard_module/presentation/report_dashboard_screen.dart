@@ -356,7 +356,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
                     ),
                     Text(
                       //"John Doe",
-                      userName,
+                      'Mr. $userName',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         color: AppColors.white,

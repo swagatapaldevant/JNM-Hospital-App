@@ -385,7 +385,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
                     else if (approvalData.approvalRemark != null &&
                         approvalData.approvalRemark!.isNotEmpty)
                       _buildAmountRow(
-                        "Reason",
+                        "Reason for Discount",
                         approvalData.approvalRemark!,
                         false,
                       ),
@@ -553,7 +553,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
                   ? _discountAmount.toString()
                   : "${widget.approvalData.discount.toString()}%",
               helperText: _discountMode == DiscountMode.percent
-                  ? "0–100%. Discount: ${_inr(_discountAmount)}"
+                  ? "0-100%. Discount: ${_inr(_discountAmount)}"
                   : "Max ${_inr(_baseTotal)}. Discount: ${_inr(_discountAmount)}",
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),

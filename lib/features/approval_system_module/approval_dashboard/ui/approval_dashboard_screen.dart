@@ -59,6 +59,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
           _pendingCount[item['section']] = item['total_count'];
         }
         isLoading = false;
+        _populatePendingData();
       });
     } else {
       setState(() {
@@ -139,9 +140,13 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     },
   };
 
+  Map<String, Map<String, dynamic>> _filterdConfig = {};
+
   String userName = "N/A";
+  String userGender = "male";
   void loadUserData() async {
     userName = await _pref.getName();
+    // userGender = (await _pref.getUserGender())?.toLowerCase() ?? "male";
   }
 
   @override
@@ -150,6 +155,14 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     getPendingCount();
     loadApprovalPerms();
     loadUserData();
+  }
+
+  String _genderPrefix() {
+    if (userGender == "male") {
+      return "Mr.";
+    } else {
+      return "Ms.";
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -252,7 +265,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Hi $userName 👋',
+                              'Hi ${_genderPrefix()} $userName 👋',
                               style: TextStyle(
                                   color: textPrimary,
                                   fontSize: 18,
@@ -267,15 +280,14 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                                   height: 1.35),
                             ),
                             const SizedBox(height: 12),
-
-                            buildPendingApprovalsPie(_pendingCount, pieSize: 120)
-                            //_buildPieChart(_pendingCount)
+                            buildPendingApprovalsPie(pendingPerDept,
+                                pieSize: 120)
                           ],
                         ),
                       ),
                     ),
                   ),
-                  
+
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -302,8 +314,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                             borderRadius: BorderRadius.circular(16),
                             gradient: const LinearGradient(
                               colors: [
-                                Color(0xFF4CAF50),
-                                Color(0xFF2E7D32)
+                                Color.fromARGB(255, 104, 218, 108),
+                                Color.fromARGB(255, 77, 202, 83)
                               ], // green success
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -339,7 +351,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                                     Text(
                                       "Approved List",
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Color.fromARGB(255, 49, 49, 49),
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                       ),
@@ -348,7 +360,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                                     Text(
                                       "See all requests you’ve already approved",
                                       style: TextStyle(
-                                        color: Colors.white70,
+                                        color: Color.fromARGB(179, 51, 50, 50),
                                         fontSize: 13,
                                       ),
                                     ),
@@ -378,13 +390,10 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     );
   }
 
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:flutter/material.dart';
-
   Widget buildPendingApprovalsPie(
-      Map<String, int> pendingPerDept, {
-        double pieSize = 80, // <- control the pie’s fixed size
-      }) {
+    Map<String, int> pendingPerDept, {
+    double pieSize = 80, // <- control the pie’s fixed size
+  }) {
     final total = pendingPerDept.values.fold<int>(0, (a, b) => a + b);
 
     if (total == 0) {
@@ -443,7 +452,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
             Expanded(
               child: Text(
                 dept,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -526,16 +536,34 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     );
   }
 
-  void updateConfig() {}
+  Map<String, int> pendingPerDept = {};
+  void _populatePendingData() {
+    pendingPerDept.clear();
+
+    approvalConfig.entries.forEach((entry) {
+      final key = entry.key;
+      final config = entry.value;
+
+      if (approvalPermissionList.contains(key)) {
+        int count = _pendingCount[key] ?? 0;
+
+        config["other_ids"].forEach((id) {
+          count += _pendingCount[id] ?? 0;
+        });
+
+        pendingPerDept[key] = count;
+      }
+    });
+  }
 
   Widget buildPatientDetailsGrid(BuildContext context) {
     tabList.clear();
     tabUrl.clear();
+    _populatePendingData();
     final tiles = approvalConfig.entries
         .map((entry) {
           final key = entry.key;
           final config = entry.value;
-          int count = 0;
 
           if (!approvalPermissionList.contains(key)) {
             return null;
@@ -544,15 +572,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
             tabUrl.add(config["approve_list_url_suffx"]);
           }
 
-          count += _pendingCount[key] ?? 0;
-
-          config["other_ids"].forEach((id) {
-            count += _pendingCount[id] ?? 0;
-          });
-
-          approvalConfig[key]?["pending_count"] = count;
-
-          //pendingPerDept[key] = count;
+          int count = _pendingCount[key] ?? 0;
+          pendingPerDept[key] = count;
 
           Color? pendingCountColor;
 
@@ -581,10 +602,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
         })
         .whereType<Widget>()
         .toList();
-    // print(approvalConfig);
-    // setState(() {
 
-    // });
     //if (tiles.isEmpty) return const SizedBox.shrink();
     const double _maxContentWidth = 720.0;
     final screenW = MediaQuery.of(context).size.width;
@@ -753,10 +771,10 @@ class _ApprovalDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
               ),
             ),
           ),
-          _roundIconButton(
-            icon: Icons.notifications_none_rounded,
-            onTap: onNotificationTap,
-          ),
+          // _roundIconButton(
+          //   icon: Icons.notifications_none_rounded,
+          //   onTap: onNotificationTap,
+          // ),
         ],
       ),
     );

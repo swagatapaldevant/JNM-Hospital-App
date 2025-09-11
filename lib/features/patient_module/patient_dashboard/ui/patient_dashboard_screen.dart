@@ -253,10 +253,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                               ),
                             ),
                           ),
-                          _roundIconButton(
-                            icon: Icons.notifications_none_rounded,
-                            onTap: () {},
-                          ),
+                          // _roundIconButton(
+                          //   icon: Icons.notifications_none_rounded,
+                          //   onTap: () {},
+                          // ),
                         ],
                       ),
                     ),

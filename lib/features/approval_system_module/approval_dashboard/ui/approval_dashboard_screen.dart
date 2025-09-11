@@ -73,7 +73,28 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
 
     print(_pendingCount);
   }
-
+    Widget _roundIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkResponse(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      radius: 28,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.6),
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2),
+        ),
+        child: Icon(icon, color: Colors.black87),
+      ),
+    );
+  }
   final Map<String, Map<String, dynamic>> approvalConfig = {
     "OPD": {
       "icon": Icons.local_hospital,
@@ -760,6 +781,11 @@ class _ApprovalDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
       child: Row(
         children: [
+          _roundIconButton(
+            icon: Icons.arrow_back_ios_new_rounded,
+            onTap: () => Navigator.of(context).pop()
+          ),
+          SizedBox(width: 10,),
           const Expanded(
             child: Text(
               'Approval Dashboard',

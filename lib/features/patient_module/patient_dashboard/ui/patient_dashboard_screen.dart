@@ -1,11 +1,19 @@
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
+import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
-import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
+
 import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/data/dashboard_usecases_impl.dart';
+import 'package:jnm_hospital_app/features/patient_module/model/dashboard/doctor_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
+
+import '../model/appointment_model.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
   const PatientDashboardScreen({super.key});
@@ -27,118 +35,167 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   static const Color opticalAccent = Color(0xFF7F5AF0); // violet
   static const double _hPad = 20;
 
-  bool _loading = true;
+  // Loading flags (split by section for correctness)
+  bool _loadingDoctors = true;
+  bool _loadingAppts = true;
 
-  // --- Sample Data (replace with API/Repository) ---
-  List<DoctorModel> _doctorsToday = [];
+  // Data
+  final List<DoctorModel> _doctorsToday = [];
+  final List<AppointmentModel> _opdUpcoming = [];
 
-  List<_Appointment> _opdUpcoming = const [
-    _Appointment(
-      typeLabel: 'OPD',
-      doctor: 'Dr. Ananya Gupta',
-      specialization: 'Cardiologist',
-      when: 'Today, 12:15 PM',
-      token: 'A-17',
-      location: 'OPD Block · Rm 203',
-      accent: opdAccent,
-    ),
-    _Appointment(
-      typeLabel: 'OPD',
-      doctor: 'Dr. Arjun Mehta',
-      specialization: 'Dermatologist',
-      when: 'Tomorrow, 10:00 AM',
-      token: 'B-03',
-      location: 'OPD Block · Rm 110',
-      accent: opdAccent,
-    ),
-  ];
+  // Paging (appointments)
+  int _apptPage = 1;
 
-  List<_Appointment> _opticalUpcoming = const [
-    _Appointment(
-      typeLabel: 'Optical',
-      doctor: 'Dr. Kavya Iyer',
-      specialization: 'Optometrist',
-      when: 'Tomorrow, 10:30 AM',
-      token: 'OPT-05',
-      location: 'Optical Center · Rm 02',
-      accent: opticalAccent,
-    ),
-  ];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Color _getCardColor(String color) {
-    final Color defaultColor = opticalAccent;
-
-    Map<String, Color> colorMap = {
+  // --- Utils ---
+  Color _getCardColor(String? color) {
+    const Color fallback = opticalAccent;
+    if (color == null || color.isEmpty) return fallback;
+    const map = {
       '#b9d8ff': Color(0xFFB9D8FF),
     };
-    return colorMap[color] ?? defaultColor;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Simulate initial fetch
-    Future.delayed(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      setState(() => _loading = false);
-    });
-    getDoctorData();
-  }
-
-  Future<void> _onRefresh() async {
-    HapticFeedback.lightImpact();
-    setState(() => _loading = true);
-    // TODO: call your API here
-    await Future.delayed(const Duration(seconds: 1)); // simulate
-    if (!mounted) return;
-
-    // Example: you could also shuffle/add items here to visualize updates
-    setState(() => _loading = false);
+    return map[color] ?? fallback;
   }
 
   String get _prettyToday {
     final now = DateTime.now();
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
+      'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'
     ];
-    const wds = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const wds = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
     return '${wds[now.weekday - 1]}, ${now.day} ${months[now.month - 1]} ${now.year}';
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  String _ymd(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
-  Future<void> getDoctorData() async {
+  @override
+  void initState() {
+    super.initState();
+    // Kick off both loads
+    getDoctorData();
+    _fetchAppointments(initial: true);
+  }
+
+  Future<void> _onRefresh() async {
+    HapticFeedback.lightImpact();
     setState(() {
-      _loading = true;
+      _loadingDoctors = true;
+      _loadingAppts = true;
+      _apptPage = 1;
+      _opdUpcoming.clear();
     });
-    final resource = await DashboardUsecaseImpl().getDoctors();
-    if (resource.status == STATUS.SUCCESS) {
-      //print(resource.data);
-      resource.data.forEach((doctor) {
-        _doctorsToday.add(DoctorModel.fromJson(doctor));
-      });
-      setState(() {
-        _loading = false;
-      });
+
+    await Future.wait([
+      getDoctorData(),
+      _fetchAppointments(initial: true),
+    ]);
+
+    if (!mounted) return;
+    setState(() {
+      _loadingDoctors = false;
+      _loadingAppts = false;
+    });
+  }
+
+  // ----------- Network: Doctors -----------
+  Future<void> getDoctorData() async {
+    setState(() => _loadingDoctors = true);
+    try {
+      final resource = await DashboardUsecaseImpl().getDoctors();
+      if (!mounted) return;
+
+      if (resource.status == STATUS.SUCCESS) {
+        _doctorsToday
+          ..clear()
+          ..addAll((resource.data as List<dynamic>)
+              .map((e) => DoctorModel.fromJson(e))
+              .toList());
+      } else {
+        CommonUtils().flutterSnackBar(
+          context: context,
+          mes: 'Failed to load doctors',
+          messageType: 2,
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: 'Failed to load doctors',
+        messageType: 2,
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() => _loadingDoctors = false);
     }
   }
+
+  // ----------- Network: Appointments -----------
+  Future<void> _fetchAppointments({required bool initial}) async {
+    if (initial) setState(() => _loadingAppts = true);
+
+    try {
+      final DateTime to = DateTime.now();
+      // As per your example body window:
+      final DateTime from = DateTime(2024, 8, 12);
+
+      final dio = getIt<Dio>();
+      final resp = await dio.post(
+        ApiEndPoint.appointmentList,
+        data: {
+          "page":1,
+          "from_date" : "2024-08-12",
+          "to_date" : "2025-09-09"
+        }
+      );
+
+      final data = (resp.data is Map && (resp.data['data'] is List))
+          ? resp.data['data'] as List
+          : (resp.data as List);
+
+      final items = data
+          .map((e) => AppointmentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      // Sort by local time ascending
+      items.sort((a, b) {
+        final aw = a.whenLocal ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bw = b.whenLocal ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return aw.compareTo(bw);
+      });
+
+      if (!mounted) return;
+      setState(() {
+        if (initial) {
+          _opdUpcoming
+            ..clear()
+            ..addAll(items);
+        } else {
+          _opdUpcoming.addAll(items);
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: 'Failed to load appointments',
+        messageType: 2,
+      );
+    } finally {
+      if (!mounted) return;
+      if (initial) setState(() => _loadingAppts = false);
+    }
+  }
+
+  // -------------------------------- UI --------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: AppDrawer(),
+      drawer:  AppDrawer(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -154,13 +211,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
           ),
           // Decorative blobs
           Positioned(
-              top: -120,
-              left: -80,
-              child: _blob(220, opdAccent.withOpacity(0.10))),
+            top: -120,
+            left: -80,
+            child: _blob(220, opdAccent.withOpacity(0.10)),
+          ),
           Positioned(
-              bottom: -140,
-              right: -100,
-              child: _blob(260, opticalAccent.withOpacity(0.10))),
+            bottom: -140,
+            right: -100,
+            child: _blob(260, opticalAccent.withOpacity(0.10)),
+          ),
 
           SafeArea(
             child: RefreshIndicator(
@@ -168,7 +227,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
               onRefresh: _onRefresh,
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 slivers: [
                   // Header
                   SliverToBoxAdapter(
@@ -194,26 +254,22 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                             ),
                           ),
                           _roundIconButton(
-                              icon: Icons.notifications_none_rounded,
-                              onTap: () {}),
+                            icon: Icons.notifications_none_rounded,
+                            onTap: () {},
+                          ),
                         ],
                       ),
                     ),
                   ),
 
-                  // SliverPersistentHeader(
-                  //   pinned: true,
-                  //   delegate:
-                  //       DashboardHeader(scaffoldKey: _scaffoldKey, hPad: _hPad),
-                  // ),
-
                   // Date
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: _hPad),
                       child: Text(
                         _prettyToday,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: textSecondary,
                           fontSize: 13.5,
                           fontWeight: FontWeight.w600,
@@ -228,24 +284,28 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(_hPad, 16, _hPad, 0),
                       child: _GlassCard(
-                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+                        padding:
+                        const EdgeInsets.fromLTRB(18, 18, 18, 14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
                               'Hi there 👋',
                               style: TextStyle(
-                                  color: textPrimary,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800),
+                                color: textPrimary,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             const SizedBox(height: 6),
                             Text(
                               'Wishing you a healthy day! Here’s what’s lined up for you.',
                               style: TextStyle(
-                                  color: Colors.black.withOpacity(0.70),
-                                  fontSize: 14.5,
-                                  height: 1.35),
+                                color:
+                                Colors.black.withOpacity(0.70),
+                                fontSize: 14.5,
+                                height: 1.35,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Wrap(
@@ -258,22 +318,13 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: opdAccent,
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(context,
-                                        RouteGenerator.kOPDRegistrationScreen);
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteGenerator
+                                          .kOPDRegistrationScreen,
+                                    );
                                   },
                                 ),
-                                // _QuickActionChip(
-                                //   icon: Icons.visibility_outlined,
-                                //   label: 'Optical',
-                                //   color: opticalAccent,
-                                //   onTap: () => HapticFeedback.selectionClick(),
-                                // ),
-                                // _QuickActionChip(
-                                //   icon: Icons.receipt_long_outlined,
-                                //   label: 'Prescriptions',
-                                //   color: const Color(0xFF20C997),
-                                //   onTap: () => HapticFeedback.selectionClick(),
-                                // ),
                                 _QuickActionChip(
                                   icon: Icons.receipt_long_outlined,
                                   label: 'Details',
@@ -281,7 +332,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   onTap: () {
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
-                                        context, "/PatientDetailsScreen");
+                                      context,
+                                      '/PatientDetailsScreen',
+                                    );
                                   },
                                 ),
                                 _QuickActionChip(
@@ -290,8 +343,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: const Color(0xFF20C997),
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(context,
-                                        RouteGenerator.kRateEnquiryScreen);
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteGenerator.kRateEnquiryScreen,
+                                    );
                                   },
                                 ),
                                 _QuickActionChip(
@@ -300,8 +355,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                   color: opdAccent,
                                   onTap: () {
                                     HapticFeedback.selectionClick();
-                                    Navigator.pushNamed(context,
-                                        RouteGenerator.kInvestigationScreen);
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteGenerator
+                                          .kInvestigationScreen,
+                                    );
                                   },
                                 ),
                               ],
@@ -315,30 +373,39 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   // Today's Doctors
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 18, _hPad, 8),
+                      padding:
+                      const EdgeInsets.fromLTRB(_hPad, 18, _hPad, 8),
                       child: _SectionHeader(
-                          title: "Today's Doctors",
-                          actionText: 'See all',
-                          onAction: () {}),
+                        title: "Today's Doctors",
+                        actionText: 'See all',
+                        onAction: () {},
+                      ),
                     ),
                   ),
-                  if (_loading)
+                  if (_loadingDoctors)
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: _hPad,
+                      ),
                       sliver: SliverList.separated(
                         itemCount: 1,
-                        itemBuilder: (_, __) => const _DoctorCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (_, __) =>
+                        const _DoctorCardSkeleton(),
+                        separatorBuilder: (_, __) =>
+                        const SizedBox(height: 12),
                       ),
                     )
                   else if (_doctorsToday.isEmpty)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: _hPad,
+                        ),
                         child: const _EmptyStateCard(
                           icon: Icons.local_hospital_outlined,
                           message: 'No doctors available today',
-                          hint: 'Check back later or book an appointment.',
+                          hint:
+                          'Check back later or book an appointment.',
                         ),
                       ),
                     )
@@ -348,110 +415,87 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         height: 156,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: _hPad),
-                          physics: const BouncingScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: _hPad,
+                          ),
+                          physics:
+                          const BouncingScrollPhysics(),
                           itemCount: _doctorsToday.length,
                           separatorBuilder: (_, __) =>
-                              const SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           itemBuilder: (context, i) => _DoctorCard(
-                              doctor: _doctorsToday[i],
-                              accent:
-                                  _getCardColor(_doctorsToday[i].color ?? ""),
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, "/DoctorDetailsScreen",
-                                    arguments: _doctorsToday[i]);
-                              }),
+                            doctor: _doctorsToday[i],
+                            accent: _getCardColor(
+                              _doctorsToday[i].color,
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/DoctorDetailsScreen',
+                                arguments: _doctorsToday[i],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
 
-                  // OPD Upcoming (separate list)
+                  // OPD Upcoming
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
+                      padding:
+                      const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
                       child: _SectionHeader(
-                          title: 'Upcoming Appointment',
-                          actionText: 'View all',
-                          onAction: () {}),
+                        title: 'Upcoming Appointment',
+                        actionText: 'View all',
+                        onAction: () {},
+                      ),
                     ),
                   ),
-                  if (_loading)
+                  if (_loadingAppts)
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: _hPad,
+                      ),
                       sliver: SliverList.separated(
                         itemCount: 2,
                         itemBuilder: (_, __) =>
-                            const _AppointmentCardSkeleton(),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        const _AppointmentCardSkeleton(),
+                        separatorBuilder: (_, __) =>
+                        const SizedBox(height: 12),
                       ),
                     )
                   else if (_opdUpcoming.isEmpty)
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: _hPad,
+                        ),
                         child: const _EmptyStateCard(
                           icon: Icons.local_hospital_outlined,
                           message: 'No upcoming OPD appointments',
-                          hint: 'Book a new OPD slot from Quick actions.',
+                          hint:
+                          'Book a new OPD slot from Quick actions.',
                         ),
                       ),
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: _hPad,
+                      ),
                       sliver: SliverList.separated(
                         itemCount: _opdUpcoming.length,
                         itemBuilder: (context, i) =>
                             _AppointmentCard(appt: _opdUpcoming[i]),
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (_, __) =>
+                        const SizedBox(height: 12),
                       ),
                     ),
 
-                  // Optical Upcoming (separate list)
-                  // SliverToBoxAdapter(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
-                  //     child: _SectionHeader(
-                  //         title: 'Optical Appointment',
-                  //         actionText: 'View all',
-                  //         onAction: () {}),
-                  //   ),
-                  // ),
-                  // if (_loading)
-                  //   SliverPadding(
-                  //     padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                  //     sliver: SliverList.separated(
-                  //       itemCount: 1,
-                  //       itemBuilder: (_, __) =>
-                  //           const _AppointmentCardSkeleton(),
-                  //       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  //     ),
-                  //   )
-                  // else if (_opticalUpcoming.isEmpty)
-                  //   SliverToBoxAdapter(
-                  //     child: Padding(
-                  //       padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                  //       child: const _EmptyStateCard(
-                  //         icon: Icons.visibility_outlined,
-                  //         message: 'No upcoming Optical appointments',
-                  //         hint: 'Schedule a new visit from Quick actions.',
-                  //       ),
-                  //     ),
-                  //   )
-                  // else
-                  //   SliverPadding(
-                  //     padding: const EdgeInsets.symmetric(horizontal: _hPad),
-                  //     sliver: SliverList.separated(
-                  //       itemCount: _opticalUpcoming.length,
-                  //       itemBuilder: (context, i) =>
-                  //           _AppointmentCard(appt: _opticalUpcoming[i]),
-                  //       separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  //     ),
-                  //   ),
-
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 24),
+                  ),
                 ],
               ),
             ),
@@ -472,16 +516,19 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         color: color,
         boxShadow: [
           BoxShadow(
-              color: color.withOpacity(0.45),
-              blurRadius: size * 0.25,
-              spreadRadius: size * 0.02)
+            color: color.withOpacity(0.45),
+            blurRadius: size * 0.25,
+            spreadRadius: size * 0.02,
+          )
         ],
       ),
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  Widget _roundIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return InkResponse(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -492,41 +539,14 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.cyan, width: 2)),
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.cyan, width: 2),
+        ),
         child: Icon(icon, color: textPrimary),
       ),
     );
   }
-}
-
-// ===== Models =====
-class _Doctor {
-  final String name;
-  final String specialization;
-  final String time;
-  const _Doctor(
-      {required this.name, required this.specialization, required this.time});
-}
-
-class _Appointment {
-  final String typeLabel; // 'OPD' or 'Optical'
-  final String doctor;
-  final String specialization;
-  final String when;
-  final String token;
-  final String location;
-  final Color accent;
-  const _Appointment({
-    required this.typeLabel,
-    required this.doctor,
-    required this.specialization,
-    required this.when,
-    required this.token,
-    required this.location,
-    required this.accent,
-  });
 }
 
 // ===== Reusable UI =====
@@ -534,8 +554,7 @@ class _Appointment {
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
-  const _GlassCard(
-      {required this.child, this.padding = const EdgeInsets.all(18)});
+  const _GlassCard({required this.child, this.padding = const EdgeInsets.all(18)});
 
   @override
   Widget build(BuildContext context) {
@@ -545,13 +564,15 @@ class _GlassCard extends StatelessWidget {
         borderRadius: radius,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.10),
-              blurRadius: 22,
-              offset: const Offset(0, 12)),
+            color: Colors.black.withOpacity(0.10),
+            blurRadius: 22,
+            offset: const Offset(0, 12),
+          ),
           BoxShadow(
-              color: Colors.white.withOpacity(0.6),
-              blurRadius: 6,
-              offset: const Offset(-2, -2)),
+            color: Colors.white.withOpacity(0.6),
+            blurRadius: 6,
+            offset: const Offset(-2, -2),
+          ),
         ],
       ),
       child: ClipRRect(
@@ -563,14 +584,13 @@ class _GlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: radius,
               color: Colors.white.withOpacity(0.78),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
                   Colors.white.withOpacity(0.88),
-                  Colors.white.withOpacity(0.72)
+                  Colors.white.withOpacity(0.72),
                 ],
               ),
             ),
@@ -587,18 +607,24 @@ class _SectionHeader extends StatelessWidget {
   final String actionText;
   final VoidCallback onAction;
 
-  const _SectionHeader(
-      {required this.title, required this.actionText, required this.onAction});
+  const _SectionHeader({
+    required this.title,
+    required this.actionText,
+    required this.onAction,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(title,
-            style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 16,
-                fontWeight: FontWeight.w700)),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         const Spacer(),
         InkWell(
           borderRadius: BorderRadius.circular(10),
@@ -608,9 +634,10 @@ class _SectionHeader extends StatelessWidget {
             child: Text(
               actionText,
               style: TextStyle(
-                  color: Colors.black.withOpacity(0.65),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13.5),
+                color: Colors.black.withOpacity(0.65),
+                fontWeight: FontWeight.w600,
+                fontSize: 13.5,
+              ),
             ),
           ),
         ),
@@ -624,11 +651,12 @@ class _QuickActionChip extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _QuickActionChip(
-      {required this.icon,
-      required this.label,
-      required this.color,
-      required this.onTap});
+  const _QuickActionChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -641,23 +669,21 @@ class _QuickActionChip extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: color.withOpacity(0.45))),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: color.withOpacity(0.45)),
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 18, color: color),
               const SizedBox(width: 8),
-              const Text(
-                '',
-                // placeholder to keep structure; actual text below:
-              ),
               Text(
                 label,
                 style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                    fontSize: 14),
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -666,6 +692,8 @@ class _QuickActionChip extends StatelessWidget {
     );
   }
 }
+
+// ===== Doctors =====
 
 class _DoctorCard extends StatelessWidget {
   final DoctorModel doctor;
@@ -682,12 +710,6 @@ class _DoctorCard extends StatelessWidget {
     if (details == null || details.isEmpty) return null;
     final parts = details.split('//');
     return parts.isNotEmpty ? parts[0].trim() : null;
-  }
-
-  String? _getDoctorDegree(String? details) {
-    if (details == null || details.isEmpty) return null;
-    final parts = details.split('//');
-    return parts.isNotEmpty ? parts[1].trim() : null;
   }
 
   @override
@@ -746,15 +768,11 @@ class _DoctorCard extends StatelessWidget {
                                 "No details available",
                             color: accent,
                           ),
-                          // _TypePill(
-                          //   text: _getDoctorDegree(doctor.details) ??
-                          //       "No Degree available",
-                          //   color: accent,
-                          // ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      // Time row (single line, compact) - constrained to available width
+
+                      // Time row
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -790,10 +808,9 @@ class _DoctorCard extends StatelessWidget {
     if (availableTime == null || availableTime.isEmpty) {
       return "No timing info";
     }
-    List<String> time = availableTime.split('--').map((e) => e.trim()).toList();
-    String formattedTime = '${time[0]} to ${time[1]}';
-
-    return formattedTime;
+    final parts = availableTime.split('--').map((e) => e.trim()).toList();
+    if (parts.length < 2) return availableTime;
+    return '${parts[0]} to ${parts[1]}';
   }
 }
 
@@ -820,9 +837,10 @@ class _AvatarBadge extends StatelessWidget {
           child: Text(
             initials.isEmpty ? '?' : initials,
             style: const TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.w700,
-                fontSize: 16),
+              color: Colors.black87,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
           ),
         ),
         Positioned(
@@ -832,9 +850,10 @@ class _AvatarBadge extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2)),
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+            ),
             child: const Icon(Icons.check, size: 12, color: Colors.white),
           ),
         ),
@@ -843,13 +862,47 @@ class _AvatarBadge extends StatelessWidget {
   }
 }
 
+// ===== Appointments =====
+
 class _AppointmentCard extends StatelessWidget {
-  final _Appointment appt;
+  final AppointmentModel appt; // API-backed model
   const _AppointmentCard({required this.appt});
+
+  String _fmtDate(DateTime d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}';
+  }
+
+  String _fmtTime(DateTime d) {
+    int h = d.hour;
+    final m = d.minute.toString().padLeft(2, '0');
+    final ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h == 0) h = 12;
+    return '$h:$m $ap';
+  }
 
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(18);
+    const Color accent = Colors.blueAccent;
+
+    // Prefer appointment_time; else appointment_date; else app_date string
+    final DateTime? when = appt.whenLocal;
+    final String whenStr =
+    when != null ? '${_fmtDate(when)} • ${_fmtTime(when)}' : (appt.appDateRaw ?? 'Time not set');
+
+    final String doctor =
+    appt.doctorDisplay.isEmpty ? 'Doctor: N/A' : appt.doctorDisplay;
+
+    final String uhidPill =
+    appt.uhid.isEmpty ? 'ID #${appt.id}' : 'UHID ${appt.uhid}';
+    final String tokenPill =
+    (appt.slotId != null) ? 'Slot ${appt.slotId}' : '#${appt.id}';
+    final String location = (appt.address == null || appt.address!.trim().isEmpty)
+        ? 'OPD Desk'
+        : appt.address!.trim();
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -857,9 +910,9 @@ class _AppointmentCard extends StatelessWidget {
         onTap: () => HapticFeedback.selectionClick(),
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white, borderRadius: radius,
-            border: Border.all(color: appt.accent.withOpacity(0.45), width: 2),
-            //boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14, offset: const Offset(0, 6))],
+            color: Colors.white,
+            borderRadius: radius,
+            border: Border.all(color: accent, width: 2),
           ),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -872,77 +925,94 @@ class _AppointmentCard extends StatelessWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: appt.accent.withOpacity(0.12),
-                    border: Border.all(color: appt.accent.withOpacity(0.45)),
+                    color: accent.withOpacity(0.12),
+                    border: Border.all(color: accent.withOpacity(0.45)),
                   ),
-                  child: Icon(
-                    appt.typeLabel.toLowerCase() == 'opd'
-                        ? Icons.local_hospital_outlined
-                        : Icons.visibility_outlined,
-                    color: appt.accent,
-                  ),
+                  child: const Icon(Icons.local_hospital_outlined, color: accent),
                 ),
                 const SizedBox(width: 12),
+
                 // Texts
                 Expanded(
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _TypePill(text: appt.typeLabel, color: appt.accent),
-                        Row(
-                          children: [
-                            // const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                appt.when,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.70),
-                                    fontSize: 13.0,
-                                    fontWeight: FontWeight.w500),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _InfoPill(text: uhidPill, color: accent),
+                      const SizedBox(height: 6),
+
+                      // When
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              whenStr,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black.withOpacity(0.70),
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      // Patient
+                      Text(
+                        appt.name.isEmpty ? 'Unknown Patient' : appt.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          appt.doctor,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2),
+                      ),
+
+                      const SizedBox(height: 2),
+
+                      // Doctor
+                      Text(
+                        doctor,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.65),
+                          fontSize: 13.5,
                         ),
-                        const SizedBox(height: 2),
-                        Text(appt.specialization,
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.65),
-                                fontSize: 13.5)),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(Icons.place_outlined,
-                                size: 16, color: appt.accent),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                appt.location,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.75),
-                                    fontSize: 13.0,
-                                    fontWeight: FontWeight.w600),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Location
+                      Row(
+                        children: [
+                          const Icon(Icons.place_outlined, size: 16, color: accent),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              location,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.black.withOpacity(0.75),
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ],
-                        ),
-                      ]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+
                 const SizedBox(width: 10),
-                _TokenPill(text: appt.token, color: appt.accent),
+                // Token/slot pill on the right
+                _TokenPill(text: tokenPill, color: accent),
               ],
             ),
           ),
@@ -969,10 +1039,11 @@ class _TypePill extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-            color: Colors.black.withOpacity(0.85),
-            fontWeight: FontWeight.w700,
-            fontSize: 12.5,
-            letterSpacing: 0.3),
+          color: Colors.black.withOpacity(0.85),
+          fontWeight: FontWeight.w700,
+          fontSize: 12.5,
+          letterSpacing: 0.3,
+        ),
       ),
     );
   }
@@ -992,12 +1063,42 @@ class _TokenPill extends StatelessWidget {
         color: color.withOpacity(0.12),
         border: Border.all(color: color.withOpacity(0.45)),
       ),
-      child: Text(text,
-          style: const TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w700,
-              fontSize: 12.5,
-              letterSpacing: 0.3)),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.w700,
+          fontSize: 12.5,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  final String text;
+  final Color color;
+  const _InfoPill({required this.text, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.30)),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
+      ),
     );
   }
 }
@@ -1030,7 +1131,8 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
       animation: _c,
       builder: (_, child) {
         final t = Tween<double>(begin: 0.5, end: 1.0).transform(
-            CurvedAnimation(parent: _c, curve: Curves.easeInOut).value);
+          CurvedAnimation(parent: _c, curve: Curves.easeInOut).value,
+        );
         return Opacity(opacity: t, child: child);
       },
       child: widget.child,
@@ -1042,8 +1144,11 @@ class _SkeletonBox extends StatelessWidget {
   final double height;
   final double width;
   final double radius;
-  const _SkeletonBox(
-      {required this.height, required this.width, this.radius = 10});
+  const _SkeletonBox({
+    required this.height,
+    required this.width,
+    this.radius = 10,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1057,9 +1162,10 @@ class _SkeletonBox extends StatelessWidget {
           border: Border.all(color: Colors.white.withOpacity(0.7)),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4))
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
           ],
         ),
       ),
@@ -1073,8 +1179,7 @@ class _DoctorCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenW = MediaQuery.of(context).size.width;
-    final double cardWidth =
-        screenW < 360 ? screenW - 40 : 248; // matches real card
+    final double cardWidth = screenW < 360 ? screenW - 40 : 248;
 
     return Container(
       width: cardWidth,
@@ -1128,25 +1233,21 @@ class _DoctorCardSkeleton extends StatelessWidget {
               ),
             ),
           ),
-          // content placeholders
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _SkeletonBox(height: 52, width: 32, radius: 26),
-              const SizedBox(width: 12),
+            children: const [
+              _SkeletonBox(height: 52, width: 32, radius: 26),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    // Simulate two lines of a long name safely
+                  children: [
                     _SkeletonBox(height: 14, width: 180),
                     SizedBox(height: 6),
                     _SkeletonBox(height: 14, width: 140),
                     SizedBox(height: 10),
-                    // specialization line
                     _SkeletonBox(height: 12, width: 140),
                     SizedBox(height: 10),
-                    // time row
                     _SkeletonBox(height: 12, width: 120),
                   ],
                 ),
@@ -1172,21 +1273,21 @@ class _AppointmentCardSkeleton extends StatelessWidget {
         border: Border.all(color: Colors.black12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 14,
-              offset: const Offset(0, 6))
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          )
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _SkeletonBox(height: 48, width: 48, radius: 24),
-          const SizedBox(width: 12),
+        children: const [
+          _SkeletonBox(height: 48, width: 48, radius: 24),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // pill + when
+              children: [
                 _SkeletonBox(height: 12, width: 160, radius: 8),
                 SizedBox(height: 10),
                 _SkeletonBox(height: 14, width: 180),
@@ -1197,8 +1298,8 @@ class _AppointmentCardSkeleton extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 10),
-          const _SkeletonBox(height: 28, width: 60, radius: 999),
+          SizedBox(width: 10),
+          _SkeletonBox(height: 28, width: 60, radius: 999),
         ],
       ),
     );
@@ -1209,8 +1310,11 @@ class _EmptyStateCard extends StatelessWidget {
   final IconData icon;
   final String message;
   final String hint;
-  const _EmptyStateCard(
-      {required this.icon, required this.message, required this.hint});
+  const _EmptyStateCard({
+    required this.icon,
+    required this.message,
+    required this.hint,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1223,9 +1327,10 @@ class _EmptyStateCard extends StatelessWidget {
         border: Border.all(color: Colors.black12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 6))
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          )
         ],
       ),
       child: Row(
@@ -1234,110 +1339,37 @@ class _EmptyStateCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: Colors.black.withOpacity(0.06)),
+              shape: BoxShape.circle,
+              color: Colors.black.withOpacity(0.06),
+            ),
             child: Icon(icon, color: Colors.black54),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(message,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message,
                   style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14.5)),
-              const SizedBox(height: 4),
-              Text(hint,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14.5,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  hint,
                   style: TextStyle(
-                      color: Colors.black.withOpacity(0.65), fontSize: 13)),
-            ]),
+                    color: Colors.black.withOpacity(0.65),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-// class DashboardHeader extends SliverPersistentHeaderDelegate {
-//   final GlobalKey<ScaffoldState> scaffoldKey;
-//   final double hPad;
-
-//   DashboardHeader({
-//     required this.scaffoldKey,
-//     this.hPad = 20,
-//   });
-
-//   Widget _roundIconButton({
-//     required IconData icon,
-//     required VoidCallback onTap,
-//   }) {
-//     return InkResponse(
-//       onTap: onTap,
-//       radius: 28,
-//       child: Container(
-//         width: 40,
-//         height: 40,
-//         decoration: BoxDecoration(
-//           color: Colors.white,
-//           shape: BoxShape.circle,
-//           border: Border.all(color: Colors.cyan, width: 2),
-//         ),
-//         child: Icon(icon, color: Colors.black87),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(
-//       BuildContext context, double shrinkOffset, bool overlapsContent) {
-//     final progress = (shrinkOffset / maxExtent).clamp(0.0, 1.0);
-//     return ClipRect(
-//       child: BackdropFilter(
-//         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-//         child: Container(
-//           color: Color.lerp(
-//             Colors.transparent,
-//             Colors.white.withOpacity(0.6),
-//             progress,
-//           ),
-//           padding: EdgeInsets.fromLTRB(hPad, 20, hPad, 10),
-//           child: Row(
-//             children: [
-//               _roundIconButton(
-//                 icon: Icons.menu_rounded,
-//                 onTap: () => scaffoldKey.currentState?.openDrawer(),
-//               ),
-//               const SizedBox(width: 12),
-//               const Expanded(
-//                 child: Text(
-//                   'Dashboard',
-//                   style: TextStyle(
-//                     color: Colors.black87,
-//                     fontSize: 22,
-//                     fontWeight: FontWeight.w800,
-//                     letterSpacing: 0.2,
-//                   ),
-//                 ),
-//               ),
-//               _roundIconButton(
-//                 icon: Icons.notifications_none_rounded,
-//                 onTap: () {},
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   double get maxExtent => 70;
-
-//   @override
-//   double get minExtent => 70;
-
-//   @override
-//   bool shouldRebuild(covariant DashboardHeader oldDelegate) {
-//     return oldDelegate.hPad != hPad || oldDelegate.scaffoldKey != scaffoldKey;
-//   }
-// }

@@ -48,6 +48,7 @@ class ApiEndPoint{
     static const getOPDTimeslot =  "$baseurl/get_timeslot";
     static const getInvestigationReport =  "$baseurl/complete_investigation_report";
     static const rateEnquiry =  "$baseurl/rate_query";
+    static const appointmentList =  "$baseurl/appointments";
 
   //approval system api
   static const approvalSystemOPD =  "$baseurl/approvalsystem/opd";

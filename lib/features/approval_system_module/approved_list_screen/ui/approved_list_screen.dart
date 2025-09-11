@@ -7,6 +7,7 @@ import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approved_list_screen/data/approved_list_usecases_impl.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_card.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_search_field.dart';
 
 class ApprovedListScreen extends StatefulWidget {
   final List<String> tabList;
@@ -28,6 +29,10 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
   List<bool> _isLoading = [];
 
   List<String> _tabNames = [];
+
+  List<List<ApprovalSystemModel>> _filteredTabData = [];
+
+  final TextEditingController _search = TextEditingController();
 
   static const Color bg1 = Color(0xFFF0F0F0);
   static const Color bg2 = Color(0xFFCDDBFF);
@@ -52,16 +57,18 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
     super.initState();
     _tabController = TabController(length: widget.tabList.length, vsync: this);
     _tabData.addAll(List.generate(widget.tabList.length, (_) => []));
+    _filteredTabData.addAll(List.generate(widget.tabList.length, (_) => []));
     _isLoading.addAll(List.generate(widget.tabList.length, (_) => false));
-    // Fetch first tab initially
+
     _fetchTabData(0);
 
-    // Fetch when tab changes (with simple caching)
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
       final i = _tabController.index;
       if (_tabData[i].isEmpty && !_isLoading[i]) {
         _fetchTabData(i);
+      } else {
+        _filterBills(); // reapply filter when switching tabs
       }
     });
     _tabNames = widget.tabList;
@@ -84,12 +91,28 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
 
       setState(() {
         _tabData[tabIndex] = approvals;
+        _filteredTabData[tabIndex] = approvals;
         _isLoading[tabIndex] = false;
       });
     } else {
       debugPrint("Error fetching approved list: ${resource.message}");
       setState(() => _isLoading[tabIndex] = false);
     }
+  }
+
+  void _filterBills() {
+    final query = _search.text.trim().toLowerCase();
+    final currentTab = _tabController.index;
+
+    if (query.isEmpty) {
+      _filteredTabData[currentTab] = List.from(_tabData[currentTab]);
+    } else {
+      _filteredTabData[currentTab] = _tabData[currentTab].where((item) {
+        final billId = item.uid?.toString().toLowerCase() ?? "";
+        return billId.contains(query);
+      }).toList();
+    }
+    setState(() {});
   }
 
   void _onApprove(int approvalId) {
@@ -285,51 +308,58 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
                   ],
                   body: TabBarView(
                     controller: _tabController,
-                    children: List.generate(5, (tabIndex) {
-                      final items = _tabData[tabIndex];
+                    children: List.generate(widget.tabList.length, (tabIndex) {
+                      final items = _filteredTabData[tabIndex];
 
-                      // Loading state per tab
                       if (_isLoading[tabIndex]) {
                         return const Center(
                             child: CupertinoActivityIndicator(radius: 16));
                       }
 
-                      // Empty state after loading
-                      if (items.isEmpty) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text(
-                              'No Data found',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w600,
-                              ),
+                      return Column(
+                        children: [
+                          // 🔍 Search field
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: SearchField(
+                              controller: _search,
+                              hint: 'Search bill by id',
+                              onChanged: (_) => _filterBills(),
                             ),
                           ),
-                        );
-                      }
-
-                      // Content list
-                      return CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverPadding(
-                            padding: const EdgeInsets.all(8),
-                            sliver: SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => Container(
-                                  //margin: const EdgeInsets.only(bottom: 16),
-                                  child: ApprovalCard(
-                                    approvalData: items[index],
-                                    onApprove: _onApprove,
-                                    isApproved: true,
+                          Expanded(
+                            child: items.isEmpty
+                                ? const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Text(
+                                        'No Data found',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : CustomScrollView(
+                                    physics: const BouncingScrollPhysics(),
+                                    slivers: [
+                                      SliverPadding(
+                                        padding: const EdgeInsets.all(8),
+                                        sliver: SliverList(
+                                          delegate: SliverChildBuilderDelegate(
+                                            (context, index) => ApprovalCard(
+                                              approvalData: items[index],
+                                              onApprove: _onApprove,
+                                              isApproved: true,
+                                            ),
+                                            childCount: items.length,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                childCount: items.length,
-                              ),
-                            ),
                           ),
                         ],
                       );

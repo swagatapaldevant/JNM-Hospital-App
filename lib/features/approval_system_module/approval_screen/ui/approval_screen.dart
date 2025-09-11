@@ -9,6 +9,7 @@ import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_layout.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_screen/data/approval_usecases.dart';
+import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_search_field.dart';
 import '../../common/widgets/common_header.dart' show CommonHeader;
 
 class ApprovalScreen extends StatefulWidget {
@@ -29,12 +30,14 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
   final ScrollController _scrollController = ScrollController();
 
   final List<ApprovalSystemModel> _bills = [];
+  List<ApprovalSystemModel> _filtered = [];
   int _currentPage = 1;
 
   bool _isInitialLoading = false; // full-screen first load
   bool _isPaging = false; // bottom loader while fetching next page
   bool _hasMore = true; // stop when server returns no more rows
   bool _mounted = true; // guard async setState after dispose
+  final TextEditingController _search = TextEditingController();
 
   @override
   void initState() {
@@ -50,6 +53,19 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _filterBills() {
+    String uid = _search.text.trim();
+
+    if (uid.isEmpty) {
+      _filtered = List.from(_bills);
+      setState(() {});
+      return;
+    }
+
+    _filtered = _bills.where((bill) => bill.uid!.contains(uid)).toList();
+    setState(() {});
   }
 
   void _onScroll() {
@@ -85,6 +101,9 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
           _bills
             ..clear()
             ..addAll(newItems);
+          _filtered
+            ..clear()
+            ..addAll(_bills);
         } else {
           _bills.addAll(newItems);
         }
@@ -117,6 +136,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       if (initial) {
         setState(() {
           _bills.clear();
+          _filtered.clear();
           _hasMore = false;
         });
       }
@@ -252,7 +272,15 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       controller: _scrollController,
       slivers: [
         CommonHeader(title: widget.title),
-
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SearchField(
+                controller: _search,
+                hint: 'Search bill by id',
+                onChanged: (_) => _filterBills()),
+          ),
+        ),
         // Initial full-screen loader
         if (_isInitialLoading)
           const SliverFillRemaining(
@@ -261,7 +289,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
           )
 
         // Empty state (only after initial load)
-        else if (_bills.isEmpty)
+        else if (_filtered.isEmpty)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -277,19 +305,19 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         // List + bottom loader
         else ...[
           SliverList.separated(
-            itemCount: _bills.length,
+            itemCount: _filtered.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
-              final bill = _bills[index];
+              final bill = _filtered[index];
               return ApprovalCard(
                 approvalData: bill,
                 onApprove: (id) => _confirmApprove(context, id),
-                onDiscountChanged: ({
-                  required DiscountMode mode,
-                  required double inputValue,
-                  required double discountAmount,
-                  required double grandTotal,
-                }) {
+                onDiscountChanged: (
+                    {required DiscountMode mode,
+                    required double inputValue,
+                    required double discountAmount,
+                    required double grandTotal,
+                    String? reason}) {
                   setState(() {
                     _discountsByBill[bill.id] = DiscountSnapshot(
                       mode: mode,

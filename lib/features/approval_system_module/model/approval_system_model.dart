@@ -42,6 +42,7 @@ class ApprovalSystemModel {
   final int? isDelete;
   final String? patientName;
   final String? createdByName;
+  final String? approvalRemark;
 
   ApprovalSystemModel({
     required this.id,
@@ -87,6 +88,7 @@ class ApprovalSystemModel {
     required this.isDelete,
     required this.patientName,
     required this.createdByName,
+    required this.approvalRemark
   });
 
   
@@ -135,6 +137,7 @@ class ApprovalSystemModel {
       isDelete: json['is_delete'],
       patientName: json['patient_name'],
       createdByName: json['created_by_name'],
+      approvalRemark: json["approval_remark"]
     );
   }
 
@@ -184,6 +187,7 @@ class ApprovalSystemModel {
       'is_delete': isDelete,
       'patient_name': patientName,
       'created_by_name': createdByName,
+      'approval_remark': approvalRemark
     };
   }
 }

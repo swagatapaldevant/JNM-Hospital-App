@@ -483,53 +483,54 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     }
   }
 
-  Widget _buildServicesSection(List<BillInfo> billInfo) {
-    return _sectionWithHangingHeader(
-      heading: Row(
-        children: [
-          Icon(Icons.receipt_long_outlined, color: Colors.white, size: 18),
-          const SizedBox(width: 4),
-          const Text(
-            "Services & Charges",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Column(
-              children: [
-                // Items - No header needed since we're using a different layout
-                ...billInfo.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  final isLast = index == billInfo.length - 1;
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: isLast
-                          ? null
-                          : Border(
-                              bottom: BorderSide(color: Colors.grey[200]!)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+
+  Widget _buildServicesSection(List<BillInfo> billInfo) {
+  return _sectionWithHangingHeader(
+    heading: Row(
+      children: [
+        Icon(Icons.receipt_long_outlined, color: Colors.white, size: 18),
+        const SizedBox(width: 4),
+        const Text(
+          "Services & Charges",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: Column(
+            children: [
+              ...billInfo.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                final isLast = index == billInfo.length - 1;
+
+                return Container(
+                  decoration: BoxDecoration(
+                    border: isLast
+                        ? null
+                        : Border(
+                            bottom: BorderSide(color: Colors.grey[200]!)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       // Service name row (with serial number)
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
-                          width: double.infinity,
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
+                        width: double.infinity,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -541,79 +542,67 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                               ),
                             ),
                             Expanded(
-                          child: Text(
-                            item.chargeName ?? "",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              child: Text(
+                                item.chargeName ?? "",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                        // Date and Amount row (two columns)
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Text(
-                                    //   "Date",
-                                    //   style: TextStyle(
-                                    //     fontSize: 11,
-                                    //     fontWeight: FontWeight.w500,
-                                    //     color: Colors.grey[600],
-                                    //   ),
-                                    // ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      formatDateShort(item.date.toString()),
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                      ),
+                      // Date and Amount row
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    formatDateShort(item.date.toString()),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    // Text(
-                                    //   "Amount",
-                                    //   style: TextStyle(
-                                    //     fontSize: 11,
-                                    //     fontWeight: FontWeight.w500,
-                                    //     color: Colors.grey[600],
-                                    //   ),
-                                    // ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      "₹${item.amount}",
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    "₹${item.amount}",
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }),
-              ],
-            ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 
   // Widget _buildPaymentSection(List<dynamic> payments) {
   //   return _sectionWithHangingHeader(

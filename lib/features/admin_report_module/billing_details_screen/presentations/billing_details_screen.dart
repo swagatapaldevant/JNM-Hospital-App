@@ -180,7 +180,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    "#${bill?.id ?? "N/A"}",
+                    "#${bill?.uid ?? "N/A"}",
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,

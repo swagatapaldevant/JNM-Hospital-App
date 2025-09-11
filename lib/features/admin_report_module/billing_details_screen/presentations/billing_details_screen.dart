@@ -115,7 +115,8 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                               _buildPatientInfoSection(patientDetails,
                                   bill?.doctorName, "Dummy dept."),
                               // Services/Items Section
-                              _buildServicesSection(billInfo ?? []),
+                              if(billInfo != null && billInfo.isNotEmpty)
+                                _buildServicesSection(billInfo),
                               // Bill Summary Section
                               _buildBillSummary(bill),
                               // Receipt History Section

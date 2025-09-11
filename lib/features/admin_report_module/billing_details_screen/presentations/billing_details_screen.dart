@@ -526,10 +526,21 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Service name row (full width)
+                      // Service name row (with serial number)
                         Container(
                           padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
                           width: double.infinity,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${index + 1}. ",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Expanded(
                           child: Text(
                             item.chargeName ?? "",
                             style: const TextStyle(

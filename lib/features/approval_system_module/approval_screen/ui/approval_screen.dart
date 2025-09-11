@@ -227,6 +227,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
 
       // (Optional) If your API accepts it, include grand total for transparency
       // "grand_total": s.grandTotal.toStringAsFixed(2),
+      "approval_remark": s.reason
     };
 
     final response = await getIt<ApprovalUsecases>()
@@ -236,14 +237,18 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
 
     if (response.status == STATUS.SUCCESS) {
       CommonUtils().flutterSnackBar(
-        context: context, mes: "Approval successful", messageType: 1,
+        context: context,
+        mes: "Approval successful",
+        messageType: 1,
       );
       _currentPage = 1;
       _hasMore = true;
       await _fetchBills(initial: true);
     } else {
       CommonUtils().flutterSnackBar(
-        context: context, mes: "Approval failed", messageType: 2,
+        context: context,
+        mes: "Approval failed",
+        messageType: 2,
       );
     }
   }
@@ -324,7 +329,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                       inputValue: inputValue,
                       discountAmount: discountAmount,
                       grandTotal: grandTotal,
-                    );
+                        reason: reason);
                   });
 
                   debugPrint(
@@ -551,17 +556,17 @@ class _ApproveSheetState extends State<_ApproveSheet> {
 
 
 class DiscountSnapshot {
-  final DiscountMode mode;      // flat | percent
-  final double inputValue;      // what user typed (₹ or %)
-  final double discountAmount;  // computed ₹
-  final double grandTotal;      // computed ₹
-
-  const DiscountSnapshot({
-    required this.mode,
+  final DiscountMode mode; // flat | percent
+  final double inputValue; // what user typed (₹ or %)
+  final double discountAmount; // computed ₹
+  final double grandTotal; // computed ₹
+  final String? reason;
+  const DiscountSnapshot(
+      {required this.mode,
     required this.inputValue,
     required this.discountAmount,
     required this.grandTotal,
-  });
+      this.reason});
 }
 
 final Map<int, DiscountSnapshot> _discountsByBill = {};

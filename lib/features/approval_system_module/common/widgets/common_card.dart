@@ -430,6 +430,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
+import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 
 enum DiscountMode { flat, percent }
@@ -439,12 +440,12 @@ class ApprovalCard extends StatefulWidget {
   final Function(int) onApprove;
   final bool? isApproved;
   // Optional: expose this to persist discount in your flow.
-  final void Function({
-  required DiscountMode mode,
+  final void Function(
+      {required DiscountMode mode,
   required double inputValue, // raw value user typed (₹ or %)
   required double discountAmount, // computed ₹
   required double grandTotal,
-  })? onDiscountChanged;
+      String? reason})? onDiscountChanged;
 
   const ApprovalCard({
     super.key,
@@ -470,9 +471,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
   late TextEditingController _discountReasonCtrl;
   late double _initialDiscountAmount; // from API, in ₹
   String? _discountError; // input validation error
-  String? _reasonError;   // reason validation error
-
-
+  String? _reasonError; // reason validation error
 
   @override
   void initState() {
@@ -584,9 +583,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
       inputValue: _inputValue,
       discountAmount: _discountAmount,
       grandTotal: _grandTotal,
-      // Add this named arg in the parent callback signature if you want it:
-      // String? reason
-    );
+        reason: _discountReasonCtrl.value.toString());
   }
 
   @override
@@ -754,8 +751,9 @@ class _ApprovalCardState extends State<ApprovalCard> {
                                 IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                tooltip:
-                                _editingDiscount ? 'Close' : 'Edit discount',
+                                  tooltip: _editingDiscount
+                                      ? 'Close'
+                                      : 'Edit discount',
                                 onPressed: () {
                                   setState(() {
                                     _editingDiscount = !_editingDiscount;
@@ -808,6 +806,13 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       false,
                       isDue: true,
                     ),
+                    if(_discountReasonCtrl.text.toString() != "")
+                      _buildAmountRow(
+                        "Reason",
+                        _discountReasonCtrl.text,
+                      false,
+                      isDue: true,
+                    ),
 
 
                   ],
@@ -843,7 +848,15 @@ class _ApprovalCardState extends State<ApprovalCard> {
 
                           // onPressed: () => widget.onApprove(approvalData.id),
                           onPressed: () {
-                            if (!_validateDiscountEdit()) return; // block approve if invalid
+                            if (!_validateDiscountEdit()) {
+                              CommonUtils().flutterSnackBar(
+                                  context: context,
+                                  mes:
+                                      "Please enter the reason for changing discount",
+                                  messageType: 4);
+                              return;
+                            }
+
                             widget.onApprove(approvalData.id);
                           },
                           icon: const Icon(Icons.check_circle_outline,
@@ -951,8 +964,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
           // Amount input
           TextField(
             controller: _discountCtrl,
-            keyboardType:
-            const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
             ],
@@ -965,8 +977,9 @@ class _ApprovalCardState extends State<ApprovalCard> {
               prefixIcon: _discountMode == DiscountMode.flat
                   ? const Icon(Icons.currency_rupee_outlined, size: 18)
                   : const Icon(Icons.percent, size: 18),
-              hintText:
-              _discountMode == DiscountMode.flat ? _discountAmount.toString() : "${widget.approvalData.discount.toString()}%",
+              hintText: _discountMode == DiscountMode.flat
+                  ? _discountAmount.toString()
+                  : "${widget.approvalData.discount.toString()}%",
               helperText: _discountMode == DiscountMode.percent
                   ? "0–100%. Discount: ${_inr(_discountAmount)}"
                   : "Max ${_inr(_baseTotal)}. Discount: ${_inr(_discountAmount)}",
@@ -979,6 +992,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
           ),
 
           const SizedBox(height: 14),
+          if(_discountChanged)
           TextField(
             controller: _discountReasonCtrl,
             maxLength: 160,
@@ -991,19 +1005,17 @@ class _ApprovalCardState extends State<ApprovalCard> {
               prefixIcon: const Icon(Icons.note_alt_outlined, size: 18),
               labelText: "Reason for discount",
               hintText: "e.g. Loyalty, package adjustment, rounding off…",
-              hintStyle: TextStyle(
-                fontSize: 12,
-                color: Colors.grey
-              ),
+                hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
               helperText: _discountChanged
                   ? "Required because discount was edited"
                   : "Optional (unchanged from original)",
               errorText: _reasonError,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
           ),
-
         ],
       ),
     );

@@ -638,7 +638,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildBillTypeChip(approvalData.section ?? ''),
-                    Text("Bill ID: ${approvalData.id}",
+                    Text("Bill ID: ${approvalData.uid}",
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,

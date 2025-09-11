@@ -154,7 +154,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
         inputValue: _inputValue,
         discountAmount: _discountAmount,
         grandTotal: _grandTotal,
-        reason: _discountReasonCtrl.value.toString());
+        reason: _discountReasonCtrl.text);
   }
 
   @override

@@ -9,6 +9,7 @@ class GlassTile extends StatefulWidget {
   final Color? primaryColor;
   final Color? secondaryColor;
   String? pendingCount;
+  Color? pendingCountColor;
 
   GlassTile({
     super.key,
@@ -17,7 +18,8 @@ class GlassTile extends StatefulWidget {
     this.onTap,
     this.primaryColor,
     this.secondaryColor,
-    this.pendingCount
+    this.pendingCount,
+    this.pendingCountColor
   });
 
   @override
@@ -120,7 +122,7 @@ class _GlassTileState extends State<GlassTile>
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              color: secondaryColor
+                              color: widget.pendingCountColor
                             ),
                             child: Padding(
                               padding:  EdgeInsets.symmetric(horizontal: 8, vertical: 3),

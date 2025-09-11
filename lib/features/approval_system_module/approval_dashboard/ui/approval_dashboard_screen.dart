@@ -377,13 +377,23 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
           }
 
           count += _pendingCount[key] ?? 0;
-
+          
           config["other_ids"].forEach((id) {
             count += _pendingCount[id] ?? 0;
           });
+
+          Color? pendingCountColor;
+
+          if(count == 0) {
+            pendingCountColor = Colors.green;
+          } else {
+            pendingCountColor = Colors.redAccent;
+          }
+          
           return GlassTile(
             icon: config["icon"] as IconData,
             label: config["label"],
+            pendingCountColor: pendingCountColor,
             pendingCount: _pendingCount[key]?.toString() ?? "0",
             onTap: () {
               Navigator.pushNamed(

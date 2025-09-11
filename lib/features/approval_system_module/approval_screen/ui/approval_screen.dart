@@ -154,46 +154,6 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     });
   }
 
-  // Future<void> approveData(int billId) async {
-  //   if (_bills.isEmpty) return;
-  //
-  //   final response = await getIt<ApprovalUsecases>()
-  //       .approveData(
-  //       ApiEndPoint.approveData,
-  //       billId,
-  //     {
-  //       "discount":_inputValue.toString(),
-  //       "discount_type": _mode.toString(),
-  //       "discount_amount":_mode.toString() == "flat"?_inputValue.toString():_grandTotal.toString()
-  //     }
-  //
-  //
-  //
-  //   );
-  //
-  //   if (!_mounted) return;
-  //
-  //   if (response.status == STATUS.SUCCESS) {
-  //     // _fetchBills(initial: true);
-  //
-  //     CommonUtils().flutterSnackBar(
-  //       context: context,
-  //       mes: "Approval successful",
-  //       messageType: 1,
-  //     );
-  //     // OPTIONAL: Refresh the list or locally mark approved
-  //     _currentPage = 1;
-  //     _hasMore = true;
-  //     await _fetchBills(initial: true);
-  //   } else {
-  //     CommonUtils().flutterSnackBar(
-  //       context: context,
-  //       mes: "Approval failed",
-  //       messageType: 2,
-  //     );
-  //   }
-  // }
-
   Future<void> approveData(int billId) async {
     final snap = _discountsByBill[billId];
     if (snap == null) {
@@ -252,7 +212,6 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       );
     }
   }
-
 
   Future<void> _confirmApprove(BuildContext context, int billId) async {
     if (!_mounted) return;
@@ -325,16 +284,16 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                     String? reason}) {
                   setState(() {
                     _discountsByBill[bill.id] = DiscountSnapshot(
-                      mode: mode,
-                      inputValue: inputValue,
-                      discountAmount: discountAmount,
-                      grandTotal: grandTotal,
+                        mode: mode,
+                        inputValue: inputValue,
+                        discountAmount: discountAmount,
+                        grandTotal: grandTotal,
                         reason: reason);
                   });
 
                   debugPrint(
                     'Bill #${bill.id} -> mode: ${mode.name}, input: $inputValue, '
-                        'amount: $discountAmount, grand: $grandTotal',
+                    'amount: $discountAmount, grand: $grandTotal',
                   );
                 },
               );
@@ -554,7 +513,6 @@ class _ApproveSheetState extends State<_ApproveSheet> {
   }
 }
 
-
 class DiscountSnapshot {
   final DiscountMode mode; // flat | percent
   final double inputValue; // what user typed (₹ or %)
@@ -563,9 +521,9 @@ class DiscountSnapshot {
   final String? reason;
   const DiscountSnapshot(
       {required this.mode,
-    required this.inputValue,
-    required this.discountAmount,
-    required this.grandTotal,
+      required this.inputValue,
+      required this.discountAmount,
+      required this.grandTotal,
       this.reason});
 }
 

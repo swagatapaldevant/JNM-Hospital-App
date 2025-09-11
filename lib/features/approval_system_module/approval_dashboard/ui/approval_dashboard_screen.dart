@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
@@ -79,7 +80,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemOPD,
       "title": "OPD Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "opd"
+      "approve_list_url_suffx": "opd",
+      "pending_count": 0
     },
     "IPD": {
       "icon": Icons.bed,
@@ -87,7 +89,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemIPD,
       "title": "IPD/Daycare Approval",
       "other_ids": ["DAYCARE"],
-      "approve_list_url_suffx": "ipd"
+      "approve_list_url_suffx": "ipd",
+      "pending_count": 0
     },
     "OT": {
       "icon": Icons.history,
@@ -95,7 +98,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemOT,
       "title": "OT Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "ot"
+      "approve_list_url_suffx": "ot",
+      "pending_count": 0
     },
     "EMG": {
       "icon": Icons.history,
@@ -103,7 +107,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemEMG,
       "title": "EMG Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "emr"
+      "approve_list_url_suffx": "emr",
+      "pending_count": 0
     },
     "OP": {
       "icon": Icons.receipt_long,
@@ -111,7 +116,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemOP,
       "title": "OP Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "op"
+      "approve_list_url_suffx": "op",
+      "pending_count": 0
     },
     "DIALYSIS": {
       "icon": Icons.receipt_long,
@@ -119,7 +125,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemDialysis,
       "title": "Dialysis Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "dialysis"
+      "approve_list_url_suffx": "dialysis",
+      "pending_count": 0
     },
     "INVESTIGATION": {
       "icon": Icons.payments,
@@ -127,15 +134,22 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
       "api": ApiEndPoint.approvalSystemInvestigation,
       "title": "Investigation Approval",
       "other_ids": [],
-      "approve_list_url_suffx": "investigation"
+      "approve_list_url_suffx": "investigation",
+      "pending_count": 0
     },
   };
+
+  String userName = "N/A";
+  void loadUserData() async {
+    userName = await _pref.getName();
+  }
 
   @override
   void initState() {
     super.initState();
     getPendingCount();
     loadApprovalPerms();
+    loadUserData();
   }
 
   Future<void> _onRefresh() async {
@@ -237,8 +251,8 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Hi there 👋',
+                            Text(
+                              'Hi $userName 👋',
                               style: TextStyle(
                                   color: textPrimary,
                                   fontSize: 22,
@@ -253,11 +267,13 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                                   height: 1.35),
                             ),
                             const SizedBox(height: 12),
+                            _buildPieChart(_pendingCount)
                           ],
                         ),
                       ),
                     ),
                   ),
+                  
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -360,6 +376,62 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
     );
   }
 
+  Widget _buildPieChart(Map<String, int> pendingPerDept) {
+    final total = pendingPerDept.values.fold<int>(0, (a, b) => a + b);
+
+    if (total == 0) {
+      return const Center(
+        child: Text(
+          "No pending approvals",
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+      );
+    }
+
+    final colors = [
+      Colors.blue,
+      Colors.pink,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.cyan,
+    ];
+
+    return PieChart(
+      PieChartData(
+        sections: pendingPerDept.entries
+            .toList()
+            .asMap()
+            .map((i, e) {
+              final dept = e.key;
+              final count = e.value;
+              final percent = (count / total) * 100;
+
+              return MapEntry(
+                i,
+                PieChartSectionData(
+                  value: count.toDouble(),
+                  color: colors[i % colors.length],
+                  title: "$count (${percent.toStringAsFixed(1)}%)\n$dept",
+                  radius: 55,
+                  titleStyle: const TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+            })
+            .values
+            .toList(),
+        sectionsSpace: 2,
+        centerSpaceRadius: 24,
+      ),
+    );
+  }
+
+  void updateConfig() {}
+
   Widget buildPatientDetailsGrid(BuildContext context) {
     tabList.clear();
     tabUrl.clear();
@@ -377,19 +449,23 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
           }
 
           count += _pendingCount[key] ?? 0;
-          
+
           config["other_ids"].forEach((id) {
             count += _pendingCount[id] ?? 0;
           });
 
+          approvalConfig[key]?["pending_count"] = count;
+
+          //pendingPerDept[key] = count;
+
           Color? pendingCountColor;
 
-          if(count == 0) {
+          if (count == 0) {
             pendingCountColor = Colors.green;
           } else {
             pendingCountColor = Colors.redAccent;
           }
-          
+
           return GlassTile(
             icon: config["icon"] as IconData,
             label: config["label"],
@@ -409,7 +485,10 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
         })
         .whereType<Widget>()
         .toList();
+    // print(approvalConfig);
+    // setState(() {
 
+    // });
     //if (tiles.isEmpty) return const SizedBox.shrink();
     const double _maxContentWidth = 720.0;
     final screenW = MediaQuery.of(context).size.width;

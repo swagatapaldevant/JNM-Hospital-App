@@ -375,15 +375,20 @@ class _ApprovalCardState extends State<ApprovalCard> {
                       false,
                       isDue: true,
                     ),
-                    if(_discountReasonCtrl.text.toString() != "")
+                    if (_discountReasonCtrl.text.toString() != "")
                       _buildAmountRow(
                         "Reason",
                         _discountReasonCtrl.text,
                         false,
                         isDue: true,
+                      )
+                    else if (approvalData.approvalRemark != null &&
+                        approvalData.approvalRemark!.isNotEmpty)
+                      _buildAmountRow(
+                        "Reason",
+                        approvalData.approvalRemark!,
+                        false,
                       ),
-
-
                   ],
                 ),
               ),
@@ -559,7 +564,7 @@ class _ApprovalCardState extends State<ApprovalCard> {
           ),
 
           const SizedBox(height: 14),
-          if(_discountChanged)
+          if (_discountChanged)
             TextField(
               controller: _discountReasonCtrl,
               maxLength: 160,

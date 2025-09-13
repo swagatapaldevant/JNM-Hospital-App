@@ -3,5 +3,5 @@ import 'package:jnm_hospital_app/features/patient_module/model/investigation_rep
 
 abstract class InvestigationUsecases {
   Future<Resource> getInvestigationReport(
-      InvestigationReportModel reportFilter);
+      Map<String, String> reportFilter);
 }

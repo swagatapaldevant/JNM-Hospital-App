@@ -1,10 +1,6 @@
 import 'dart:ui';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
-import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
@@ -61,9 +57,20 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   String get _prettyToday {
     final now = DateTime.now();
     const months = [
-      'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
-    const wds = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const wds = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return '${wds[now.weekday - 1]}, ${now.day} ${months[now.month - 1]} ${now.year}';
   }
 
@@ -73,9 +80,12 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   @override
   void initState() {
     super.initState();
-    // Kick off both loads
-    getDoctorData();
-    _fetchAppointments(initial: true);
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getDoctorData();
+      _fetchAppointments(initial: true);
+    });
+
   }
 
   Future<void> _onRefresh() async {
@@ -127,8 +137,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
         messageType: 2,
       );
     } finally {
-      if (!mounted) return;
-      setState(() => _loadingDoctors = false);
+      if (mounted) {
+        setState(() => _loadingDoctors = false);
+      }
     }
   }
 
@@ -137,34 +148,22 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     if (initial) setState(() => _loadingAppts = true);
 
     try {
-      final DateTime to = DateTime.now();
-      // As per your example body window:
-      final DateTime from = DateTime(2024, 8, 12);
 
-      final dio = getIt<Dio>();
-      final resp = await dio.post(
-        ApiEndPoint.appointmentList,
-        data: {
-          "page":1,
-          "from_date" : "2024-08-12",
-          "to_date" : "2025-09-09"
-        }
-      );
+      final resource = await DashboardUsecaseImpl().getAppointments( {
+        "page": "1",
+        "from_date": "2024-08-12",
+        "to_date": "2025-09-09"
+      });
+      if (!mounted) return;
 
-      final data = (resp.data is Map && (resp.data['data'] is List))
-          ? resp.data['data'] as List
-          : (resp.data as List);
+      if(resource.status == STATUS.SUCCESS) {
+        final data = resource.data as List<dynamic>;
 
       final items = data
-          .map((e) => AppointmentModel.fromJson(e as Map<String, dynamic>))
+          .map((e) => AppointmentModel.fromJson(e))
           .toList();
 
-      // Sort by local time ascending
-      items.sort((a, b) {
-        final aw = a.whenLocal ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bw = b.whenLocal ?? DateTime.fromMillisecondsSinceEpoch(0);
-        return aw.compareTo(bw);
-      });
+      print(items);
 
       if (!mounted) return;
       setState(() {
@@ -176,13 +175,17 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
           _opdUpcoming.addAll(items);
         }
       });
-    } catch (_) {
+      }
+
+      
+    } catch (e) {
       if (!mounted) return;
       CommonUtils().flutterSnackBar(
         context: context,
         mes: 'Failed to load appointments',
-        messageType: 2,
+        messageType: 4,
       );
+      print(e);
     } finally {
       if (!mounted) return;
       if (initial) setState(() => _loadingAppts = false);
@@ -195,7 +198,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer:  AppDrawer(),
+      drawer: AppDrawer(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -265,8 +268,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   // Date
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding:
-                      const EdgeInsets.symmetric(horizontal: _hPad),
+                      padding: const EdgeInsets.symmetric(horizontal: _hPad),
                       child: Text(
                         _prettyToday,
                         style: const TextStyle(
@@ -284,8 +286,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(_hPad, 16, _hPad, 0),
                       child: _GlassCard(
-                        padding:
-                        const EdgeInsets.fromLTRB(18, 18, 18, 14),
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -301,8 +302,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                             Text(
                               'Wishing you a healthy day! Here’s what’s lined up for you.',
                               style: TextStyle(
-                                color:
-                                Colors.black.withOpacity(0.70),
+                                color: Colors.black.withOpacity(0.70),
                                 fontSize: 14.5,
                                 height: 1.35,
                               ),
@@ -320,8 +320,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
                                       context,
-                                      RouteGenerator
-                                          .kOPDRegistrationScreen,
+                                      RouteGenerator.kOPDRegistrationScreen,
                                     );
                                   },
                                 ),
@@ -357,8 +356,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                                     HapticFeedback.selectionClick();
                                     Navigator.pushNamed(
                                       context,
-                                      RouteGenerator
-                                          .kInvestigationScreen,
+                                      RouteGenerator.kInvestigationScreen,
                                     );
                                   },
                                 ),
@@ -373,8 +371,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   // Today's Doctors
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding:
-                      const EdgeInsets.fromLTRB(_hPad, 18, _hPad, 8),
+                      padding: const EdgeInsets.fromLTRB(_hPad, 18, _hPad, 8),
                       child: _SectionHeader(
                         title: "Today's Doctors",
                         actionText: 'See all',
@@ -389,10 +386,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                       ),
                       sliver: SliverList.separated(
                         itemCount: 1,
-                        itemBuilder: (_, __) =>
-                        const _DoctorCardSkeleton(),
-                        separatorBuilder: (_, __) =>
-                        const SizedBox(height: 12),
+                        itemBuilder: (_, __) => const _DoctorCardSkeleton(),
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
                       ),
                     )
                   else if (_doctorsToday.isEmpty)
@@ -404,8 +399,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         child: const _EmptyStateCard(
                           icon: Icons.local_hospital_outlined,
                           message: 'No doctors available today',
-                          hint:
-                          'Check back later or book an appointment.',
+                          hint: 'Check back later or book an appointment.',
                         ),
                       ),
                     )
@@ -418,11 +412,10 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                           padding: const EdgeInsets.symmetric(
                             horizontal: _hPad,
                           ),
-                          physics:
-                          const BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: _doctorsToday.length,
                           separatorBuilder: (_, __) =>
-                          const SizedBox(width: 12),
+                              const SizedBox(width: 12),
                           itemBuilder: (context, i) => _DoctorCard(
                             doctor: _doctorsToday[i],
                             accent: _getCardColor(
@@ -443,8 +436,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                   // OPD Upcoming
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding:
-                      const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
+                      padding: const EdgeInsets.fromLTRB(_hPad, 22, _hPad, 8),
                       child: _SectionHeader(
                         title: 'Upcoming Appointment',
                         actionText: 'View all',
@@ -460,9 +452,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                       sliver: SliverList.separated(
                         itemCount: 2,
                         itemBuilder: (_, __) =>
-                        const _AppointmentCardSkeleton(),
-                        separatorBuilder: (_, __) =>
-                        const SizedBox(height: 12),
+                            const _AppointmentCardSkeleton(),
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
                       ),
                     )
                   else if (_opdUpcoming.isEmpty)
@@ -474,8 +465,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         child: const _EmptyStateCard(
                           icon: Icons.local_hospital_outlined,
                           message: 'No upcoming OPD appointments',
-                          hint:
-                          'Book a new OPD slot from Quick actions.',
+                          hint: 'Book a new OPD slot from Quick actions.',
                         ),
                       ),
                     )
@@ -488,8 +478,7 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
                         itemCount: _opdUpcoming.length,
                         itemBuilder: (context, i) =>
                             _AppointmentCard(appt: _opdUpcoming[i]),
-                        separatorBuilder: (_, __) =>
-                        const SizedBox(height: 12),
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
                       ),
                     ),
 
@@ -554,7 +543,8 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
 class _GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
-  const _GlassCard({required this.child, this.padding = const EdgeInsets.all(18)});
+  const _GlassCard(
+      {required this.child, this.padding = const EdgeInsets.all(18)});
 
   @override
   Widget build(BuildContext context) {
@@ -584,7 +574,8 @@ class _GlassCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: radius,
               color: Colors.white.withOpacity(0.78),
-              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -869,7 +860,20 @@ class _AppointmentCard extends StatelessWidget {
   const _AppointmentCard({required this.appt});
 
   String _fmtDate(DateTime d) {
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${d.day.toString().padLeft(2, '0')} ${months[d.month - 1]} ${d.year}';
   }
 
@@ -888,20 +892,22 @@ class _AppointmentCard extends StatelessWidget {
     const Color accent = Colors.blueAccent;
 
     // Prefer appointment_time; else appointment_date; else app_date string
-    final DateTime? when = appt.whenLocal;
-    final String whenStr =
-    when != null ? '${_fmtDate(when)} • ${_fmtTime(when)}' : (appt.appDateRaw ?? 'Time not set');
+    final DateTime? when = appt.appointmentDate;
+    final String whenStr = when != null
+        ? '${_fmtDate(when)} • ${_fmtTime(when)}'
+        : (appt.appointmentDate.toString());
 
     final String doctor =
-    appt.doctorDisplay.isEmpty ? 'Doctor: N/A' : appt.doctorDisplay;
+        appt.doctorName ?? 'Doctor: N/A';
 
     final String uhidPill =
-    appt.uhid.isEmpty ? 'ID #${appt.id}' : 'UHID ${appt.uhid}';
+        appt.uhid ?? 'UHID #${appt.id}';
     final String tokenPill =
-    (appt.slotId != null) ? 'Slot ${appt.slotId}' : '#${appt.id}';
-    final String location = (appt.address == null || appt.address!.trim().isEmpty)
-        ? 'OPD Desk'
-        : appt.address!.trim();
+        (appt.slotId != null) ? 'Slot ${appt.slotId}' : '#${appt.id}';
+    final String location =
+        (appt.address == null || appt.address!.trim().isEmpty)
+            ? 'OPD Desk'
+            : appt.address!.trim();
 
     return Material(
       color: Colors.transparent,
@@ -928,7 +934,8 @@ class _AppointmentCard extends StatelessWidget {
                     color: accent.withOpacity(0.12),
                     border: Border.all(color: accent.withOpacity(0.45)),
                   ),
-                  child: const Icon(Icons.local_hospital_outlined, color: accent),
+                  child:
+                      const Icon(Icons.local_hospital_outlined, color: accent),
                 ),
                 const SizedBox(width: 12),
 
@@ -962,7 +969,7 @@ class _AppointmentCard extends StatelessWidget {
 
                       // Patient
                       Text(
-                        appt.name.isEmpty ? 'Unknown Patient' : appt.name,
+                        appt.name ?? "N/A",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -991,7 +998,8 @@ class _AppointmentCard extends StatelessWidget {
                       // Location
                       Row(
                         children: [
-                          const Icon(Icons.place_outlined, size: 16, color: accent),
+                          const Icon(Icons.place_outlined,
+                              size: 16, color: accent),
                           const SizedBox(width: 6),
                           Flexible(
                             child: Text(

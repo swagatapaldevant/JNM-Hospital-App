@@ -28,6 +28,29 @@ class DashboardUsecaseImpl implements DashboardUsecase {
       return resource;
     }
   }
+
+  Future<Resource> getAppointments(Map<String, String> req) async {
+    final ApiClient _apiClient = getIt<ApiClient>();
+  final SharedPref _pref = getIt<SharedPref>();
+
+  
+      
+    String token = await _pref.getUserAuthToken();
+    Map<String, String> header = {
+      "Authorization": "Bearer $token"
+    };
+    // print("Bearer$token");
+    Resource resource = await _apiClient.postRequest(
+        url: ApiEndPoint.appointmentList,
+        header: header,
+        requestData: req
+        );
+    if (resource.status == STATUS.SUCCESS) {
+      return resource;
+    } else {
+      return resource;
+    }
+  }
     
   
 }

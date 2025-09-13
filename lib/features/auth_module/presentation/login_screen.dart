@@ -270,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> loginAdmin() async {
     setState(() => isLoading = true);
-
+    try{
     final requestData = {
       "email": emailController.text.trim(),
       "password": passwordController.text.trim(),
@@ -288,10 +288,12 @@ class _LoginScreenState extends State<LoginScreen>
       _pref.setUserName(resource.data["user"]["name"].toString());
 
       List<String> approvalPermissionList = [];
-      approvalPermissionList =
-          parseApprovalPermission(resource.data["user"]["permissions"]);
-      _pref.setApprovalPermissionList(approvalPermissionList);
-      
+
+      if(resource.data["user"]["permissions"] != null) {
+        approvalPermissionList =  
+            parseApprovalPermission(resource.data["user"]["permissions"]);
+        _pref.setApprovalPermissionList(approvalPermissionList);
+      }
 
       setState(() => isLoading = false);
 
@@ -308,7 +310,16 @@ class _LoginScreenState extends State<LoginScreen>
         messageType: 4,
       );
     }
+  } catch(err){
+    print(err);
+    setState(() => isLoading = false);
+      CommonUtils().flutterSnackBar(
+        context: context,
+        mes: "Something went wrong",
+        messageType: 4,
+      );
   }
+  } 
 }
 
 // ======================== Pieces ========================

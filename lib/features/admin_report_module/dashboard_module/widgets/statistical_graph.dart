@@ -64,6 +64,7 @@ class _StatisticalGraphState extends State<StatisticalGraph> {
     );
   }
 }
+
 class BarChartDetails extends StatefulWidget {
   final List<String> categories;
   final List<int> newData;
@@ -87,14 +88,17 @@ class _BarChartDetailsState extends State<BarChartDetails> {
   @override
   void initState() {
     super.initState();
-    currentNew = List.filled(widget.newData.length, 0);
-    currentOld = List.filled(widget.oldData.length, 0);
-    animateBars();
+    if (widget.newData.isNotEmpty && widget.oldData.isNotEmpty) {
+      currentNew = List.filled(widget.newData.length, 0);
+      currentOld = List.filled(widget.oldData.length, 0);
+      animateBars();
+    }
   }
 
   void animateBars() async {
     for (int i = 0; i < widget.newData.length; i++) {
       await Future.delayed(const Duration(milliseconds: 150));
+      if (!mounted) return; // safety
       setState(() {
         currentNew[i] = widget.newData[i];
         currentOld[i] = widget.oldData[i];
@@ -104,11 +108,37 @@ class _BarChartDetailsState extends State<BarChartDetails> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ Fallback if no data
+    if (widget.categories.isEmpty ||
+        widget.newData.isEmpty ||
+        widget.oldData.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          "No data available",
+          style: TextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
+
     return AspectRatio(
       aspectRatio: 2.8,
       child: BarChart(
         BarChartData(
-          maxY: getMaxY([...widget.newData, ...widget.oldData].map((e) => e.toDouble()).toList()),
+          maxY: getMaxY(
+            [...widget.newData, ...widget.oldData]
+                .map((e) => e.toDouble())
+                .toList(),
+          ),
           barGroups: List.generate(widget.categories.length, (index) {
             return BarChartGroupData(
               x: index,
@@ -116,16 +146,16 @@ class _BarChartDetailsState extends State<BarChartDetails> {
                 BarChartRodData(
                   toY: currentNew[index].toDouble(),
                   width: 10,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      topRight: Radius.circular(4),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
                   ),
                   color: Colors.blueAccent,
                 ),
                 BarChartRodData(
                   toY: currentOld[index].toDouble(),
                   width: 10,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
                     topRight: Radius.circular(4),
                   ),
@@ -148,9 +178,9 @@ class _BarChartDetailsState extends State<BarChartDetails> {
                         angle: 20 * 3.1415926535 / 180,
                         child: Text(
                           widget.categories[idx],
-                          style:  TextStyle(
+                          style: const TextStyle(
                             fontSize: 9,
-                            color: AppColors.colorBlack,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                             fontFamily: "Poppins",
                           ),
@@ -170,7 +200,7 @@ class _BarChartDetailsState extends State<BarChartDetails> {
             enabled: true,
             touchTooltipData: BarTouchTooltipData(
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                final label = rodIndex == 0 ? "Old" : "New";
+                final label = rodIndex == 0 ? "New" : "Old";
                 return BarTooltipItem(
                   '$label: ${rod.toY.toStringAsFixed(0)}',
                   const TextStyle(

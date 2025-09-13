@@ -253,27 +253,25 @@ class _CollapsibleInsightCardsBlockState<T>
   }
 }
 
-/// =================== END: Collapsible wrapper =======================
-
-/// INSIGHT CARDS (non-scrollable)
-///
 class InsightCardsBlock<T> extends StatefulWidget {
   final List<String> rows;
   final List<String> cols;
   final List<List<T>> data;
+
   const InsightCardsBlock({
     super.key,
     required this.rows,
     required this.cols,
     required this.data,
   });
+
+  @override
   createState() => _InsightCardsBlockState<T>();
 }
 
-
 class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
-  bool _isNum(dynamic v) => v is num;
   String? selectedRow; // null = all rows
+  bool _isNum(dynamic v) => v is num;
 
   @override
   Widget build(BuildContext context) {
@@ -281,8 +279,32 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
     final cols = widget.cols;
     final data = widget.data;
 
-    final int rowCount = rows.length;
-    final int colCount = cols.length;
+    final rowCount = rows.length;
+    final colCount = cols.length;
+
+    
+    if (rowCount == 0 || colCount == 0 || data.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          "No insights available",
+          style: TextStyle(
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
+
+    // ------------------------
+    // Normal logic continues...
+    // ------------------------
 
     final List<double?> rowMin = List.filled(rowCount, null);
     final List<double?> rowMax = List.filled(rowCount, null);
@@ -304,22 +326,20 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
       }
     }
 
-    // Summary chips
+    // summary chips
     final summary = Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
         GestureDetector(
-          onTap: () {
-            setState(() => selectedRow = null); // Show all
-          },
+          onTap: () => setState(() => selectedRow = null),
           child: _SummaryChip(
             label: "All",
             value: _formatNumber(rowSum.fold(0, (a, b) => a + b)),
             subtitle: "Grand Total",
             textColor: selectedRow == null ? Colors.white : Colors.black,
-             containerColor: selectedRow == null ? Colors.white : _metricColor(0),
-
+            containerColor:
+                selectedRow == null ? Colors.white : _metricColor(0),
             color: selectedRow == null ? Colors.blue : Colors.white,
           ),
         ),
@@ -329,58 +349,54 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
           final value = isNumeric ? _formatNumber(rowSum[r]) : '—';
           final subtitle = isNumeric ? 'Total' : '—';
           return GestureDetector(
-            onTap: () {
-              setState(() => selectedRow = title);
-            },
+            onTap: () => setState(() => selectedRow = title),
             child: _SummaryChip(
               label: title,
               value: value,
               subtitle: subtitle,
-              color: selectedRow == title ? _metricColor(r) : const Color.fromARGB(255, 255, 255, 255),
+              color: selectedRow == title
+                  ? _metricColor(r)
+                  : const Color.fromARGB(255, 255, 255, 255),
               textColor: selectedRow == title ? Colors.white : Colors.black,
-              containerColor: selectedRow == title ? Colors.white : _metricColor(r),
+              containerColor:
+                  selectedRow == title ? Colors.white : _metricColor(r),
             ),
           );
         }),
       ],
     );
 
-    // Calculate column sums
+    // column sums
     final List<double> colSum = List.filled(colCount, 0.0);
     for (var c = 0; c < colCount; c++) {
       for (var r = 0; r < rowCount; r++) {
         final val = data[r][c];
-        if (_isNum(val)) {
-          colSum[c] += (val as num).toDouble();
-        }
+        if (_isNum(val)) colSum[c] += (val as num).toDouble();
       }
     }
 
-    // Convert sums to type T
     List<T> _convertSumToType(List<double> sums) {
-      if (T == int) {
-        return sums.map((s) => s.toInt()).cast<T>().toList();
-      }
+      if (T == int) return sums.map((s) => s.toInt()).cast<T>().toList();
       return sums.cast<T>();
     }
 
-
-    // Calculate column-wise min/max for "All" view
+    // col min/max
     final List<double?> colMin = List.filled(colCount, null);
     final List<double?> colMax = List.filled(colCount, null);
-    
     for (var c = 0; c < colCount; c++) {
       for (var r = 0; r < rowCount; r++) {
         final val = data[r][c];
         if (_isNum(val)) {
           final v = (val as num).toDouble();
-          colMin[c] = (colMin[c] == null) ? v : (v < colMin[c]! ? v : colMin[c]!);
-          colMax[c] = (colMax[c] == null) ? v : (v > colMax[c]! ? v : colMax[c]!);
+          colMin[c] =
+              (colMin[c] == null) ? v : (v < colMin[c]! ? v : colMin[c]!);
+          colMax[c] =
+              (colMax[c] == null) ? v : (v > colMax[c]! ? v : colMax[c]!);
         }
       }
     }
 
-    // Filtered rows
+    // filtered rows
     final filteredIndexes =
         selectedRow == null ? [] : [rows.indexOf(selectedRow!)];
 
@@ -402,16 +418,16 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
             } else if (width >= 600) {
               crossAxisCount = 2;
             }
-            
+
             List<T> colSumConverted = _convertSumToType(colSum);
-            
+
             return selectedRow == null
                 ? _InsightCard<T>(
                     title: "All",
                     cols: cols,
                     values: colSumConverted,
-                    colMin: colMin, 
-                    colMax: colMax, 
+                    colMin: colMin,
+                    colMax: colMax,
                   )
                 : _InsightCard<T>(
                     title: rows[filteredIndexes.first],
@@ -435,17 +451,16 @@ class _InsightCardsBlockState<T> extends State<InsightCardsBlock<T>> {
 
   Color _metricColor(int index) {
     const palette = [
-      Color(0xFF3C4D99), // darker indigo
-      Color(0xFF2C82A3), // darker sky
-      Color(0xFF3F7A3C), // darker green
-      Color(0xFFB56A2E), // darker orange
-      Color(0xFF9B4C7F), // darker pink
-      Color(0xFF7C5DA8), // darker violet
+      Color(0xFF3C4D99),
+      Color(0xFF2C82A3),
+      Color(0xFF3F7A3C),
+      Color(0xFFB56A2E),
+      Color(0xFF9B4C7F),
+      Color(0xFF7C5DA8),
     ];
     return palette[index % palette.length];
   }
 }
-
 /// One row’s card with its metrics visualized (your version with internal collapse)
 
 class _InsightCard<T> extends StatefulWidget {

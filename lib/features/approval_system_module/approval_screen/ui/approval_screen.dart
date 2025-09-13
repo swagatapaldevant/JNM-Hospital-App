@@ -5,6 +5,7 @@ import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/locator.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/bill_card_simmer.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_card.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_layout.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
@@ -247,9 +248,11 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         ),
         // Initial full-screen loader
         if (_isInitialLoading)
-          const SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: CircularProgressIndicator()),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => const BillCardShimmer(),
+              childCount: 6, 
+            ),
           )
 
         // Empty state (only after initial load)

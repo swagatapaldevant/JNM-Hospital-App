@@ -9,6 +9,8 @@ import 'package:jnm_hospital_app/core/services/localStorage/shared_pref.dart';
 import 'package:jnm_hospital_app/core/services/routeGenerator/route_generator.dart';
 import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/data/approval_dashboard_usecases_impl.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/ui/glasscard.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/approval_dashboard/ui/glasscard_simmer.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/glasscard.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_dashboard/widgets/app_drawer.dart';
 
@@ -280,7 +282,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(_hPad, 16, _hPad, 0),
-                      child: _GlassCard(
+                      child: isLoading ? GlassCardShimmer() : GlassCard(
                         padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -714,59 +716,7 @@ class _ApprovalDashboardScreenState extends State<ApprovalDashboardScreen>
   }
 }
 
-// ===== Reusable UI =====
 
-class _GlassCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-
-  const _GlassCard(
-      {required this.child, this.padding = const EdgeInsets.all(18)});
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(22);
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: radius,
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.10),
-              blurRadius: 22,
-              offset: const Offset(0, 12)),
-          BoxShadow(
-              color: Colors.white.withOpacity(0.6),
-              blurRadius: 6,
-              offset: const Offset(-2, -2)),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            padding: padding,
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              color: Colors.white.withOpacity(0.78),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.6), width: 1),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.88),
-                  Colors.white.withOpacity(0.72)
-                ],
-              ),
-            ),
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _ApprovalDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
   final VoidCallback onNotificationTap;

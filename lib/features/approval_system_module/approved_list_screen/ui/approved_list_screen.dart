@@ -5,6 +5,7 @@ import 'package:jnm_hospital_app/core/network/apiHelper/api_endpoint.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/resource.dart';
 import 'package:jnm_hospital_app/core/network/apiHelper/status.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/approved_list_screen/data/approved_list_usecases_impl.dart';
+import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/bill_card_simmer.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/common/widgets/common_card.dart';
 import 'package:jnm_hospital_app/features/approval_system_module/model/approval_system_model.dart';
 import 'package:jnm_hospital_app/features/patient_module/patient_details/ui/common_search_field.dart';
@@ -312,8 +313,16 @@ class _ApprovedListScreenState extends State<ApprovedListScreen>
                       final items = _filteredTabData[tabIndex];
 
                       if (_isLoading[tabIndex]) {
-                        return const Center(
-                            child: CupertinoActivityIndicator(radius: 16));
+                        return CustomScrollView(
+                          slivers: [
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => const BillCardShimmer(),
+                                childCount: 6,
+                              ),
+                            ),
+                          ],
+                        );
                       }
 
                       return Column(

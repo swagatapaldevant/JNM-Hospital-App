@@ -12,6 +12,7 @@ import 'package:jnm_hospital_app/core/utils/helper/common_utils.dart';
 import 'package:jnm_hospital_app/core/utils/helper/screen_utils.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/admin_common_widget/switchable_table_stat.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/customer_pie_chart.dart';
+import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/dashboard_simmer.dart';
 import 'package:jnm_hospital_app/features/admin_report_module/dashboard_module/widgets/statistical_graph.dart';
 
 class ReportDashboardScreen extends StatefulWidget {
@@ -119,11 +120,7 @@ class _ReportDashboardScreenState extends State<ReportDashboardScreen> {
           ),
           Expanded(
             child: isLoading
-                ? Center(
-              child: CircularProgressIndicator(
-                color: AppColors.arrowBackground,
-              ),
-            )
+                ? DashboardSimmer()
                 : RefreshIndicator(
               onRefresh: _onRefresh,
               child: SingleChildScrollView(

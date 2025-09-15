@@ -48,11 +48,11 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
     // String toDate = today;
 
     try {
-      Resource resource = await InvestigationUsecasesImpl()
-          .getInvestigationReport(filters);
+      Resource resource =
+          await InvestigationUsecasesImpl().getInvestigationReport(filters);
 
       final data = resource.data as List;
-
+      _reports.clear();
       for (final item in data) {
         _reports.add(InvstReportResModel.fromJson(item));
       }
@@ -85,16 +85,9 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
   Widget build(BuildContext context) {
     return PatientDetailsScreenLayout(
       slivers: [
-        
-        CommonHeader(title: "Ready Reports"),
-        
-        
-         isLoading
-          ? const SliverToBoxAdapter(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ) :
+        const CommonHeader(title: "Ready Reports"),
+
+        // Filters
         SliverToBoxAdapter(
           child: _ExpandableFilterCard(
             expanded: _filterExpanded,
@@ -106,67 +99,45 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
             ),
           ),
         ),
-        SliverList(
-          delegate: SliverChildListDelegate.fixed([
-            const SizedBox(height: 16),
-            if (_reports.isEmpty)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                child: _EmptyState(
-                  title: "No results",
-                  subtitle: "Try adjusting filters or date range.",
+        isLoading
+            ? const SliverFillRemaining(
+                child: Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-            ..._reports.map(
-              (report) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: InvestigationCard(
-                  onTap: () {
-                    // TODO: handle open details
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Open bill #${report.uid ?? ''}")),
-                    );
-                  },
-                  report: report,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ]),
-        ),
+              )
+            : _reports.isEmpty
+                ? SliverPadding(
+                   padding:
+                        EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                  sliver: SliverToBoxAdapter(
+                    child: _EmptyState(
+                      title: "No results",
+                      subtitle: "Try adjusting filters or date range.",
+                    ),
+                  ),
+                )
+                : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final report = _reports[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: InvestigationCard(
+                            onTap: () {
+                              // handle details
+                            },
+                            report: report,
+                          ),
+                        );
+                      },
+                      childCount: _reports.length,
+                    ),
+                  ),
       ],
     );
   }
 
-  Widget _roundIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
-    return InkResponse(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
-      },
-      radius: 28,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.cyan, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(.06),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: Colors.black87),
-      ),
-    );
-  }
 }
 
 /* ===========================================================
@@ -174,15 +145,6 @@ class _InvestigationScreenState extends State<InvestigationScreen> {
  * ===========================================================
 */
 
-
-enum ReportStatus {
-  all("3-4"),
-  delivered("3"),
-  notDelivered("4");
-
-  final String value;
-  const ReportStatus(this.value);
-}
 
 class FilterData {
   final ReportStatus status;
@@ -377,14 +339,14 @@ class _FilterFormState extends State<FilterForm> {
               _choiceChip(
                 label: "All",
                 selected: _data.status == ReportStatus.all,
-                onSelected: () =>
-                    setState(() => _data = _data.copyWith(status: ReportStatus.all)),
+                onSelected: () => setState(
+                    () => _data = _data.copyWith(status: ReportStatus.all)),
               ),
               _choiceChip(
                 label: "Delivered",
                 selected: _data.status == ReportStatus.delivered,
-                onSelected: () => setState(
-                    () => _data = _data.copyWith(status: ReportStatus.delivered)),
+                onSelected: () => setState(() =>
+                    _data = _data.copyWith(status: ReportStatus.delivered)),
               ),
               _choiceChip(
                 label: "Not Delivered",
@@ -817,113 +779,187 @@ class InvestigationCard extends StatelessWidget {
   final VoidCallback onTap;
   const InvestigationCard({required this.report, required this.onTap});
 
-  @override
+ Color _statusColor(ReportStatus status) {
+    switch (status) {
+      case ReportStatus.delivered:
+        return Colors.green;
+      case ReportStatus.notDelivered:
+        return Colors.orange;
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
+  String _statusLabel(ReportStatus status) {
+    switch (status) {
+      case ReportStatus.delivered:
+        return "Delivered";
+      case ReportStatus.notDelivered:
+        return "Not Delivered";
+      default:
+        return "All";
+    }
+  }
+
   Widget build(BuildContext context) {
-    //final status = (report.status ?? '').toLowerCase().contains('deliver');
-    //final statusColor = status ? Colors.green : Colors.orange;
-    final dateText = _formatDateTime(report.billCreatedDate);
+  final dateText = _formatDateTime(report.billCreatedDate);
+  final status = report.status;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Leading circular gradient with bill no
-            Container(
-              width: 52,
-              height: 52,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF00C2FF), Color(0xFF7F5AF0)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  (report.uid ?? '—').toString(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(16),
+    child: Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withOpacity(0.15), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              // Leading circle with bill uid
+              Container(
+                width: 52,
+                height: 52,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF00C2FF), Color(0xFF7F5AF0)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 14),
-
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Name + status
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          (report.patientName ?? 'Unknown Patient'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15.5,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-
-                  // Doctor
-                  Text(
-                    "Dr ${report.doctorName ?? 'NA'}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                child: Center(
+                  child: Text(
+                    (report.uid ?? '—').toString(),
                     style: const TextStyle(
-                      fontSize: 13.5,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 6),
-
-                  // Date row
-                  Row(
-                    children: [
-                      const Icon(Icons.event, size: 16, color: Colors.blueGrey),
-                      const SizedBox(width: 6),
-                      Text(
-                        dateText,
-                        style: const TextStyle(
-                            fontSize: 12.5, color: Colors.black54),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(width: 14),
+
+              // Main content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name + Status chip
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            (report.patientName ?? 'Unknown Patient'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15.5,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (_statusLabel(status) != "All")
+                          Chip(
+                            label: Text(
+                              _statusLabel(status),
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white),
+                            ),
+                            backgroundColor: _statusColor(status),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+
+                    // Doctor
+                    Text(
+                      "Dr ${report.doctorName ?? 'NA'}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+
+                    // Date row
+                    Row(
+                      children: [
+                        const Icon(Icons.event, size: 16, color: Colors.blueGrey),
+                        const SizedBox(width: 6),
+                        Text(
+                          dateText,
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Expand button
+              Container(
+                margin: const EdgeInsets.only(left: 8),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _showDetailModal(context),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(
+                        Icons.expand_more,
+                        size: 18,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+void _showDetailModal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => _DetailModalSheet(report: report),
+  );
+}
+
 
   static String _formatDateTime(DateTime? d) {
     if (d == null) return '—';
@@ -947,5 +983,304 @@ class InvestigationCard extends StatelessWidget {
     final hh = d.hour.toString().padLeft(2, '0');
     final min = d.minute.toString().padLeft(2, '0');
     return '$dd $mm $yyyy • $hh:$min';
+  }
+}
+class _DetailModalSheet extends StatelessWidget {
+  final InvstReportResModel report;
+
+  const _DetailModalSheet({required this.report});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF00C2FF), Color(0xFF7F5AF0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      (report.uid ?? '—').toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Patient Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      Text(
+                        report.patientName ?? 'Unknown Patient',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.close, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+
+          // Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSection(
+                    'Patient Information',
+                    [
+                      _buildInfoRow(Icons.person, 'Patient Name', report.patientName ?? 'N/A'),
+                      _buildInfoRow(Icons.phone, 'Phone', report.phone ?? 'N/A'),
+                      _buildInfoRow(Icons.people, 'Gender', report.gender ?? 'N/A'),
+                      _buildInfoRow(Icons.cake, 'Date of Birth', _formatDateOfBirth()),
+                      _buildInfoRow(Icons.badge, 'Patient ID', report.patientId?.toString() ?? 'N/A'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  _buildSection(
+                    'Medical Information',
+                    [
+                      _buildInfoRow(Icons.medical_services, 'Doctor', 'Dr ${report.doctorName ?? 'N/A'}'),
+                      _buildInfoRow(Icons.person_pin, 'Referral', report.referralName ?? 'N/A'),
+                      _buildInfoRow(Icons.science, 'Section', report.section ?? 'N/A'),
+                      _buildInfoRow(Icons.bed, 'Bed Name', report.bedName ?? 'N/A'),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  _buildSection(
+                    'Bill Information',
+                    [
+                      _buildInfoRow(Icons.receipt_long, 'Bill ID', report.billId?.toString() ?? 'N/A'),
+                      _buildInfoRow(Icons.event, 'Created Date', _formatDateTime(report.billCreatedDate)),
+                      if (report.statusValue != null)
+                        _buildStatusRow(),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          ),
+          child: Column(children: children),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(icon, size: 18, color: Colors.grey[600]),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(Icons.info, size: 18, color: Colors.grey[600]),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Status',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _statusColor(report.statusValue),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _statusLabel(report.statusValue),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDateOfBirth() {
+    if (report.dobYear != null && report.dobMonth != null && report.dobDay != null) {
+      try {
+        final date = DateTime(report.dobYear!, report.dobMonth!, report.dobDay!);
+        return DateFormat('MMM dd, yyyy').format(date);
+      } catch (e) {
+        return 'Invalid Date';
+      }
+    }
+    return 'N/A';
+  }
+
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return 'N/A';
+    return DateFormat('MMM dd, yyyy • hh:mm a').format(dateTime);
+  }
+
+  // You'll need to implement these methods based on your existing logic
+  String _statusLabel(dynamic status) {
+    // Implement your status label logic here
+    return status?.toString() ?? 'Unknown';
+  }
+
+  Color _statusColor(dynamic status) {
+    // Implement your status color logic here
+    return Colors.blue; // Default color
   }
 }

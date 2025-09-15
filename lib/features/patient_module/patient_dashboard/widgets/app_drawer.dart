@@ -287,6 +287,14 @@ class _AppDrawerState extends State<AppDrawer> {
                       // TODO: Navigator.pushNamed(context, '/Payments');
                     },
                   ),
+                  _DrawerItem(
+                    icon: Icons.payments_outlined,
+                    label: 'Bills',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, RouteGenerator.kPatientBillsScreen);
+                    },
+                  ),
                   // _DrawerItem(
                   //   icon: Icons.description_outlined,
                   //   label: 'Reports',

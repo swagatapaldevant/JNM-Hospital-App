@@ -49,6 +49,7 @@ class ApiEndPoint{
     static const getInvestigationReport =  "$baseurl/complete_investigation_report";
     static const rateEnquiry =  "$baseurl/rate_query";
     static const appointmentList =  "$baseurl/appointments";
+    static const getpatientBills = "$baseurl/patient_all_bills";
 
   //approval system api
   static const approvalSystemOPD =  "$baseurl/approvalsystem/opd";

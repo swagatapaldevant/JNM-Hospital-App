@@ -1,101 +1,86 @@
-class ReadyReportFilter {
-  String? field;
-  String? reportStatus;
-  // List<String> multiValues = [];
-  final DateTime? fromDate;
-  final DateTime? toDate;
-  // final List<Map<int, String>> charges;
-  final String? fieldValue; 
+enum ReportStatus {
+  all("3-4"),
+  delivered("3"),
+  notDelivered("4");
 
-  ReadyReportFilter({
-    this.field,
-    this.reportStatus,
-    // this.multiValues = const [], 
-    this.fromDate,
-    this.toDate,
-    // this.charges = const [],
-    this.fieldValue
-  });
-
-  Map<String, String?> toJson() {
-    return {
-      'field_name': field,
-      'reportStatus': reportStatus,
-      // 'multiValues': multiValues,
-      'from_date': fromDate?.toIso8601String(),
-      'to_date': toDate?.toIso8601String(),
-      'field_value': fieldValue,
-    };
-  }
+  final String value;
+  const ReportStatus(this.value);
 }
 
-// {
-// 	"from_date" : "2023-08-12",
-// 	"to_date" : "2025-08-12",
-// 	"status_value" : '3-4',
-// 	"field_name" : "",
-// 	"field_value" : ""
-// }
-
 class InvstReportResModel {
-    InvstReportResModel({
-        required this.id,
-        required this.billId,
-        required this.uid,
-        required this.billCreatedDate,
-        required this.patientName,
-        required this.patientId,
-        required this.phone,
-        required this.gender,
-        required this.dobYear,
-        required this.dobMonth,
-        required this.dobDay,
-        required this.referralName,
-        required this.doctorName,
-        required this.section,
-        required this.sectionId,
-        required this.bedName,
-    });
+  InvstReportResModel({
+    required this.id,
+    required this.billId,
+    required this.uid,
+    required this.billCreatedDate,
+    required this.patientName,
+    required this.patientId,
+    required this.phone,
+    required this.gender,
+    required this.dobYear,
+    required this.dobMonth,
+    required this.dobDay,
+    required this.referralName,
+    required this.doctorName,
+    required this.section,
+    required this.sectionId,
+    required this.bedName,
+    this.statusValue,
+  });
 
-    final int? id;
-    final int? billId;
-    final String? uid;
-    final DateTime? billCreatedDate;
-    final String? patientName;
-    final int? patientId;
-    final String? phone;
-    final String? gender;
-    final int? dobYear;
-    final int? dobMonth;
-    final int? dobDay;
-    final String? referralName;
-    final dynamic doctorName;
-    final String? section;
-    final int? sectionId;
-    final dynamic bedName;
+  final int? id;
+  final int? billId;
+  final String? uid;
+  final DateTime? billCreatedDate;
+  final String? patientName;
+  final int? patientId;
+  final String? phone;
+  final String? gender;
+  final int? dobYear;
+  final int? dobMonth;
+  final int? dobDay;
+  final String? referralName;
+  final dynamic doctorName;
+  final String? section;
+  final int? sectionId;
+  final dynamic bedName;
+  final String? statusValue;
 
-    factory InvstReportResModel.fromJson(Map<String, dynamic> json){ 
-        return InvstReportResModel(
-            id: json["id"],
-            billId: json["bill_id"],
-            uid: json["uid"],
-            billCreatedDate: DateTime.tryParse(json["bill_created_date"] ?? ""),
-            patientName: json["patient_name"],
-            patientId: json["patient_id"],
-            phone: json["phone"],
-            gender: json["gender"],
-            dobYear: json["dob_year"],
-            dobMonth: json["dob_month"],
-            dobDay: json["dob_day"],
-            referralName: json["referral_name"],
-            doctorName: json["doctor_name"],
-            section: json["section"],
-            sectionId: json["section_id"],
-            bedName: json["bed_name"],
-        );
+  /// Convert statusValue string into enum
+  ReportStatus get status {
+    switch (statusValue) {
+      case "3":
+        return ReportStatus.delivered;
+      case "4":
+        return ReportStatus.notDelivered;
+      default:
+        return ReportStatus.all;
     }
+  }
 
-    Map<String, dynamic> toJson() => {
+  factory InvstReportResModel.fromJson(Map<String, dynamic> json) {
+    return InvstReportResModel(
+      id: json["id"],
+      billId: json["bill_id"],
+      uid: json["uid"],
+      billCreatedDate: DateTime.tryParse(json["bill_created_date"] ?? ""),
+      patientName: json["patient_name"],
+      patientId: json["patient_id"],
+      phone: json["phone"],
+      gender: json["gender"],
+      dobYear: json["dob_year"],
+      dobMonth: json["dob_month"],
+      dobDay: json["dob_day"],
+      referralName: json["referral_name"],
+      doctorName: json["doctor_name"],
+      section: json["section"],
+      sectionId: json["section_id"],
+      bedName: json["bed_name"],
+      statusValue: json["status_value"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
         "id": id,
         "bill_id": billId,
         "uid": uid,
@@ -112,7 +97,6 @@ class InvstReportResModel {
         "section": section,
         "section_id": sectionId,
         "bed_name": bedName,
-    };
-
+        "status_value": statusValue,
+      };
 }
-

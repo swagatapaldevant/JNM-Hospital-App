@@ -80,12 +80,11 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getDoctorData();
       _fetchAppointments(initial: true);
     });
-
   }
 
   Future<void> _onRefresh() async {
@@ -148,36 +147,28 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen>
     if (initial) setState(() => _loadingAppts = true);
 
     try {
-
-      final resource = await DashboardUsecaseImpl().getAppointments( {
-        "page": "1",
-        "from_date": "2024-08-12",
-        "to_date": "2025-09-09"
-      });
+      final resource = await DashboardUsecaseImpl().getAppointments(
+          {"page": "1", "from_date": "2024-08-12", "to_date": "2025-09-09"});
       if (!mounted) return;
 
-      if(resource.status == STATUS.SUCCESS) {
+      if (resource.status == STATUS.SUCCESS) {
         final data = resource.data as List<dynamic>;
 
-      final items = data
-          .map((e) => AppointmentModel.fromJson(e))
-          .toList();
+        final items = data.map((e) => AppointmentModel.fromJson(e)).toList();
 
-      print(items);
+        print(items);
 
-      if (!mounted) return;
-      setState(() {
-        if (initial) {
-          _opdUpcoming
-            ..clear()
-            ..addAll(items);
-        } else {
-          _opdUpcoming.addAll(items);
-        }
-      });
+        if (!mounted) return;
+        setState(() {
+          if (initial) {
+            _opdUpcoming
+              ..clear()
+              ..addAll(items);
+          } else {
+            _opdUpcoming.addAll(items);
+          }
+        });
       }
-
-      
     } catch (e) {
       if (!mounted) return;
       CommonUtils().flutterSnackBar(
@@ -897,11 +888,9 @@ class _AppointmentCard extends StatelessWidget {
         ? '${_fmtDate(when)} • ${_fmtTime(when)}'
         : (appt.appointmentDate.toString());
 
-    final String doctor =
-        appt.doctorName ?? 'Doctor: N/A';
+    final String doctor = appt.doctorName ?? 'Doctor: N/A';
 
-    final String uhidPill =
-        appt.uhid ?? 'UHID #${appt.id}';
+    final String uhidPill = appt.uhid ?? 'UHID #${appt.id}';
     final String tokenPill =
         (appt.slotId != null) ? 'Slot ${appt.slotId}' : '#${appt.id}';
     final String location =
@@ -944,7 +933,23 @@ class _AppointmentCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _InfoPill(text: uhidPill, color: accent),
+                      Row(
+                        children: [
+                          Text(
+                            appt.name ?? "N/A",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          SizedBox(width: 4,),
+                          _InfoPill(text: uhidPill, color: accent),
+                        ],
+                      ),
                       const SizedBox(height: 6),
 
                       // When
@@ -966,19 +971,6 @@ class _AppointmentCard extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 6),
-
-                      // Patient
-                      Text(
-                        appt.name ?? "N/A",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
 
                       const SizedBox(height: 2),
 

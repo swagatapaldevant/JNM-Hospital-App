@@ -15,7 +15,7 @@ class ApprovalSystemModel {
   final int? miscellaneousAmount;
   final int? miscellaneous;
   final String? miscellaneousType;
-  final int? discountAmount;
+  final dynamic? discountAmount;
   final int? discount;
   final String? discountType;
   final String? discountStatus;

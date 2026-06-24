@@ -22,7 +22,7 @@ class BillingDetailsScreen extends StatefulWidget {
 class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
   bool isLoading = false;
   BillingDetailsModel? billingDetails;
-  
+
   @override
   initState() {
     super.initState();
@@ -78,7 +78,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     final billInfo = billingDetails?.billInfo;
     final payments = billingDetails?.payments ?? [];
     final patientDetails = billingDetails?.patient;
-  AppDimensions.init(context);
+    AppDimensions.init(context);
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: Column(
@@ -100,33 +100,34 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
                         Container(
                           margin: const EdgeInsets.all(2),
                           child: Padding(
-                            padding:  EdgeInsets.symmetric(horizontal: AppDimensions.screenPadding),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: AppDimensions.screenPadding),
                             child: Column(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                              ),
-                              // Hospital Header Section
-                              _buildHospitalHeader(bill),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              // Patient & Bill Info Section
-                              _buildPatientInfoSection(patientDetails,
-                                  bill?.doctorName, "Dummy dept."),
-                              // Services/Items Section
-                              if(billInfo != null && billInfo.isNotEmpty)
-                                _buildServicesSection(billInfo),
-                              // Bill Summary Section
-                              _buildBillSummary(bill),
-                              // Receipt History Section
-                              if (payments.isNotEmpty)
-                                _buildPaymentSection(payments),
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                // Hospital Header Section
+                                _buildHospitalHeader(bill),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                // Patient & Bill Info Section
+                                _buildPatientInfoSection(patientDetails,
+                                    bill?.doctorName, "Dummy dept."),
+                                // Services/Items Section
+                                if (billInfo != null && billInfo.isNotEmpty)
+                                  _buildServicesSection(billInfo),
+                                // Bill Summary Section
+                                _buildBillSummary(bill),
+                                // Receipt History Section
+                                if (payments.isNotEmpty)
+                                  _buildPaymentSection(payments),
 
-                              // Footer
-                              //_buildFooter(),
-                            ],
-                          ),
+                                // Footer
+                                //_buildFooter(),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -256,7 +257,9 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     required Widget body,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10,),
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topLeft,
@@ -484,126 +487,123 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
     }
   }
 
-
-
   Widget _buildServicesSection(List<BillInfo> billInfo) {
-  return _sectionWithHangingHeader(
-    heading: Row(
-      children: [
-        Icon(Icons.receipt_long_outlined, color: Colors.white, size: 18),
-        const SizedBox(width: 4),
-        const Text(
-          "Services & Charges",
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return _sectionWithHangingHeader(
+      heading: Row(
+        children: [
+          Icon(Icons.receipt_long_outlined, color: Colors.white, size: 18),
+          const SizedBox(width: 4),
+          const Text(
+            "Services & Charges",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
-        ),
-      ],
-    ),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Column(
-            children: [
-              ...billInfo.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                final isLast = index == billInfo.length - 1;
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Column(
+              children: [
+                ...billInfo.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  final isLast = index == billInfo.length - 1;
 
-                return Container(
-                  decoration: BoxDecoration(
-                    border: isLast
-                        ? null
-                        : Border(
-                            bottom: BorderSide(color: Colors.grey[200]!)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Service name row (with serial number)
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
-                        width: double.infinity,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${index + 1}. ",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                item.chargeName ?? "",
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: isLast
+                          ? null
+                          : Border(
+                              bottom: BorderSide(color: Colors.grey[200]!)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Service name row (with serial number)
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 2),
+                          width: double.infinity,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${index + 1}. ",
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Date and Amount row
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    formatDateShort(item.date.toString()),
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                              Expanded(
+                                child: Text(
+                                  item.chargeName ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    "₹${item.amount}",
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
+                        // Date and Amount row
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      formatDateShort(item.date.toString()),
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "₹${item.amount}",
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   // Widget _buildPaymentSection(List<dynamic> payments) {
   //   return _sectionWithHangingHeader(
@@ -881,7 +881,7 @@ class _BillingDetailsScreenState extends State<BillingDetailsScreen> {
           const Divider(),
           const SizedBox(height: 8),
           Text(
-            "Thank you for choosing JNM Hospital",
+            "Thank you for choosing JMN Hospital",
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,

@@ -57,9 +57,9 @@ class _SplashScreenState extends State<SplashScreen>
             builder: (_, __) {
               final t = _bgController.value;
               final c1 =
-              Color.lerp(AppColors.splashBg1, const Color(0xFFEAF4FF), t)!;
-              final c2 =
-              Color.lerp(AppColors.splashBg2, const Color(0xFFD6E6FF), 1 - t)!;
+                  Color.lerp(AppColors.splashBg1, const Color(0xFFEAF4FF), t)!;
+              final c2 = Color.lerp(
+                  AppColors.splashBg2, const Color(0xFFD6E6FF), 1 - t)!;
               return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -226,7 +226,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: 16),
                     // Brand lockup
                     Text(
-                      "JNM",
+                      "JMN",
                       //"Rainbow",
                       style: TextStyle(
                         fontSize: 28,
@@ -284,14 +284,14 @@ class _SplashScreenState extends State<SplashScreen>
                   const SizedBox(height: 6),
                   Container(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(color: Colors.black12),
                     ),
                     child: const Text(
-                      "v1.0 • JNM Suite",
+                      "v1.0 • JMN Suite",
                       //"v1.0.0 • Rainbow",
                       style: TextStyle(
                         fontSize: 11.5,
@@ -388,7 +388,10 @@ class _GlassLogoCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.white.withOpacity(.88), Colors.white.withOpacity(.72)],
+                colors: [
+                  Colors.white.withOpacity(.88),
+                  Colors.white.withOpacity(.72)
+                ],
               ),
             ),
             child: child,
